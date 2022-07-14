@@ -7,10 +7,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -93,10 +96,30 @@ fun ProjectCard(
             })
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement =  Arrangement.spacedBy((-8).dp)) {
                 painters.forEach {
                     Image(
                         painter = it,
+                        contentDescription = "User profile",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .border(0.5.dp, BluePrimary, CircleShape)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy((-8).dp)){
+                //This is the same as forEach
+                itemsIndexed(painters){ _, painter->
+                    Image(
+                        painter = painter,
                         contentDescription = "User profile",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
