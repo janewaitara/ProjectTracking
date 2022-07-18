@@ -1,41 +1,50 @@
 package com.mumbicodes
 
 import android.os.Bundle
+import android.text.style.ParagraphStyle
+import android.view.Surface
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mumbicodes.data.Project
 import com.mumbicodes.data.sampleProjects
 import com.mumbicodes.ui.theme.*
+import org.w3c.dom.Text
+import java.time.format.TextStyle
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
 
-            //TODO - change background color
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -102,23 +111,73 @@ fun WelcomeMessages(modifier: Modifier = Modifier) {
     }
 }
 
-//TODO research how to make the arrangements work in LazyVertical grid
-//and make the list staggered
+//TODO research on how to reduce the icon and text spacing and the whole margin
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProjectListing(modifier: Modifier = Modifier) {
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(2),
-        contentPadding = PaddingValues(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+fun SearchBar(
+    modifier: Modifier = Modifier, searchList: String
+) {
+    Surface(
+        modifier = modifier
+            .height(56.dp)
+            .fillMaxWidth()
+            .shadow(
+                elevation = 60.dp,
+                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
+                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+            ),
+        shape = RoundedCornerShape(4.dp),
+        color = White,
     ) {
-        itemsIndexed(sampleProjects()) { _, project ->
-            ProjectCard(project = project)
-        }
+        TextField(
+            value = "",
+            onValueChange = {},
+            leadingIcon = {
+                Icon(
+                    modifier = Modifier.alpha(ContentAlpha.medium),
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    tint = TextColorSubtle
+                )
+            },
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = White,
+                disabledTextColor = Color.Transparent,
+                //Added below code to remove the underline
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            placeholder = {
+                Text(
+                    modifier = Modifier.alpha(ContentAlpha.medium),// reduces the opacity
+                    text = stringResource(id = R.string.search_placeHolder, searchList),
+                    color = TextColorSubtle,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp,
+                    )
+                )
+            },
+            textStyle = TextStyle(
+                TextColorNormal,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                lineHeight = 24.sp,
+            ),
+
+            singleLine = true,
+
+            modifier = modifier
+                .fillMaxWidth()
+                .heightIn(min = 56.dp)
+                .padding(0.dp)
+        )
     }
+
 }
+
 
 //TODO - Custom shadows on card
 @Composable
@@ -127,8 +186,14 @@ fun ProjectCard(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
-        elevation = 10.dp
+            .fillMaxWidth()
+            .shadow(
+                elevation = 40.dp,
+                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
+                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+            ),
+        elevation = 40.dp,
+        shape = RoundedCornerShape(4.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Text(
@@ -145,19 +210,22 @@ fun ProjectCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(modifier = Modifier.fillMaxWidth(), text = buildAnnotatedString {
-                withStyle(ParagraphStyle(lineHeight = 20.sp)) {
-                    withStyle(
-                        style = SpanStyle(
-                            color = TextColorNormal,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    ) {
-                        append(project.projectDesc)
+            Text(modifier = Modifier.fillMaxWidth(),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis, // adds three dots after 2 lines
+                text = buildAnnotatedString {
+                    withStyle(ParagraphStyle(lineHeight = 20.sp)) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = TextColorNormal,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        ) {
+                            append(project.projectDesc)
+                        }
                     }
-                }
-            })
+                })
             Spacer(modifier = Modifier.height(8.dp))
 
             //testing - not even sure it will work
@@ -253,6 +321,27 @@ fun profilesIntListToPainter(teamMembers: List<Int>): List<Painter> =
         painterResource(id = it)
     }
 
+
+//TODO research how to make the arrangements work in LazyVertical grid
+//and make the list staggered - checkout
+//https://medium.com/mobile-app-development-publication/staggeredverticalgrid-of-android-jetpack-compose-fa565e5363e1
+
+@Composable
+fun ProjectListing(modifier: Modifier = Modifier) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        itemsIndexed(sampleProjects()) { _, project ->
+            ProjectCard(project = project)
+        }
+    }
+}
+
+
 @Composable
 fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
     BottomNavigation(
@@ -296,7 +385,6 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-
             )
         })
     }
@@ -306,13 +394,18 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
 fun ProjectsApp(modifier: Modifier = Modifier) {
     ProjectTrackingTheme {
         Scaffold(bottomBar = { ProjectsBottomNavigation() }) {
-            Column(modifier = modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
+
+            Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp)) {
                 WelcomeMessages(
                     modifier = modifier
                         .fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
+                SearchBar(searchList = "projects")
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 ProjectListing(
                     modifier
@@ -324,9 +417,22 @@ fun ProjectsApp(modifier: Modifier = Modifier) {
     }
 }
 
+
 @Preview(showBackground = true, heightDp = 200)
 @Composable
-fun DefaultPreview() {
+fun WelcomeMessagePreview() {
+    WelcomeMessages()
+}
+
+@Preview(showBackground = true, heightDp = 200)
+@Composable
+fun SearchBarPreview() {
+    SearchBar(searchList = "projects")
+}
+
+@Preview(showBackground = true, heightDp = 200)
+@Composable
+fun ProjectListingPreview() {
     ProjectTrackingTheme {
         ProjectListing(Modifier.fillMaxWidth())
     }
@@ -338,14 +444,7 @@ fun BottomNavigationPreview() {
     ProjectsBottomNavigation()
 }
 
-@Preview(showBackground = true, heightDp = 200)
-@Composable
-fun WelcomeMessagePreview() {
-    WelcomeMessages()
-}
-
-
-@Preview(widthDp = 360, heightDp = 640)
+@Preview(widthDp = 375, heightDp = 812)
 @Composable
 fun MyProjectsPreview() {
     ProjectTrackingTheme {

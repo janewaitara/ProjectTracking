@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Project Tracking</string>
+    <string name="search_placeHolder">Search for %1$s</string>
 </resources>
