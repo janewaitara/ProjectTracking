@@ -12,18 +12,17 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,19 +34,71 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val title = "Portfolio"
-            val desc = "The design of my personal portfolio"
-            val dueDate = "12th Dec 2022"
 
             //TODO - change background color
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(BlueAccent)
             ) {
-                ProjectListing(modifier = Modifier.fillMaxWidth())
+                ProjectsApp()
             }
         }
+    }
+}
+
+@Composable
+fun WelcomeMessages(modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(
+            text = buildAnnotatedString {
+                withStyle(ParagraphStyle(lineHeight = 44.sp)) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = TextColorDark,
+                            fontFamily = fontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 32.sp,
+                        )
+                    ) {
+                        append("Hello Jane!!")
+                    }
+                }
+            }, modifier = Modifier
+                .padding(bottom = 8.dp)
+                .fillMaxWidth()
+        )
+        Text(text = buildAnnotatedString {
+            withStyle(ParagraphStyle(lineHeight = 28.sp)) {
+                withStyle(
+                    style = SpanStyle(
+                        color = TextColorNormal,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                ) {
+                    append("You have ")
+                }
+                withStyle(
+                    style = SpanStyle(
+                        color = BluePrimary,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("${sampleProjects().size}")
+                }
+                withStyle(
+                    style = SpanStyle(
+                        color = TextColorNormal,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                ) {
+                    append(" projects.")
+                }
+            }
+        }, modifier = Modifier.fillMaxWidth())
     }
 }
 
@@ -60,9 +111,8 @@ fun ProjectListing(modifier: Modifier = Modifier) {
     LazyVerticalGrid(
         cells = GridCells.Fixed(2),
         contentPadding = PaddingValues(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.padding(horizontal = 16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(sampleProjects()) { _, project ->
             ProjectCard(project = project)
@@ -77,8 +127,7 @@ fun ProjectCard(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
+            .fillMaxWidth(),
         elevation = 10.dp
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
@@ -187,7 +236,6 @@ fun ProjectCard(
     }
 }
 
-
 @Composable
 fun profilesIntListToPainters(teamMembers: List<Int>): List<Painter> {
 
@@ -206,7 +254,7 @@ fun profilesIntListToPainter(teamMembers: List<Int>): List<Painter> =
     }
 
 @Composable
-fun projectsBottomNavigation(modifier: Modifier = Modifier) {
+fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
     BottomNavigation(
         modifier = modifier,
         backgroundColor = BlueAccent
@@ -216,14 +264,14 @@ fun projectsBottomNavigation(modifier: Modifier = Modifier) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_home_filled),
                 contentDescription = null, // decorative element
-            tint = BluePrimary
+                tint = BluePrimary
             )
         })
         BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
             Icon(
                 painter = painterResource(id = R.drawable.ic_tasks_outlined),
                 contentDescription = null, // decorative element
-                        tint = TextColorSubtle
+                tint = TextColorSubtle
             )
         })
         BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
@@ -257,12 +305,21 @@ fun projectsBottomNavigation(modifier: Modifier = Modifier) {
 @Composable
 fun ProjectsApp(modifier: Modifier = Modifier) {
     ProjectTrackingTheme {
-        Scaffold(bottomBar = { projectsBottomNavigation() }) {
-            ProjectListing(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(it)
-            )
+        Scaffold(bottomBar = { ProjectsBottomNavigation() }) {
+            Column(modifier = modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
+                WelcomeMessages(
+                    modifier = modifier
+                        .fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ProjectListing(
+                    modifier
+                        .fillMaxWidth()
+                        .padding(it)
+                )
+            }
         }
     }
 }
@@ -278,12 +335,20 @@ fun DefaultPreview() {
 @Preview(showBackground = true, heightDp = 200)
 @Composable
 fun BottomNavigationPreview() {
-    projectsBottomNavigation()
+    ProjectsBottomNavigation()
+}
+
+@Preview(showBackground = true, heightDp = 200)
+@Composable
+fun WelcomeMessagePreview() {
+    WelcomeMessages()
 }
 
 
 @Preview(widthDp = 360, heightDp = 640)
 @Composable
 fun MyProjectsPreview() {
-    ProjectsApp()
+    ProjectTrackingTheme {
+        ProjectsApp()
+    }
 }
