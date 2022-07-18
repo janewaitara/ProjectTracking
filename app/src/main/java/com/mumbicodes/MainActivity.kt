@@ -12,12 +12,13 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -204,7 +205,67 @@ fun profilesIntListToPainter(teamMembers: List<Int>): List<Painter> =
         painterResource(id = it)
     }
 
+@Composable
+fun projectsBottomNavigation(modifier: Modifier = Modifier) {
+    BottomNavigation(
+        modifier = modifier,
+        backgroundColor = BlueAccent
+    ) {
 
+        BottomNavigationItem(selected = true, onClick = { /*TODO*/ }, icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_home_filled),
+                contentDescription = null, // decorative element
+            tint = BluePrimary
+            )
+        })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_tasks_outlined),
+                contentDescription = null, // decorative element
+                        tint = TextColorSubtle
+            )
+        })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_add_outlined),
+                contentDescription = null, // decorative element
+                tint = TextColorSubtle
+            )
+        })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_notifications_outlined),
+                contentDescription = null, // decorative element
+                tint = TextColorSubtle
+            )
+        })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            Image(
+                painter = painterResource(id = R.drawable.caucasian),
+                contentDescription = "User profile",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+
+            )
+        })
+    }
+}
+
+@Composable
+fun ProjectsApp(modifier: Modifier = Modifier) {
+    ProjectTrackingTheme {
+        Scaffold(bottomBar = { projectsBottomNavigation() }) {
+            ProjectListing(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(it)
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true, heightDp = 200)
 @Composable
@@ -212,4 +273,17 @@ fun DefaultPreview() {
     ProjectTrackingTheme {
         ProjectListing(Modifier.fillMaxWidth())
     }
+}
+
+@Preview(showBackground = true, heightDp = 200)
+@Composable
+fun BottomNavigationPreview() {
+    projectsBottomNavigation()
+}
+
+
+@Preview(widthDp = 360, heightDp = 640)
+@Composable
+fun MyProjectsPreview() {
+    ProjectsApp()
 }
