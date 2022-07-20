@@ -1,8 +1,6 @@
 package com.mumbicodes
 
 import android.os.Bundle
-import android.text.style.ParagraphStyle
-import android.view.Surface
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -37,8 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.mumbicodes.data.Project
 import com.mumbicodes.data.sampleProjects
 import com.mumbicodes.ui.theme.*
-import org.w3c.dom.Text
-import java.time.format.TextStyle
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +54,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun WelcomeMessages(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        Text(
+
+        /* Text(
             text = buildAnnotatedString {
                 withStyle(ParagraphStyle(lineHeight = 44.sp)) {
                     withStyle(
@@ -75,39 +72,40 @@ fun WelcomeMessages(modifier: Modifier = Modifier) {
             }, modifier = Modifier
                 .padding(bottom = 8.dp)
                 .fillMaxWidth()
+        )*/
+
+        Text(
+            text = "Hello Jane!!",
+            style = MaterialTheme.typography.h5.copy(color = TextColorDark),
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .fillMaxWidth()
         )
-        Text(text = buildAnnotatedString {
-            withStyle(ParagraphStyle(lineHeight = 28.sp)) {
+
+        Text(
+            text = buildAnnotatedString {
                 withStyle(
-                    style = SpanStyle(
-                        color = TextColorNormal,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal
-                    )
+                    style = MaterialTheme.typography.subtitle1.toSpanStyle()
+                        .copy(fontWeight = FontWeight.Normal, color = TextColorNormal)
                 ) {
                     append("You have ")
                 }
                 withStyle(
-                    style = SpanStyle(
-                        color = BluePrimary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline
-                    )
+                    style = MaterialTheme.typography.subtitle1.toSpanStyle()
+                        .copy(textDecoration = TextDecoration.Underline, color = BluePrimary)
                 ) {
                     append("${sampleProjects().size}")
                 }
                 withStyle(
-                    style = SpanStyle(
-                        color = TextColorNormal,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal
-                    )
+                    style = MaterialTheme.typography.subtitle1.toSpanStyle()
+                        .copy(fontWeight = FontWeight.Normal, color = TextColorNormal)
                 ) {
                     append(" projects.")
                 }
-            }
-        }, modifier = Modifier.fillMaxWidth())
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
     }
 }
 
@@ -115,7 +113,7 @@ fun WelcomeMessages(modifier: Modifier = Modifier) {
 
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier, searchList: String
+    modifier: Modifier = Modifier, searchParamType: String
 ) {
     Surface(
         modifier = modifier
@@ -151,21 +149,12 @@ fun SearchBar(
             placeholder = {
                 Text(
                     modifier = Modifier.alpha(ContentAlpha.medium),// reduces the opacity
-                    text = stringResource(id = R.string.search_placeHolder, searchList),
+                    text = stringResource(id = R.string.search_placeHolder, searchParamType),
                     color = TextColorSubtle,
-                    style = TextStyle(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                    )
+                    style = MaterialTheme.typography.body1
                 )
             },
-            textStyle = TextStyle(
-                TextColorNormal,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-            ),
+            textStyle = MaterialTheme.typography.body1.copy(color = TextColorNormal),
 
             singleLine = true,
 
@@ -199,33 +188,19 @@ fun ProjectCard(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = project.projectTitle,
-                style = TextStyle(
-                    TextColorDark,
-                    fontFamily = fontFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    lineHeight = 32.sp,
-                )
+                style = MaterialTheme.typography.h6.copy(color = TextColorDark)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(modifier = Modifier.fillMaxWidth(),
+            Text(
+                modifier = Modifier.fillMaxWidth(),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis, // adds three dots after 2 lines
-                text = buildAnnotatedString {
-                    withStyle(ParagraphStyle(lineHeight = 20.sp)) {
-                        withStyle(
-                            style = SpanStyle(
-                                color = TextColorNormal,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Normal
-                            )
-                        ) {
-                            append(project.projectDesc)
-                        }
-                    }
-                })
+                text = project.projectDesc,
+                style = MaterialTheme.typography.caption.copy(color = TextColorNormal)
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
 
             //testing - not even sure it will work
@@ -289,17 +264,11 @@ fun ProjectCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(modifier = Modifier.fillMaxWidth(), text = buildAnnotatedString {
-                withStyle(
-                    SpanStyle(
-                        color = BluePrimary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal
-                    )
-                ) {
-                    append(project.dueDate)
-                }
-            })
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = project.dueDate,
+                style = MaterialTheme.typography.overline.copy(color = BluePrimary)
+            )
         }
     }
 }
@@ -403,7 +372,7 @@ fun ProjectsApp(modifier: Modifier = Modifier) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                SearchBar(searchList = "projects")
+                SearchBar(searchParamType = "projects")
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -427,7 +396,7 @@ fun WelcomeMessagePreview() {
 @Preview(showBackground = true, heightDp = 200)
 @Composable
 fun SearchBarPreview() {
-    SearchBar(searchList = "projects")
+    SearchBar(searchParamType = "projects")
 }
 
 @Preview(showBackground = true, heightDp = 200)
