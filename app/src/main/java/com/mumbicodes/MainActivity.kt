@@ -318,34 +318,44 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
         backgroundColor = BlueAccent
     ) {
 
-        BottomNavigationItem(selected = true, onClick = { /*TODO*/ }, icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_home_filled),
-                contentDescription = null, // decorative element
-                tint = BluePrimary
-            )
-        })
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_tasks_outlined),
-                contentDescription = null, // decorative element
-                tint = TextColorSubtle
-            )
-        })
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_add_outlined),
-                contentDescription = null, // decorative element
-                tint = TextColorSubtle
-            )
-        })
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_notifications_outlined),
-                contentDescription = null, // decorative element
-                tint = TextColorSubtle
-            )
-        })
+        BottomNavigationItem(
+            selected = true,
+            onClick = { /*TODO*/ },
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = TextColorSubtle,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_home_filled),
+                    contentDescription = null, // decorative element
+                )
+            })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ },
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = TextColorSubtle,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_tasks_outlined),
+                    contentDescription = null, // decorative element
+                )
+            })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ },
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = TextColorSubtle,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add_outlined),
+                    contentDescription = null, // decorative element
+                )
+            })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ },
+            selectedContentColor = MaterialTheme.colors.primary,
+            unselectedContentColor = TextColorSubtle,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_notifications_outlined),
+                    contentDescription = null, // decorative element
+                )
+            })
         BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
             Image(
                 painter = painterResource(id = R.drawable.caucasian),
