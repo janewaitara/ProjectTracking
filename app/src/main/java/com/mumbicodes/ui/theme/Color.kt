@@ -2,27 +2,32 @@ package com.mumbicodes.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
 
 //Color Guide
-val BluePrimary = Color(0xFF0039B2)
-val BlueSecondary = Color(0xFFD1E7FE)
-val BlueAccent = Color(0xFFFCFDFF)
+val BlueDarker = Color(0xFF001033)
+val BlueDark = Color(0xFF002066)
+val BlueMain = Color(0xFF0039B2)
+val BlueSubtle = Color(0xFF3374ff)
+val BlueLight = Color(0xFFD1E7FE)
+val BlueLightest = Color(0xFFFCFDFF)
 
-//TextColor
-val TextColorDark = Color(0xFF03102C)
-val TextColorNormal = Color(0xFF253046)
-val TextColorSubtle= Color(0xFF737A88)
-
-//Neutral colors
+//Neutral Color
 val Black = Color(0xFF000000)
+val GreyDarkest = Color(0xFF020918)
+val GreyDark = Color(0xFF03102C)
+val GreyNormal = Color(0xFF253046)
+val GreySubtle= Color(0xFF737A88)
 val White = Color(0xFFFFFFFF)
 
-//State colors
-val danger = Color(0xFFFB000D)
+//State colors: Error
+val Red10 = Color(0xFF330003)
+val Red20 = Color(0xFF660005)
+val Red30 = Color(0xFF990008)
+val RedMain = Color(0xFFFB000D) //Red49
+val Red80 = Color(0xFFff999e)
+val Red90 = Color(0xFFffcccf)
+
+
 val Warning = Color(0xFFFFA900)
 val Success = Color(0xFF00A49E)
 
