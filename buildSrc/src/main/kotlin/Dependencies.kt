@@ -14,7 +14,7 @@ object Versions {
     const val testRunner = "1.4.1-alpha03"
     const val espresso = "3.5.0-alpha03"
 
-    //compose
+    //Compose
     const val composeUi = "1.2.0"
     const val composeMaterial3 = "1.0.0-alpha14"
     const val constraintLayoutCompose = "1.0.0-beta02"
@@ -26,6 +26,14 @@ object Versions {
     // Gradle Plugins - ktlint
     const val ktlint = "10.2.1"
 
+    //Room
+    const val room = "2.4.2"
+
+    // Coroutines
+    const val coroutines = "1.5.0"
+
+    //Navigation
+    const val navVersion = "2.5.1"
 }
 
 object BuildPlugins {
@@ -42,7 +50,7 @@ object Libraries {
     const val appCompat = "androidx.appcompat:appcompat:${Versions.appCompat}"
     const val ktxCore = "androidx.core:core-ktx:${Versions.ktx}"
 
-    //compose
+    //Compose
     const val composeUi = "androidx.compose.ui:ui:${Versions.composeUi}"
     const val composeTooling = "androidx.compose.ui:ui-tooling-preview:${Versions.composeUi}"
     const val composeMaterial3 = "androidx.compose.material3:material3:${Versions.composeMaterial3}"
@@ -52,7 +60,23 @@ object Libraries {
     const val constraintLayoutCompose =
         "androidx.constraintlayout:constraintlayout-compose:${Versions.constraintLayoutCompose}"
 
+    //Navigation
+   const val navigationCompose = "androidx.navigation:navigation-compose:${Versions.navVersion}"
+
+    //Lifecycle
     const val lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
+    const val lifecycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}"
+
+    //Room
+    const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
+    const val roomCompiler =  "androidx.room:room-compiler:${Versions.room}"
+    const val roomKtx =  "androidx.room:room-ktx:${Versions.room}"
+
+    // Coroutines
+    const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
+    const val coroutinesAndroid =
+        "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
+
 }
 
 object TestLibraries {

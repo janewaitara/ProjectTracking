@@ -1,7 +1,10 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
     id(BuildPlugins.androidApplication)
     id(BuildPlugins.kotlinAndroid)
     id(BuildPlugins.ktlintPlugin)
+    id("kotlin-kapt")
 }
 
 android {
@@ -56,12 +59,30 @@ dependencies {
     implementation(Libraries.activityCompose)
     implementation(Libraries.constraintLayoutCompose)
 
+    // Lifecycle
     implementation(Libraries.lifecycle)
+    implementation(Libraries.lifecycleViewModel)
 
+    // Room
+    implementation(Libraries.roomRuntime)
+    kapt(Libraries.roomCompiler)
+    implementation(Libraries.roomKtx)
+
+    // Coroutines
+    implementation(Libraries.coroutines)
+    implementation(Libraries.coroutinesAndroid)
+
+    // Navigation
+    implementation(Libraries.navigationCompose)
+
+    // Unit tests
     testImplementation(TestLibraries.junit4)
+
+    // Android Tests
     androidTestImplementation(TestLibraries.junit)
     androidTestImplementation(TestLibraries.espresso)
     androidTestImplementation(TestLibraries.composeJunit4)
+
     debugImplementation(TestLibraries.composeTooling)
     debugImplementation(TestLibraries.composeManifest)
 }
