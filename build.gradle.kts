@@ -10,6 +10,12 @@ tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }
 
+buildscript {
+    dependencies {
+        classpath(Libraries.hiltGradle)
+    }
+}
+
 allprojects {
 
     apply(plugin = BuildPlugins.ktlintPlugin)

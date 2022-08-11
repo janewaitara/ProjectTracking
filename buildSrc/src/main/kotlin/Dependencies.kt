@@ -34,6 +34,10 @@ object Versions {
 
     //Navigation
     const val navVersion = "2.5.1"
+
+    // Hilt
+    const val hilt= "2.42"
+    const val hiltWithOtherLibs = "1.0.0"
 }
 
 object BuildPlugins {
@@ -42,6 +46,7 @@ object BuildPlugins {
     const val androidApplication = "com.android.application"
     const val kotlinAndroid = "org.jetbrains.kotlin.android"
     const val ktlintPlugin = "org.jlleitschuh.gradle.ktlint"
+    const val hiltPlugin = "dagger.hilt.android.plugin"
 }
 
 object Libraries {
@@ -76,6 +81,14 @@ object Libraries {
     const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     const val coroutinesAndroid =
         "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
+
+    // Hilt
+    const val hiltGradle = "com.google.dagger:hilt-android-gradle-plugin:${Versions.hilt}"
+    const val hiltAndroid = "com.google.dagger:hilt-android:${Versions.hilt}"
+    const val hiltCompilerAndroid = "com.google.dagger:hilt-android-compiler:${Versions.hilt}"
+    const val hiltCompiler = "androidx.hilt:hilt-compiler:${Versions.hiltWithOtherLibs}"
+    const val hiltNavigation = "androidx.hilt:hilt-navigation-compose:${Versions.hiltWithOtherLibs}"
+    const val hiltViewModel = "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
 
 }
 

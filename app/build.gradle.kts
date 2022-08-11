@@ -1,10 +1,10 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
-
 plugins {
     id(BuildPlugins.androidApplication)
     id(BuildPlugins.kotlinAndroid)
     id(BuildPlugins.ktlintPlugin)
+    id(BuildPlugins.hiltPlugin)
     id("kotlin-kapt")
+    kotlin("kapt")
 }
 
 android {
@@ -74,6 +74,13 @@ dependencies {
 
     // Navigation
     implementation(Libraries.navigationCompose)
+
+    // DI - Hilt
+    implementation(Libraries.hiltAndroid)
+    kapt(Libraries.hiltCompilerAndroid)
+    kapt(Libraries.hiltCompiler)
+    implementation(Libraries.hiltNavigation)
+    implementation(Libraries.hiltViewModel)
 
     // Unit tests
     testImplementation(TestLibraries.junit4)
