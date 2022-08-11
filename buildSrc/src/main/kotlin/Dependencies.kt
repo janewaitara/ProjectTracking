@@ -23,6 +23,9 @@ object Versions {
     // Lifecycle
     const val lifecycle = "2.4.1"
 
+    // Gradle Plugins - ktlint
+    const val ktlint = "10.2.1"
+
 }
 
 object BuildPlugins {
@@ -30,6 +33,7 @@ object BuildPlugins {
     const val androidLibrary = "com.android.library"
     const val androidApplication = "com.android.application"
     const val kotlinAndroid = "org.jetbrains.kotlin.android"
+    const val ktlintPlugin = "org.jlleitschuh.gradle.ktlint"
 }
 
 object Libraries {
