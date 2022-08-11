@@ -15,7 +15,7 @@ object Versions {
     const val espresso = "3.5.0-alpha03"
 
     //compose
-    const val composeUi = "1.2.0-alpha08"
+    const val composeUi = "1.2.0"
     const val composeMaterial3 = "1.0.0-alpha14"
     const val constraintLayoutCompose = "1.0.0-beta02"
     const val activityCompose = "1.3.1"
@@ -45,7 +45,7 @@ object Libraries {
     const val composeMaterial3Window =
         "androidx.compose.material3:material3-window-size-class:${Versions.composeMaterial3}"
     const val activityCompose = "androidx.activity:activity-compose:${Versions.activityCompose}"
-    const val constraintLayout =
+    const val constraintLayoutCompose =
         "androidx.constraintlayout:constraintlayout-compose:${Versions.constraintLayoutCompose}"
 
     const val lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
