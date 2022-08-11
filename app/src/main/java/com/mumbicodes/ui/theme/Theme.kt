@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorPalette = darkColorScheme(
@@ -30,7 +29,7 @@ private val DarkColorPalette = darkColorScheme(
     onSurfaceVariant = White,
 
     outline = GreyNormal
-    )
+)
 
 private val LightColorPalette = lightColorScheme(
 
@@ -63,7 +62,7 @@ fun ProjectTrackingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    //Checks whether the user is using android 12 phone
+    // Checks whether the user is using android 12 phone
     val useDynamicColors = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
     val colors = when {

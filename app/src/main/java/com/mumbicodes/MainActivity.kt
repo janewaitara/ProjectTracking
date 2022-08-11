@@ -106,15 +106,15 @@ fun WelcomeMessages(modifier: Modifier = Modifier) {
             },
             modifier = Modifier.fillMaxWidth()
         )
-
     }
 }
 
-//TODO research on how to reduce the icon and text spacing and the whole margin
+// TODO research on how to reduce the icon and text spacing and the whole margin
 
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier, searchParamType: String
+    modifier: Modifier = Modifier,
+    searchParamType: String
 ) {
     Surface(
         modifier = modifier
@@ -142,14 +142,14 @@ fun SearchBar(
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = White,
                 disabledTextColor = Color.Transparent,
-                //Added below code to remove the underline
+                // Added below code to remove the underline
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
             placeholder = {
                 Text(
-                    modifier = Modifier.alpha(0.5f),// reduces the opacity
+                    modifier = Modifier.alpha(0.5f), // reduces the opacity
                     text = stringResource(id = R.string.search_placeHolder, searchParamType),
                     color = GreySubtle,
                     style = MaterialTheme.typography.bodySmall
@@ -165,11 +165,9 @@ fun SearchBar(
                 .padding(0.dp)
         )
     }
-
 }
 
-
-//TODO - Custom shadows on card
+// TODO - Custom shadows on card
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -177,9 +175,10 @@ fun ProjectCard(
     project: Project
 ) {
     Card(
-        //the Material color is not working - MaterialTheme.colorScheme.surface
+        // the Material color is not working - MaterialTheme.colorScheme.surface
         colors = CardDefaults.cardColors(
-            containerColor = White),
+            containerColor = White
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 40.dp),
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
@@ -210,7 +209,7 @@ fun ProjectCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            //testing - not even sure it will work
+            // testing - not even sure it will work
             project.teamMembers?.let { teamMembers ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -297,10 +296,9 @@ fun profilesIntListToPainter(teamMembers: List<Int>): List<Painter> =
         painterResource(id = it)
     }
 
-
-//TODO research how to make the arrangements work in LazyVertical grid
-//and make the list staggered - checkout
-//https://medium.com/mobile-app-development-publication/staggeredverticalgrid-of-android-jetpack-compose-fa565e5363e1
+// TODO research how to make the arrangements work in LazyVertical grid
+// and make the list staggered - checkout
+// https://medium.com/mobile-app-development-publication/staggeredverticalgrid-of-android-jetpack-compose-fa565e5363e1
 
 @Composable
 fun ProjectListing(modifier: Modifier = Modifier) {
@@ -392,8 +390,8 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
 @Composable
 fun ProjectsApp(modifier: Modifier = Modifier) {
     ProjectTrackingTheme {
-        Scaffold(bottomBar = { //ProjectsBottomNavigation()
-             }) {
+        Scaffold(bottomBar = { // ProjectsBottomNavigation()
+        }) {
 
             Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp)) {
                 WelcomeMessages(
@@ -416,7 +414,6 @@ fun ProjectsApp(modifier: Modifier = Modifier) {
         }
     }
 }
-
 
 @Preview(showBackground = true, heightDp = 200)
 @Composable
@@ -441,7 +438,7 @@ fun ProjectListingPreview() {
 @Preview(showBackground = true, heightDp = 200)
 @Composable
 fun BottomNavigationPreview() {
-   // ProjectsBottomNavigation()
+    // ProjectsBottomNavigation()
 }
 
 @Preview(widthDp = 375, heightDp = 812)

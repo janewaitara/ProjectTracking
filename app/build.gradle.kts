@@ -1,6 +1,6 @@
 plugins {
-    id (BuildPlugins.androidApplication)
-    id (BuildPlugins.kotlinAndroid)
+    id(BuildPlugins.androidApplication)
+    id(BuildPlugins.kotlinAndroid)
     id(BuildPlugins.ktlintPlugin)
 }
 
@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.mumbicodes"
-        minSdk =  AndroidSdk.minSdkVersion
-        targetSdk  = AndroidSdk.targetSdkVersion
+        minSdk = AndroidSdk.minSdkVersion
+        targetSdk = AndroidSdk.targetSdkVersion
         versionCode = AndroidSdk.versionCode
         versionName = AndroidSdk.versionName
 
@@ -48,21 +48,20 @@ android {
 
 dependencies {
 
-    implementation (Libraries.ktxCore)
-    implementation (Libraries.composeUi)
-    implementation (Libraries.composeMaterial3)
-    implementation (Libraries.composeMaterial3Window)
-    implementation (Libraries.composeTooling)
-    implementation (Libraries.activityCompose)
-    implementation (Libraries.constraintLayoutCompose)
+    implementation(Libraries.ktxCore)
+    implementation(Libraries.composeUi)
+    implementation(Libraries.composeMaterial3)
+    implementation(Libraries.composeMaterial3Window)
+    implementation(Libraries.composeTooling)
+    implementation(Libraries.activityCompose)
+    implementation(Libraries.constraintLayoutCompose)
 
-    implementation (Libraries.lifecycle)
+    implementation(Libraries.lifecycle)
 
-    testImplementation (TestLibraries.junit4)
-    androidTestImplementation (TestLibraries.junit)
-    androidTestImplementation (TestLibraries.espresso)
-    androidTestImplementation (TestLibraries.composeJunit4)
-    debugImplementation (TestLibraries.composeTooling)
-    debugImplementation (TestLibraries.composeManifest)
-
+    testImplementation(TestLibraries.junit4)
+    androidTestImplementation(TestLibraries.junit)
+    androidTestImplementation(TestLibraries.espresso)
+    androidTestImplementation(TestLibraries.composeJunit4)
+    debugImplementation(TestLibraries.composeTooling)
+    debugImplementation(TestLibraries.composeManifest)
 }

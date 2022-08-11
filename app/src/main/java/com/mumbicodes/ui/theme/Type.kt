@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    //This is the Title
+    // This is the Title
     headlineLarge = TextStyle(
         fontFamily = fontFamily,
         fontWeight = FontWeight.Bold,
@@ -18,37 +18,37 @@ val Typography = Typography(
         letterSpacing = (-0.0015).em
     ),
 
-    //This is the Header 2
-    headlineMedium= TextStyle(
+    // This is the Header 2
+    headlineMedium = TextStyle(
         fontFamily = fontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 32.sp,
         letterSpacing = (-0.001).em
-    ) ,
+    ),
 
-    //This is the subtitle
+    // This is the subtitle
     titleMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         lineHeight = 28.sp
     ),
-    //This is the strong body in my guide
+    // This is the strong body in my guide
     bodyMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         lineHeight = 24.sp
     ),
-    //This is the body
+    // This is the body
     bodySmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp
     ),
-    //This is the button text
+    // This is the button text
     labelLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.W500,
@@ -56,20 +56,20 @@ val Typography = Typography(
         letterSpacing = 0.02.em,
         lineHeight = 20.sp
     ),
-    //This is the small text in my guide
+    // This is the small text in my guide
     labelMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.W400,
         fontSize = 14.sp,
-        letterSpacing =0.01.em,
+        letterSpacing = 0.01.em,
         lineHeight = 20.sp
     ),
-    //This is the smallest text in my guide
+    // This is the smallest text in my guide
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.W400,
         fontSize = 12.sp,
-        letterSpacing =0.01.em,
+        letterSpacing = 0.01.em,
         lineHeight = 16.sp
     )
 )
