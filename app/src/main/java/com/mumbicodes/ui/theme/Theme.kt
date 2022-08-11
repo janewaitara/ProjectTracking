@@ -62,12 +62,13 @@ fun ProjectTrackingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    // Checks whether the user is using android 12 phone
-    val useDynamicColors = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-
+    // when the version 12 check is out of the when statement, lint fails on github actions
     val colors = when {
-        useDynamicColors && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        useDynamicColors && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context)
+            else dynamicLightColorScheme(context)
+        }
         darkTheme -> DarkColorPalette
         else -> LightColorPalette
     }
