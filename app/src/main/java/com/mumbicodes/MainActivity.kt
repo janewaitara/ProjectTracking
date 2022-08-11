@@ -11,9 +11,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,16 +25,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mumbicodes.data.Project
 import com.mumbicodes.data.sampleProjects
 import com.mumbicodes.ui.theme.*
+import org.w3c.dom.Text
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +77,7 @@ fun WelcomeMessages(modifier: Modifier = Modifier) {
 
         Text(
             text = "Hello Jane!!",
-            style = MaterialTheme.typography.h5.copy(color = TextColorDark),
+            style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
             modifier = Modifier
                 .padding(bottom = 8.dp)
                 .fillMaxWidth()
@@ -85,20 +86,20 @@ fun WelcomeMessages(modifier: Modifier = Modifier) {
         Text(
             text = buildAnnotatedString {
                 withStyle(
-                    style = MaterialTheme.typography.subtitle1.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = TextColorNormal)
+                    style = MaterialTheme.typography.titleMedium.toSpanStyle()
+                        .copy(fontWeight = FontWeight.Normal, color = GreyNormal)
                 ) {
                     append("You have ")
                 }
                 withStyle(
-                    style = MaterialTheme.typography.subtitle1.toSpanStyle()
-                        .copy(textDecoration = TextDecoration.Underline, color = BluePrimary)
+                    style = MaterialTheme.typography.titleMedium.toSpanStyle()
+                        .copy(textDecoration = TextDecoration.Underline, color = BlueMain)
                 ) {
                     append("${sampleProjects().size}")
                 }
                 withStyle(
-                    style = MaterialTheme.typography.subtitle1.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = TextColorNormal)
+                    style = MaterialTheme.typography.titleMedium.toSpanStyle()
+                        .copy(fontWeight = FontWeight.Normal, color = GreyNormal)
                 ) {
                     append(" projects.")
                 }
@@ -132,14 +133,14 @@ fun SearchBar(
             onValueChange = {},
             leadingIcon = {
                 Icon(
-                    modifier = Modifier.alpha(ContentAlpha.medium),
+                    modifier = Modifier.alpha(0.5f),
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = TextColorSubtle
+                    tint = GreySubtle
                 )
             },
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = White,
+                containerColor = White,
                 disabledTextColor = Color.Transparent,
                 //Added below code to remove the underline
                 focusedIndicatorColor = Color.Transparent,
@@ -148,13 +149,13 @@ fun SearchBar(
             ),
             placeholder = {
                 Text(
-                    modifier = Modifier.alpha(ContentAlpha.medium),// reduces the opacity
+                    modifier = Modifier.alpha(0.5f),// reduces the opacity
                     text = stringResource(id = R.string.search_placeHolder, searchParamType),
-                    color = TextColorSubtle,
-                    style = MaterialTheme.typography.body1
+                    color = GreySubtle,
+                    style = MaterialTheme.typography.bodySmall
                 )
             },
-            textStyle = MaterialTheme.typography.body1.copy(color = TextColorNormal),
+            textStyle = MaterialTheme.typography.bodySmall.copy(color = GreyNormal),
 
             singleLine = true,
 
@@ -169,26 +170,32 @@ fun SearchBar(
 
 
 //TODO - Custom shadows on card
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectCard(
     project: Project
 ) {
     Card(
+        //the Material color is not working - MaterialTheme.colorScheme.surface
+        colors = CardDefaults.cardColors(
+            containerColor = White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 40.dp),
+        shape = MaterialTheme.shapes.small,
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
                 elevation = 40.dp,
+                shape = MaterialTheme.shapes.small,
                 ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
                 spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
             ),
-        elevation = 40.dp,
-        shape = RoundedCornerShape(4.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = project.projectTitle,
-                style = MaterialTheme.typography.h6.copy(color = TextColorDark)
+                style = MaterialTheme.typography.headlineMedium.copy(color = GreyDark)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -198,7 +205,7 @@ fun ProjectCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis, // adds three dots after 2 lines
                 text = project.projectDesc,
-                style = MaterialTheme.typography.caption.copy(color = TextColorNormal)
+                style = MaterialTheme.typography.labelMedium.copy(color = GreyNormal)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -218,7 +225,7 @@ fun ProjectCard(
                             modifier = Modifier
                                 .size(32.dp)
                                 .clip(CircleShape)
-                                .border(0.5.dp, BluePrimary, CircleShape)
+                                .border(0.5.dp, BlueMain, CircleShape)
                         )
                     }
                 }
@@ -267,7 +274,7 @@ fun ProjectCard(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = project.dueDate,
-                style = MaterialTheme.typography.overline.copy(color = BluePrimary)
+                style = MaterialTheme.typography.labelSmall.copy(color = BlueMain)
             )
         }
     }
@@ -310,6 +317,7 @@ fun ProjectListing(modifier: Modifier = Modifier) {
     }
 }
 
+/*
 
 @Composable
 fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
@@ -320,7 +328,9 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
 
         BottomNavigationItem(
             selected = true,
-            onClick = { /*TODO*/ },
+            onClick = { */
+/*TODO*//*
+ },
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = TextColorSubtle,
             icon = {
@@ -329,7 +339,9 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
                     contentDescription = null, // decorative element
                 )
             })
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ },
+        BottomNavigationItem(selected = false, onClick = { */
+/*TODO*//*
+ },
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = TextColorSubtle,
             icon = {
@@ -338,7 +350,9 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
                     contentDescription = null, // decorative element
                 )
             })
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ },
+        BottomNavigationItem(selected = false, onClick = { */
+/*TODO*//*
+ },
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = TextColorSubtle,
             icon = {
@@ -347,7 +361,9 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
                     contentDescription = null, // decorative element
                 )
             })
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ },
+        BottomNavigationItem(selected = false, onClick = { */
+/*TODO*//*
+ },
             selectedContentColor = MaterialTheme.colors.primary,
             unselectedContentColor = TextColorSubtle,
             icon = {
@@ -356,7 +372,9 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
                     contentDescription = null, // decorative element
                 )
             })
-        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+        BottomNavigationItem(selected = false, onClick = { */
+/*TODO*//*
+ }, icon = {
             Image(
                 painter = painterResource(id = R.drawable.caucasian),
                 contentDescription = "User profile",
@@ -368,11 +386,14 @@ fun ProjectsBottomNavigation(modifier: Modifier = Modifier) {
         })
     }
 }
+*/
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectsApp(modifier: Modifier = Modifier) {
     ProjectTrackingTheme {
-        Scaffold(bottomBar = { ProjectsBottomNavigation() }) {
+        Scaffold(bottomBar = { //ProjectsBottomNavigation()
+             }) {
 
             Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp)) {
                 WelcomeMessages(
@@ -420,7 +441,7 @@ fun ProjectListingPreview() {
 @Preview(showBackground = true, heightDp = 200)
 @Composable
 fun BottomNavigationPreview() {
-    ProjectsBottomNavigation()
+   // ProjectsBottomNavigation()
 }
 
 @Preview(widthDp = 375, heightDp = 812)
