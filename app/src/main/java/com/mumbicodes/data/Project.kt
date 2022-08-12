@@ -23,8 +23,8 @@ fun sampleProjects() = listOf(
         "12th Dec 2022"
     ),
     Project(
-        projectTitle =  "Notes application",
-        projectDesc ="A multipurpose application that lets users take notes",
+        projectTitle = "Notes application",
+        projectDesc = "A multipurpose application that lets users take notes",
         dueDate = "12th Dec 2022"
     ),
     Project(
@@ -34,8 +34,8 @@ fun sampleProjects() = listOf(
         "12th Dec 2022"
     ),
     Project(
-        projectTitle =  "Android",
-        projectDesc ="This is the description",
+        projectTitle = "Android",
+        projectDesc = "This is the description",
         dueDate = "12th Dec 2022"
     ),
     Project(
@@ -63,4 +63,3 @@ val imageResources = listOf(
     R.drawable.black,
     R.drawable.caucasian
 )
-
