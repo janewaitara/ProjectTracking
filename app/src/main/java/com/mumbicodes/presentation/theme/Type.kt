@@ -1,4 +1,4 @@
-package com.mumbicodes.ui.theme
+package com.mumbicodes.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
