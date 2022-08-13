@@ -1,4 +1,4 @@
-package com.mumbicodes
+package com.mumbicodes.presentation.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -32,10 +32,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mumbicodes.R
 import com.mumbicodes.data.Project
 import com.mumbicodes.data.sampleProjects
-import com.mumbicodes.ui.theme.*
-import org.w3c.dom.Text
+import com.mumbicodes.presentation.theme.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

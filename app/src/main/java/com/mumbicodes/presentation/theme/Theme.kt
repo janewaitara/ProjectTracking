@@ -1,4 +1,4 @@
-package com.mumbicodes.ui.theme
+package com.mumbicodes.presentation.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
