@@ -14,7 +14,7 @@
         android:theme="@style/Theme.ProjectTracking"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ProjectTracking">
             <intent-filter>
