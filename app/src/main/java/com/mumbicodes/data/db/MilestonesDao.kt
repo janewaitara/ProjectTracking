@@ -12,7 +12,7 @@ interface MilestonesDao {
 
     /** Fetch */
     @Query("SELECT * from milestones_table WHERE milestoneId = :milestoneId")
-    suspend fun getMilestoneById(milestoneId: String): Milestone
+    suspend fun getMilestoneById(milestoneId: Int): Milestone
 
     @Query("SELECT * from milestones_table Where projectId = :projectId AND status = :status")
     fun getAllMilestonesBasedOnProjIdAndStatus(

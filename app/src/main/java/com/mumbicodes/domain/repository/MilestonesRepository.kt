@@ -7,7 +7,7 @@ interface MilestonesRepository {
 
     suspend fun insertMilestone(milestone: Milestone)
 
-    suspend fun getMilestoneById(milestoneId: String): Milestone
+    suspend fun getMilestoneById(milestoneId: Int): Milestone
 
     fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,
