@@ -7,8 +7,6 @@ interface ProjectsRepository {
 
     suspend fun insertProject(project: Project)
 
-    fun getProjects(): Flow<List<Project>>
-
     suspend fun getProjectById(projectId: Int): Project
 
     fun getAllProjectsBasedOnStatus(projectStatus: String?): Flow<List<Project>>
