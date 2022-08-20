@@ -5,8 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "milestones_table")
 data class Milestone(
-    @PrimaryKey(autoGenerate = true) val projectId: String,
-    val milestoneId: String,
+    val projectId: Int,
+    @PrimaryKey(autoGenerate = true)
+    val milestoneId: Int = 0,
     val milestoneTitle: String,
     val milestoneSrtDate: Long,
     val milestoneEndDate: Long,
