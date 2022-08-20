@@ -82,6 +82,10 @@ dependencies {
     implementation(Libraries.hiltNavigation)
     implementation(Libraries.hiltViewModel)
 
+    // Moshi
+    implementation(Libraries.moshi)
+    implementation(Libraries.moshiConverter)
+
     // Unit tests
     testImplementation(TestLibraries.junit4)
 

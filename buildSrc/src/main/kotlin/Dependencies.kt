@@ -38,6 +38,12 @@ object Versions {
     // Hilt
     const val hilt= "2.42"
     const val hiltWithOtherLibs = "1.0.0"
+
+    // Moshi
+    const val moshi = "1.13.0"
+
+    // Retrofit
+    const val retrofit = "2.9.0"
 }
 
 object BuildPlugins {
@@ -89,6 +95,10 @@ object Libraries {
     const val hiltCompiler = "androidx.hilt:hilt-compiler:${Versions.hiltWithOtherLibs}"
     const val hiltNavigation = "androidx.hilt:hilt-navigation-compose:${Versions.hiltWithOtherLibs}"
     const val hiltViewModel = "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+
+    // Moshi
+    const val moshi = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
+    const val moshiConverter = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
 
 }
 
