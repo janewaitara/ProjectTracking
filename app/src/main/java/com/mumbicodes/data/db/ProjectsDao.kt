@@ -18,10 +18,6 @@ interface ProjectsDao {
     @Query("SELECT * FROM projects_table Where projectStatus = :projectStatus")
     fun getAllProjectsBasedOnStatus(projectStatus: String?): Flow<List<Project>>
 
-    // Used when filtering by due date - closest due date
-    @Query("SELECT * FROM projects_table Where projectStatus = :projectStatus ORDER BY projectDeadline ASC")
-    fun getProjectsBasedOnDueDate(projectStatus: String?): Flow<List<Project>>
-
     /** Deletion */
     @Delete
     suspend fun deleteProject(project: Project)

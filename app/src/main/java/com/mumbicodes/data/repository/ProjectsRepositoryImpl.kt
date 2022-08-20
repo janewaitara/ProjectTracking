@@ -18,9 +18,6 @@ class ProjectsRepositoryImpl(
     override fun getAllProjectsBasedOnStatus(projectStatus: String?): Flow<List<Project>> =
         projectsDao.getAllProjectsBasedOnStatus(projectStatus)
 
-    override fun getProjectsBasedOnDueDate(projectStatus: String?): Flow<List<Project>> =
-        projectsDao.getProjectsBasedOnDueDate(projectStatus)
-
     override suspend fun deleteProject(project: Project) {
         projectsDao.deleteProject(project)
     }

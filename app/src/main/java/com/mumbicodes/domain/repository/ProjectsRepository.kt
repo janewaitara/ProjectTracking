@@ -11,8 +11,6 @@ interface ProjectsRepository {
 
     fun getAllProjectsBasedOnStatus(projectStatus: String?): Flow<List<Project>>
 
-    fun getProjectsBasedOnDueDate(projectStatus: String?): Flow<List<Project>>
-
     suspend fun deleteProject(project: Project)
 
     suspend fun deleteAllProjects()
