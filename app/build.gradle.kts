@@ -80,7 +80,6 @@ dependencies {
     kapt(Libraries.hiltCompilerAndroid)
     kapt(Libraries.hiltCompiler)
     implementation(Libraries.hiltNavigation)
-    implementation(Libraries.hiltViewModel)
 
     // Moshi
     implementation(Libraries.moshi)
