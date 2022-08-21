@@ -6,4 +6,5 @@ data class ProjectsUseCases(
     val getProjectsUseCase: GetProjectsUseCase,
     val deleteProjectUseCase: DeleteProjectUseCase,
     val deleteAllProjectsUseCase: DeleteAllProjectsUseCase,
+    val checkProjectStatusUseCase: CheckProjectStatusUseCase,
 )
