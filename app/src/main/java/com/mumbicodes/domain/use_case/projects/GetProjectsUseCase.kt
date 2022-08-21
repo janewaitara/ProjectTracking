@@ -1,4 +1,4 @@
-package com.mumbicodes.domain.use_case
+package com.mumbicodes.domain.use_case.projects
 
 import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.repository.ProjectsRepository
@@ -7,8 +7,8 @@ import com.mumbicodes.domain.util.ProjectsOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GetProjectUseCase(
-    private val repository: ProjectsRepository,
+class GetProjectsUseCase(
+    private val repository: ProjectsRepository
 ) {
     /**
      * Added logic to get projects and sort the projects

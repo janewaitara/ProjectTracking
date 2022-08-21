@@ -13,7 +13,7 @@ class MilestonesRepositoryImpl(
         milestonesDao.insertMilestone(milestone)
     }
 
-    override suspend fun getMilestoneById(milestoneId: String): Milestone =
+    override suspend fun getMilestoneById(milestoneId: Int): Milestone =
         milestonesDao.getMilestoneById(milestoneId)
 
     override fun getAllMilestonesBasedOnProjIdAndStatus(
