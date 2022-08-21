@@ -16,13 +16,14 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideProjectsUseCases(repository: ProjectsRepository): ProjectsUseCases {
+    fun provideProjectsUseCases(projectRepository: ProjectsRepository, milestonesRepository: MilestonesRepository): ProjectsUseCases {
         return ProjectsUseCases(
-            addProjectsUseCase = AddProjectsUseCase(repository),
-            getProjectByIdUseCase = GetProjectByIdUseCase(repository),
-            getProjectsUseCase = GetProjectsUseCase(repository),
-            deleteProjectUseCase = DeleteProjectUseCase(repository),
-            deleteAllProjectsUseCase = DeleteAllProjectsUseCase(repository),
+            addProjectsUseCase = AddProjectsUseCase(projectRepository),
+            getProjectByIdUseCase = GetProjectByIdUseCase(projectRepository),
+            getProjectsUseCase = GetProjectsUseCase(projectRepository),
+            deleteProjectUseCase = DeleteProjectUseCase(projectRepository),
+            deleteAllProjectsUseCase = DeleteAllProjectsUseCase(projectRepository),
+            checkProjectStatusUseCase = CheckProjectStatusUseCase(milestonesRepository),
         )
     }
 
@@ -35,7 +36,8 @@ object UseCaseModule {
             getMilestonesUseCase = GetMilestonesUseCase(repository),
             deleteMilestoneUseCase = DeleteMilestoneUseCase(repository),
             deleteMilestonesForProjectUseCase = DeleteMilestonesForProjectUseCase(repository),
-            deleteAllMilestonesUseCase = DeleteAllMilestonesUseCase(repository)
+            deleteAllMilestonesUseCase = DeleteAllMilestonesUseCase(repository),
+            checkMilestoneStatusUseCase = CheckMilestoneStatusUseCase(repository)
         )
     }
 }
