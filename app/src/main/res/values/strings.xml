@@ -4,4 +4,5 @@
     <string name="completed">Completed</string>
     <string name="notStarted">Not Started</string>
     <string name="inProgress">In Progress</string>
+    <string name="all">All</string>
 </resources>
