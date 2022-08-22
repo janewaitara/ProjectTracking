@@ -1,5 +1,6 @@
 package com.mumbicodes.di
 
+import android.app.Application
 import com.mumbicodes.domain.repository.MilestonesRepository
 import com.mumbicodes.domain.repository.ProjectsRepository
 import com.mumbicodes.domain.use_case.milestones.*
@@ -16,20 +17,27 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideProjectsUseCases(projectRepository: ProjectsRepository, milestonesRepository: MilestonesRepository): ProjectsUseCases {
+    fun provideProjectsUseCases(
+        projectRepository: ProjectsRepository,
+        milestonesRepository: MilestonesRepository,
+        app: Application,
+    ): ProjectsUseCases {
         return ProjectsUseCases(
             addProjectsUseCase = AddProjectsUseCase(projectRepository),
             getProjectByIdUseCase = GetProjectByIdUseCase(projectRepository),
             getProjectsUseCase = GetProjectsUseCase(projectRepository),
             deleteProjectUseCase = DeleteProjectUseCase(projectRepository),
             deleteAllProjectsUseCase = DeleteAllProjectsUseCase(projectRepository),
-            checkProjectStatusUseCase = CheckProjectStatusUseCase(milestonesRepository),
+            checkProjectStatusUseCase = CheckProjectStatusUseCase(milestonesRepository, app),
         )
     }
 
     @Provides
     @Singleton
-    fun provideMilestonesUseCases(repository: MilestonesRepository): MilestonesUseCases {
+    fun provideMilestonesUseCases(
+        repository: MilestonesRepository,
+        app: Application,
+    ): MilestonesUseCases {
         return MilestonesUseCases(
             addMilestoneUseCase = AddMilestoneUseCase(repository),
             getMilestoneByIdUseCase = GetMilestoneByIdUseCase(repository),
@@ -37,7 +45,7 @@ object UseCaseModule {
             deleteMilestoneUseCase = DeleteMilestoneUseCase(repository),
             deleteMilestonesForProjectUseCase = DeleteMilestonesForProjectUseCase(repository),
             deleteAllMilestonesUseCase = DeleteAllMilestonesUseCase(repository),
-            checkMilestoneStatusUseCase = CheckMilestoneStatusUseCase(repository)
+            checkMilestoneStatusUseCase = CheckMilestoneStatusUseCase(repository, app),
         )
     }
 }

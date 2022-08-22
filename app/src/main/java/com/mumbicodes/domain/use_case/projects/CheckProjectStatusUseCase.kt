@@ -1,10 +1,15 @@
 package com.mumbicodes.domain.use_case.projects
 
+import android.app.Application
+import com.mumbicodes.R
 import com.mumbicodes.domain.repository.MilestonesRepository
 import com.mumbicodes.domain.util.ProgressStatus
 import kotlinx.coroutines.flow.collectLatest
 
-class CheckProjectStatusUseCase(val repository: MilestonesRepository) {
+class CheckProjectStatusUseCase(
+    val repository: MilestonesRepository,
+    private val appContext: Application,
+) {
 
     suspend operator fun invoke(projectId: Int): ProgressStatus {
 
@@ -17,18 +22,18 @@ class CheckProjectStatusUseCase(val repository: MilestonesRepository) {
             milestonesStatusList = milestones.map { it.status }
         }
 
-        val completed = milestonesStatusList.contains("Completed") &&
-            !milestonesStatusList.contains("Not Started") &&
-            !milestonesStatusList.contains("In Progress")
+        val completed = milestonesStatusList.contains(appContext.getString(R.string.completed)) &&
+            !milestonesStatusList.contains(appContext.getString(R.string.notStarted)) &&
+            !milestonesStatusList.contains(appContext.getString(R.string.inProgress))
 
-        val notStarted = milestonesStatusList.contains("Not Started") &&
-            !milestonesStatusList.contains("Completed") &&
-            !milestonesStatusList.contains("In Progress")
+        val notStarted = milestonesStatusList.contains(appContext.getString(R.string.notStarted)) &&
+            !milestonesStatusList.contains(appContext.getString(R.string.completed)) &&
+            !milestonesStatusList.contains(appContext.getString(R.string.inProgress))
 
         return when {
-            completed -> ProgressStatus.Completed("Completed")
-            notStarted -> ProgressStatus.NotStarted("Not Started")
-            else -> ProgressStatus.InProgress("In Progress")
+            completed -> ProgressStatus.Completed(appContext.getString(R.string.completed))
+            notStarted -> ProgressStatus.NotStarted(appContext.getString(R.string.notStarted))
+            else -> ProgressStatus.InProgress(appContext.getString(R.string.inProgress))
         }
     }
 }
