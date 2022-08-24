@@ -17,6 +17,7 @@ object Versions {
     //Compose
     const val composeUi = "1.2.0"
     const val composeMaterial3 = "1.0.0-alpha14"
+    const val composeMaterial2 = "1.2.1"
     const val constraintLayoutCompose = "1.0.0-beta02"
     const val activityCompose = "1.3.1"
 
@@ -70,6 +71,7 @@ object Libraries {
     const val activityCompose = "androidx.activity:activity-compose:${Versions.activityCompose}"
     const val constraintLayoutCompose =
         "androidx.constraintlayout:constraintlayout-compose:${Versions.constraintLayoutCompose}"
+    const val composeMaterial2 =  "androidx.compose.material:material:${Versions.composeMaterial2}"
 
     //Navigation
    const val navigationCompose = "androidx.navigation:navigation-compose:${Versions.navVersion}"

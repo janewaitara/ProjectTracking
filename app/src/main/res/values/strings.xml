@@ -5,4 +5,14 @@
     <string name="notStarted">Not Started</string>
     <string name="inProgress">In Progress</string>
     <string name="all">All</string>
+    <string name="filter">Filter Projects</string>
+    <string name="filterBy">Filter by:</string>
+    <string name="orderBy">Order by</string>
+    <string name="projectName">Name of project</string>
+    <string name="projectDeadline">Project deadline</string>
+    <string name="dateCreated">Date created</string>
+    <string name="descending">Descending</string>
+    <string name="ascending">Ascending</string>
+    <string name="applyFilters">Apply filters</string>
+    <string name="resetFilters">Reset filters</string>
 </resources>

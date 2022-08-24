@@ -58,6 +58,7 @@ dependencies {
     implementation(Libraries.composeTooling)
     implementation(Libraries.activityCompose)
     implementation(Libraries.constraintLayoutCompose)
+    implementation(Libraries.composeMaterial2)
 
     // Lifecycle
     implementation(Libraries.lifecycle)

@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mumbicodes.presentation.theme.GreyNormal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,7 +18,7 @@ fun DefaultRadioButton(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(horizontal = 8.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
@@ -25,14 +26,15 @@ fun DefaultRadioButton(
             selected = isSelected,
             onClick = onSelect,
             colors = RadioButtonDefaults.colors(
-                selectedColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                selectedColor = MaterialTheme.colorScheme.primary,
                 unselectedColor = MaterialTheme.colorScheme.outline,
             ),
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.bodySmall.copy(color = GreyNormal),
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
