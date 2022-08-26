@@ -7,6 +7,14 @@ import com.mumbicodes.domain.util.ProjectsOrder
 data class AllProjectsStates(
     val projects: List<Project> = emptyList(),
     val projectsOrder: ProjectsOrder = ProjectsOrder.DateAdded(OrderType.Descending),
-    val projectStatus: String = "All",
+    val filtersStatus: List<String> = filters,
+    val selectedProjectStatus: String = filters.first(),
     val isFilterBottomSheetVisible: Boolean = false,
+)
+
+val filters = listOf(
+    "All",
+    "Not Started",
+    "In Progress",
+    "Completed",
 )

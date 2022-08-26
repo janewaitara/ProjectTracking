@@ -2,9 +2,11 @@ package com.mumbicodes.presentation.allProjects
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -36,6 +38,7 @@ import com.mumbicodes.presentation.allProjects.components.FilterBottomSheetConte
 import com.mumbicodes.presentation.allProjects.components.ProjectItem
 import com.mumbicodes.presentation.allProjects.components.SearchBar
 import com.mumbicodes.presentation.allProjects.components.StaggeredVerticalGrid
+import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.theme.*
 import kotlinx.coroutines.launch
 
@@ -102,13 +105,20 @@ fun AllProjectsScreen(
                         top = 24.dp
                     ),
                     projectsState = state,
-                    onClickProject = {/*TODO Navigate to project page */},
+                    onClickProject = { /*TODO Navigate to project page */ },
                     onClickFilterBtn = {
                         scope.launch {
                             modalBottomSheetState.show()
                         }
-                        //TODO test whether this needs to be here
+                        // TODO test whether this needs to be here
                         projectsViewModel.onEvent(AllProjectsEvent.ToggleBottomSheetVisibility)
+                    },
+                    onClickFilterStatus = { selectedStatus ->
+                        projectsViewModel.onEvent(
+                            AllProjectsEvent.SelectProjectStatus(
+                                selectedStatus
+                            )
+                        )
                     }
                 )
             }
@@ -122,6 +132,7 @@ fun AllProjectsScreenContent(
     projectsState: AllProjectsStates,
     onClickProject: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
+    onClickFilterStatus: (String) -> Unit,
 ) {
 
     Column(modifier = modifier) {
@@ -152,6 +163,21 @@ fun AllProjectsScreenContent(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_filter),
                     contentDescription = "Filter projects",
+                )
+            }
+        }
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            itemsIndexed(projectsState.filtersStatus) { _, filter ->
+                FilterChip(
+                    text = filter,
+                    selected = filter == projectsState.selectedProjectStatus,
+                    onClick = onClickFilterStatus,
                 )
             }
         }
@@ -220,30 +246,27 @@ fun AllProjectsScreenPreview() {
 
 @Preview
 @Composable
-fun FilterBtnPreview() {
+fun FilterChipsPreview() {
     ProjectTrackingTheme {
 
-        Row(
+        LazyRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            SearchBar(
-                modifier = Modifier.weight(1f),
-                searchParamType = stringResource(id = R.string.projects)
+            val filters = listOf(
+                "All",
+                "Not Started",
+                "In Progress",
+                "Completed",
+                "Testing"
             )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(White),
-                onClick = {}
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_filter),
-                    contentDescription = "Filter projects",
+            itemsIndexed(filters) { _, filter ->
+                FilterChip(
+                    text = filter,
+                    selected = filter == "All",
+                    onClick = {}
                 )
             }
         }
@@ -255,19 +278,20 @@ fun FilterBtnPreview() {
 fun StaggeredVerticalGridPreview() {
     ProjectTrackingTheme {
         StaggeredVerticalGrid(
-             maxColumnWidth = 220.dp,
-             modifier = Modifier.padding(4.dp)
-         ) {
-             sampleDataProjects().forEach { project ->
-                 ProjectItem(
-                     modifier = Modifier.padding(8.dp),
-                     project = project,
-                     onClickProject = {  }
-                 )
-             }
-         }
+            maxColumnWidth = 220.dp,
+            modifier = Modifier.padding(4.dp)
+        ) {
+            sampleDataProjects().forEach { project ->
+                ProjectItem(
+                    modifier = Modifier.padding(8.dp),
+                    project = project,
+                    onClickProject = { }
+                )
+            }
+        }
     }
 }
+
 @Preview
 @Composable
 fun AllProjectsContentPreview() {
@@ -277,7 +301,8 @@ fun AllProjectsContentPreview() {
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
         ) {
             itemsIndexed(sampleDataProjects()) { _, project ->

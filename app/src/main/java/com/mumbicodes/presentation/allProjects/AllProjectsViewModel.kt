@@ -38,7 +38,7 @@ class AllProjectsViewModel @Inject constructor(
                 ) {
                     return
                 }
-                getProjects(projectsEvent.projectsOrder, state.value.projectStatus)
+                getProjects(projectsEvent.projectsOrder, state.value.selectedProjectStatus)
             }
             is AllProjectsEvent.ResetProjectsOrder -> {
                 _state.value = state.value.copy(
@@ -58,7 +58,7 @@ class AllProjectsViewModel @Inject constructor(
                 }
             }
             is AllProjectsEvent.SelectProjectStatus -> {
-                if (state.value.projectStatus == projectsEvent.projectStatus) {
+                if (state.value.selectedProjectStatus == projectsEvent.projectStatus) {
                     return
                 }
                 getProjects(state.value.projectsOrder, projectsEvent.projectStatus)
@@ -78,13 +78,13 @@ class AllProjectsViewModel @Inject constructor(
     private fun getProjects(projectsOrder: ProjectsOrder, projectStatus: String) {
         getProjectsJob?.cancel()
         getProjectsJob =
-            projectsUseCases.getProjectsUseCase(state.value.projectStatus, projectsOrder)
+            projectsUseCases.getProjectsUseCase(state.value.selectedProjectStatus, projectsOrder)
                 // map the flow to AllProjects compose State
                 .onEach { projects ->
                     _state.value = state.value.copy(
                         projects = projects,
                         projectsOrder = projectsOrder,
-                        projectStatus = projectStatus
+                        selectedProjectStatus = projectStatus
                     )
                 }
                 .launchIn(viewModelScope)
