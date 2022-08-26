@@ -40,6 +40,11 @@ class AllProjectsViewModel @Inject constructor(
                 }
                 getProjects(projectsEvent.projectsOrder, state.value.projectStatus)
             }
+            is AllProjectsEvent.ResetProjectsOrder -> {
+                _state.value = state.value.copy(
+                    projectsOrder = projectsEvent.projectsOrder,
+                )
+            }
             is AllProjectsEvent.DeleteProject -> {
                 viewModelScope.launch {
                     projectsUseCases.deleteProjectUseCase(projectsEvent.project)

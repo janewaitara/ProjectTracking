@@ -15,4 +15,6 @@
     <string name="ascending">Ascending</string>
     <string name="applyFilters">Apply filters</string>
     <string name="resetFilters">Reset filters</string>
+    <string name="greetings">Hello There</string>
+    <string name="projects">projects</string>
 </resources>

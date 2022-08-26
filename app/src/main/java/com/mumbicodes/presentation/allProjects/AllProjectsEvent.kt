@@ -9,6 +9,7 @@ import com.mumbicodes.domain.util.ProjectsOrder
  * */
 sealed class AllProjectsEvent {
     data class OrderProjects(val projectsOrder: ProjectsOrder) : AllProjectsEvent()
+    data class ResetProjectsOrder(val projectsOrder: ProjectsOrder) : AllProjectsEvent()
     data class DeleteProject(val project: Project) : AllProjectsEvent()
     data class RestoreProject(val project: Project) : AllProjectsEvent()
     data class SelectProjectStatus(val projectStatus: String) : AllProjectsEvent()

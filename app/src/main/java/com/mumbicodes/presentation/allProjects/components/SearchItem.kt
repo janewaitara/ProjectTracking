@@ -1,6 +1,5 @@
 package com.mumbicodes.presentation.allProjects.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -31,8 +30,7 @@ fun SearchBar(
 ) {
     Surface(
         modifier = modifier
-            .height(56.dp)
-            .fillMaxWidth()
+            .height(48.dp)
             .shadow(
                 elevation = 60.dp,
                 ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
@@ -73,8 +71,7 @@ fun SearchBar(
             singleLine = true,
 
             modifier = modifier
-                .fillMaxWidth()
-                .heightIn(min = 56.dp)
+                .heightIn(min = 48.dp)
                 .padding(0.dp)
         )
     }
