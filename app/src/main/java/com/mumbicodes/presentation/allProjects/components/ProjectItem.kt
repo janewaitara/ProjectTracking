@@ -37,14 +37,14 @@ fun ProjectItem(
             ),
 
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(Space8dp)) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = project.projectName,
                 style = MaterialTheme.typography.headlineMedium.copy(color = GreyDark)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Space8dp))
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -54,7 +54,7 @@ fun ProjectItem(
                 style = MaterialTheme.typography.labelMedium.copy(color = GreyNormal)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Space8dp))
 
             Text(
                 modifier = Modifier.fillMaxWidth(),

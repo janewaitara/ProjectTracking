@@ -9,14 +9,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mumbicodes.R
 import com.mumbicodes.domain.util.OrderType
 import com.mumbicodes.domain.util.ProjectsOrder
 import com.mumbicodes.presentation.components.PrimaryButton
 import com.mumbicodes.presentation.components.SecondaryButton
-import com.mumbicodes.presentation.theme.GreyNormal
-import com.mumbicodes.presentation.theme.ProjectTrackingTheme
+import com.mumbicodes.presentation.theme.*
 
 @Composable
 fun FilterBottomSheetContent(
@@ -31,7 +29,7 @@ fun FilterBottomSheetContent(
         modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(20.dp),
+            .padding(Space20dp),
         horizontalAlignment = Alignment.Start
     ) {
 
@@ -40,14 +38,14 @@ fun FilterBottomSheetContent(
             style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
             modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(Space24dp))
 
         Text(
             text = stringResource(id = R.string.filterBy),
             style = MaterialTheme.typography.titleMedium.copy(color = GreyNormal),
             modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(Space12dp))
 
         // Used user's selection state since the selection has not been published
         DefaultRadioButton(
@@ -70,14 +68,14 @@ fun FilterBottomSheetContent(
             onSelect = { onOrderChange(ProjectsOrder.Deadline(selectedProjectsOrder.orderType)) },
             modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(Space24dp))
 
         Text(
             text = stringResource(id = R.string.orderBy),
             style = MaterialTheme.typography.titleMedium.copy(color = GreyNormal),
             modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(Space12dp))
 
         DefaultRadioButton(
             text = stringResource(id = R.string.descending),
@@ -93,7 +91,7 @@ fun FilterBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(Space24dp))
 
         PrimaryButton(
             text = stringResource(id = R.string.applyFilters),
@@ -101,7 +99,7 @@ fun FilterBottomSheetContent(
             isEnabled = projectsOrder !is ProjectsOrder.DateAdded || projectsOrder.orderType !is OrderType.Descending
         )
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(Space8dp))
 
         SecondaryButton(
             text = stringResource(id = R.string.resetFilters),

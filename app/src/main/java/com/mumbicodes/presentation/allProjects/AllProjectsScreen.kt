@@ -140,7 +140,7 @@ fun AllProjectsScreenContent(
             modifier = Modifier.fillMaxWidth(),
             projects = projectsState.projects
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Space16dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -167,11 +167,13 @@ fun AllProjectsScreenContent(
             }
         }
 
+        Spacer(modifier = Modifier.height(Space16dp))
+
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(horizontal = Space20dp),
+            horizontalArrangement = Arrangement.spacedBy(Space8dp)
         ) {
             itemsIndexed(projectsState.filtersStatus) { _, filter ->
                 FilterChip(
@@ -182,15 +184,15 @@ fun AllProjectsScreenContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Space8dp))
 
         StaggeredVerticalGrid(
             maxColumnWidth = 220.dp,
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier.padding(horizontal = Space12dp)
         ) {
             projectsState.projects.forEach { project ->
                 ProjectItem(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(Space8dp),
                     project = project,
                     onClickProject = onClickProject
                 )
@@ -207,9 +209,9 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
             text = stringResource(id = R.string.greetings),
             style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(Space8dp))
         Text(
             text = buildAnnotatedString {
                 withStyle(
@@ -243,6 +245,18 @@ fun AllProjectsScreenPreview() {
         AllProjectsScreen()
     }
 }
+@Preview
+@Composable
+fun WelcomeMessageSectionPreview() {
+    ProjectTrackingTheme {
+        WelcomeMessageSection(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Space20dp),
+            projects = sampleDataProjects()
+        )
+    }
+}
 
 @Preview
 @Composable
@@ -252,8 +266,8 @@ fun FilterChipsPreview() {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(horizontal = Space20dp),
+            horizontalArrangement = Arrangement.spacedBy(Space8dp)
         ) {
             val filters = listOf(
                 "All",
@@ -279,11 +293,11 @@ fun StaggeredVerticalGridPreview() {
     ProjectTrackingTheme {
         StaggeredVerticalGrid(
             maxColumnWidth = 220.dp,
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier.padding(horizontal = Space12dp)
         ) {
             sampleDataProjects().forEach { project ->
                 ProjectItem(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(Space8dp),
                     project = project,
                     onClickProject = { }
                 )

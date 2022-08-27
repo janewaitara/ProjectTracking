@@ -8,8 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
+import com.mumbicodes.presentation.theme.Space12dp
+import com.mumbicodes.presentation.theme.Space16dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +37,7 @@ fun FilterChip(
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            modifier = Modifier.padding(horizontal = Space16dp, vertical = Space12dp)
         )
     }
 }

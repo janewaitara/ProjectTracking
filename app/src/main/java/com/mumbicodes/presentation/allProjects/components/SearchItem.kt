@@ -3,7 +3,6 @@ package com.mumbicodes.presentation.allProjects.components
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -16,13 +15,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.R
-import com.mumbicodes.presentation.theme.GreyNormal
-import com.mumbicodes.presentation.theme.GreySubtle
-import com.mumbicodes.presentation.theme.ProjectTrackingTheme
-import com.mumbicodes.presentation.theme.White
+import com.mumbicodes.presentation.theme.*
 
-// TODO research on how to reduce the icon and text spacing and the whole margin
-
+/**
+ * TODO research on how to reduce the icon and text spacing and the whole margin
+ * Todo - With the custom size < 56, the text is cut off - how to solve that
+*/
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
@@ -30,13 +28,13 @@ fun SearchBar(
 ) {
     Surface(
         modifier = modifier
-            .height(48.dp)
+            .height(Space48dp)
             .shadow(
                 elevation = 60.dp,
                 ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
                 spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
             ),
-        shape = RoundedCornerShape(4.dp),
+        shape = MaterialTheme.shapes.small,
         color = White,
     ) {
         TextField(
@@ -71,8 +69,9 @@ fun SearchBar(
             singleLine = true,
 
             modifier = modifier
-                .heightIn(min = 48.dp)
                 .padding(0.dp)
+                .heightIn(min = Space48dp)
+
         )
     }
 }
