@@ -30,6 +30,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -85,6 +86,9 @@ dependencies {
     // Moshi
     implementation(Libraries.moshi)
     implementation(Libraries.moshiConverter)
+
+    // Enable support for DateFormatter language APIs on any version of the Android platform
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
 
     // Unit tests
     testImplementation(TestLibraries.junit4)
