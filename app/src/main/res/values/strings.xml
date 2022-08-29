@@ -10,6 +10,7 @@
     <string name="orderBy">Order by</string>
     <string name="projectName">Name of project</string>
     <string name="projectDeadline">Project deadline</string>
+    <string name="projectDesc">Project description</string>
     <string name="dateCreated">Date created</string>
     <string name="descending">Descending</string>
     <string name="ascending">Ascending</string>
@@ -17,4 +18,10 @@
     <string name="resetFilters">Reset filters</string>
     <string name="greetings">Hello There</string>
     <string name="projects">projects</string>
+    <string name="addEditProjectTitle">%1$s Project</string>
+    <string name="addTitle">Add</string>
+    <string name="editTitle">Edit</string>
+    <string name="saveProject">Save Project</string>
+
+
 </resources>

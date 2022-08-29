@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mumbicodes">
 
+    <uses-sdk tools:overrideLibrary="com.squaredem.composecalendar"/>
+
     <application
         android:name=".ProjectsApplication"
         android:allowBackup="true"

@@ -51,6 +51,8 @@ class AddEditProjectViewModel @Inject constructor(
     // Default project status is "Not Started" since it doesn't have any milestones
     private var currentProjectStatus: String = "Not Started"
 
+    var passedProjectId: Int? = savedStateHandle.get<Int>(PROJECT_ID)
+
     // We pass -1 as the arg when creating a new project
     init {
         savedStateHandle.get<Int>(PROJECT_ID)?.let { projectId ->

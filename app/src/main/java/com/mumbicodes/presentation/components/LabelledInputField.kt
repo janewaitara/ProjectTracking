@@ -3,7 +3,8 @@ package com.mumbicodes.presentation.components
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -13,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mumbicodes.R
 import com.mumbicodes.presentation.theme.*
 
 @Composable
@@ -22,12 +22,13 @@ fun LabelledInputField(
     fieldLabel: String = "label",
     placeholder: String = " Placeholder",
     textValue: String = "",
-    @DrawableRes vectorImageId: Int? = null,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    singleLine: Boolean = true,
 ) {
     Column(modifier = modifier) {
         Text(
-            modifier = Modifier,
+            modifier = Modifier
+                .fillMaxWidth(),
             text = fieldLabel,
             style = MaterialTheme.typography.bodySmall,
             color = GreyNormal
@@ -37,17 +38,64 @@ fun LabelledInputField(
         OutlinedTextField(
             modifier = Modifier
                 .padding(0.dp)
-                .heightIn(min = Space48dp),
+                .heightIn(min = Space48dp)
+                .fillMaxWidth(),
+            value = textValue,
+            onValueChange = onValueChange,
+            placeholder = {
+                Text(
+                    modifier = Modifier,
+                    text = placeholder,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = GreySubtle
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                textColor = MaterialTheme.colorScheme.onSurface,
+                containerColor = MaterialTheme.colorScheme.surface,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
+            ),
+            maxLines = 1,
+            singleLine = singleLine,
+        )
+    }
+}
+
+@Composable
+fun LabelledInputFieldWithIcon(
+    modifier: Modifier = Modifier,
+    fieldLabel: String = "label",
+    placeholder: String = " Placeholder",
+    textValue: String = "",
+    @DrawableRes vectorIconId: Int,
+    onValueChange: (String) -> Unit,
+    singleLine: Boolean = true,
+) {
+    Column(modifier = modifier) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = fieldLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = GreyNormal
+        )
+        Spacer(modifier = Modifier.height(Space8dp))
+
+        OutlinedTextField(
+            modifier = Modifier
+                .padding(0.dp)
+                .heightIn(min = Space48dp)
+                .fillMaxWidth(),
             value = textValue,
             onValueChange = onValueChange,
             leadingIcon = {
-                if (vectorImageId != null) {
-                    Icon(
-                        modifier = Modifier.size(24.dp, 24.dp),
-                        painter = painterResource(id = vectorImageId),
-                        contentDescription = null
-                    )
-                }
+                Icon(
+                    modifier = Modifier.size(24.dp, 24.dp),
+                    painter = painterResource(id = vectorIconId),
+                    contentDescription = null
+                )
             },
             placeholder = {
                 Text(
@@ -67,7 +115,7 @@ fun LabelledInputField(
                 focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
             ),
             maxLines = 1,
-            singleLine = true,
+            singleLine = singleLine,
         )
     }
 }
@@ -80,7 +128,6 @@ fun LabelledTextFieldPreview() {
             modifier = Modifier.background(
                 color = White
             ),
-            vectorImageId = R.drawable.ic_calendar,
             onValueChange = {}
         )
     }
