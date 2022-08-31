@@ -14,7 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -32,23 +35,67 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.mumbicodes.R
 import com.mumbicodes.data.Project
 import com.mumbicodes.data.sampleProjects
+import com.mumbicodes.presentation.components.BottomNavigationBar
 import com.mumbicodes.presentation.theme.*
+import com.mumbicodes.presentation.util.navigation.ProjectNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                ProjectsApp()
+            ProjectTrackingTheme {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    MainScreen()
+                }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScreen() {
+    val navController = rememberNavController()
+
+    val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            if (bottomBarState.value)
+                BottomNavigationBar(
+                    navController = navController,
+                    onItemClick = {
+                        navController.navigate(it.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+        },
+    ) { innerPadding ->
+
+        ProjectNavHost(
+            modifier = Modifier.padding(innerPadding),
+            navController = navController,
+            isBottomBarVisible = {
+                bottomBarState.value = it
+            }
+        )
     }
 }
 
@@ -114,7 +161,7 @@ fun WelcomeMessages(modifier: Modifier = Modifier) {
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    searchParamType: String
+    searchParamType: String,
 ) {
     Surface(
         modifier = modifier
@@ -172,7 +219,7 @@ fun SearchBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectCard(
-    project: Project
+    project: Project,
 ) {
     Card(
         // the Material color is not working - MaterialTheme.colorScheme.surface
