@@ -9,8 +9,6 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -83,25 +81,12 @@ fun AllProjectsScreen(
         scrimColor = GreyDark.copy(alpha = 0.5f)
     ) {
         Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { /*TODO Navigate to add project */ },
-                    backgroundColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add new project"
-                    )
-                }
-            },
             scaffoldState = scaffoldState,
             backgroundColor = MaterialTheme.colorScheme.background
         ) { padding -> // We need to pass scaffold's inner padding to content. That's why we use Box.
             Box(modifier = Modifier.padding(padding)) {
                 AllProjectsScreenContent(
                     modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
                         top = 24.dp
                     ),
                     projectsState = state,
@@ -137,13 +122,23 @@ fun AllProjectsScreenContent(
 
     Column(modifier = modifier) {
         WelcomeMessageSection(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = Space20dp,
+                    end = Space20dp,
+                ),
             projects = projectsState.projects
         )
         Spacer(modifier = Modifier.height(Space16dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = Space20dp,
+                    end = Space20dp,
+                ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SearchBar(
@@ -245,6 +240,7 @@ fun AllProjectsScreenPreview() {
         AllProjectsScreen()
     }
 }
+
 @Preview
 @Composable
 fun WelcomeMessageSectionPreview() {

@@ -91,6 +91,8 @@ class AddEditProjectViewModel @Inject constructor(
                     convertDateToString(addEditProjectEvents.value, "dd/MM/yyyy")
                 projectDeadlineStateDb.value =
                     convertDateToString(addEditProjectEvents.value, "dd MMM yyyy")
+                // Dismiss calendar after clicking ok
+                _isCalendarVisible.value = !isCalendarVisible.value
             }
             is AddEditProjectEvents.AddEditProject -> {
                 viewModelScope.launch {

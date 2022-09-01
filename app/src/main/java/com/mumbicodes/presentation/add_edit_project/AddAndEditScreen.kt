@@ -114,10 +114,10 @@ fun ScreenHeader(
             modifier = Modifier
                 .size(24.dp, 24.dp)
                 .clickable {
-                    iconOnClick
+                    iconOnClick()
                 },
             painter = painterResource(id = R.drawable.ic_arrow_back),
-            tint = MaterialTheme.colorScheme.outline,
+            tint = MaterialTheme.colorScheme.onBackground,
             contentDescription = "Back button",
         )
         Text(
@@ -160,7 +160,7 @@ fun FieldForms(
             modifier = Modifier
                 .fillMaxWidth(),
             onValueChange = onDescChanged,
-            fieldLabel = stringResource(id = R.string.projectName),
+            fieldLabel = stringResource(id = R.string.projectDesc),
             placeholder = "How would you describe it?",
             textValue = descTextValue,
             singleLine = false,
@@ -179,7 +179,7 @@ fun FieldForms(
                 modifier = Modifier
                     .fillMaxWidth(),
                 onValueChange = {},
-                fieldLabel = stringResource(id = R.string.projectName),
+                fieldLabel = stringResource(id = R.string.projectDeadline),
                 placeholder = "DD/MM/YYYY",
                 textValue = deadlineTextValue,
                 singleLine = true,
