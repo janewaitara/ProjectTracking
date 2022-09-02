@@ -8,8 +8,8 @@ sealed class ProjectsOrder(val orderType: OrderType) {
     fun copy(orderType: OrderType): ProjectsOrder {
         return when (this) {
             is Name -> Name(orderType)
-            is Deadline -> Name(orderType)
-            is DateAdded -> Name(orderType)
+            is Deadline -> Deadline(orderType)
+            is DateAdded -> DateAdded(orderType)
         }
     }
 }

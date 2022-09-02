@@ -65,13 +65,20 @@ fun AllProjectsScreen(
                 },
                 onFiltersApplied = {
                     projectsViewModel.onEvent(AllProjectsEvent.OrderProjects(selectedProjectOrder.value))
-                    selectedProjectOrder.value = state.projectsOrder
+                    // hide the sheet after applying filters
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
                 },
                 onFiltersReset = {
                     projectsViewModel.onEvent(
                         AllProjectsEvent
                             .ResetProjectsOrder(ProjectsOrder.DateAdded(OrderType.Descending))
                     )
+                    selectedProjectOrder.value = ProjectsOrder.DateAdded(OrderType.Descending)
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
                 },
             )
         },
