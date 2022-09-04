@@ -41,9 +41,8 @@ class AllProjectsViewModel @Inject constructor(
                 getProjects(projectsEvent.projectsOrder, state.value.selectedProjectStatus)
             }
             is AllProjectsEvent.ResetProjectsOrder -> {
-                _state.value = state.value.copy(
-                    projectsOrder = projectsEvent.projectsOrder,
-                )
+
+                getProjects(projectsEvent.projectsOrder, state.value.selectedProjectStatus)
             }
             is AllProjectsEvent.DeleteProject -> {
                 viewModelScope.launch {
@@ -78,7 +77,7 @@ class AllProjectsViewModel @Inject constructor(
     private fun getProjects(projectsOrder: ProjectsOrder, projectStatus: String) {
         getProjectsJob?.cancel()
         getProjectsJob =
-            projectsUseCases.getProjectsUseCase(state.value.selectedProjectStatus, projectsOrder)
+            projectsUseCases.getProjectsUseCase(projectStatus, projectsOrder)
                 // map the flow to AllProjects compose State
                 .onEach { projects ->
                     _state.value = state.value.copy(

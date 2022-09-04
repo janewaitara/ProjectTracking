@@ -3,6 +3,7 @@ package com.mumbicodes.di
 import android.content.Context
 import androidx.room.Room
 import com.mumbicodes.data.db.ProjectsDatabase
+import com.mumbicodes.data.db.TaskConverter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +22,9 @@ object LocalModule {
             context,
             ProjectsDatabase::class.java,
             DATABASE_NAME
-        ).build()
+        )
+            .addTypeConverter(TaskConverter())
+            .build()
     }
 
     private const val DATABASE_NAME = "projects_db"

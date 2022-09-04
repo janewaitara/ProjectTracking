@@ -50,21 +50,21 @@ fun FilterBottomSheetContent(
         // Used user's selection state since the selection has not been published
         DefaultRadioButton(
             text = stringResource(id = R.string.dateCreated),
-            isSelected = projectsOrder is ProjectsOrder.DateAdded,
+            isSelected = selectedProjectsOrder is ProjectsOrder.DateAdded,
             onSelect = { onOrderChange(ProjectsOrder.DateAdded(selectedProjectsOrder.orderType)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
         DefaultRadioButton(
             text = stringResource(id = R.string.projectName),
-            isSelected = projectsOrder is ProjectsOrder.Name,
+            isSelected = selectedProjectsOrder is ProjectsOrder.Name,
             onSelect = { onOrderChange(ProjectsOrder.Name(selectedProjectsOrder.orderType)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
         DefaultRadioButton(
             text = stringResource(id = R.string.projectDeadline),
-            isSelected = projectsOrder is ProjectsOrder.Deadline,
+            isSelected = selectedProjectsOrder is ProjectsOrder.Deadline,
             onSelect = { onOrderChange(ProjectsOrder.Deadline(selectedProjectsOrder.orderType)) },
             modifier = Modifier.fillMaxWidth(),
         )
@@ -79,24 +79,28 @@ fun FilterBottomSheetContent(
 
         DefaultRadioButton(
             text = stringResource(id = R.string.descending),
-            isSelected = projectsOrder.orderType is OrderType.Descending,
+            isSelected = selectedProjectsOrder.orderType is OrderType.Descending,
             onSelect = { onOrderChange(selectedProjectsOrder.copy(OrderType.Descending)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
         DefaultRadioButton(
             text = stringResource(id = R.string.ascending),
-            isSelected = projectsOrder.orderType is OrderType.Ascending,
+            isSelected = selectedProjectsOrder.orderType is OrderType.Ascending,
             onSelect = { onOrderChange(selectedProjectsOrder.copy(OrderType.Ascending)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(Modifier.height(Space24dp))
 
+        // need a way to compare whether the selected and project order have the same value
         PrimaryButton(
             text = stringResource(id = R.string.applyFilters),
             onClick = onFiltersApplied,
-            isEnabled = projectsOrder !is ProjectsOrder.DateAdded || projectsOrder.orderType !is OrderType.Descending
+            isEnabled = projectsOrder !is ProjectsOrder.DateAdded ||
+                projectsOrder.orderType !is OrderType.Descending ||
+                selectedProjectsOrder !is ProjectsOrder.DateAdded ||
+                selectedProjectsOrder.orderType !is OrderType.Descending
         )
 
         Spacer(Modifier.height(Space8dp))
