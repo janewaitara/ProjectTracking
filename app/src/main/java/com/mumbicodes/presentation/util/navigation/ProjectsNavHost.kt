@@ -24,9 +24,16 @@ fun ProjectNavHost(
 
         composable(route = Screens.AllProjectsScreens.route) {
             isBottomBarVisible(true)
-            AllProjectsScreen()
+            AllProjectsScreen(onClickProject = { projectId ->
+                navController.navigate(
+                    "${Screens.AddAndEditScreens.route}/$projectId"
+                )
+            })
         }
-        composable(route = Screens.AddAndEditScreens.route) {
+        composable(
+            route = Screens.AddAndEditScreens.routeWithArgs,
+            arguments = Screens.AddAndEditScreens.arguments
+        ) {
             isBottomBarVisible(false)
             AddAndEditScreen(navController = navController)
         }

@@ -1,7 +1,10 @@
 package com.mumbicodes.presentation.util.navigation
 
 import androidx.annotation.DrawableRes
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.mumbicodes.R
+import com.mumbicodes.presentation.util.PROJECT_ID
 
 sealed class Screens(
     val route: String,
@@ -23,7 +26,16 @@ sealed class Screens(
             R.drawable.ic_add_outlined,
             R.drawable.ic_add_filled,
             "Add"
+        ) {
+        const val projectId = PROJECT_ID
+        val routeWithArgs = "$route/{$projectId}"
+        val arguments = listOf(
+            navArgument(projectId) {
+                type = NavType.IntType
+                defaultValue = -1
+            }
         )
+    }
 
     object MilestonesScreens : Screens(
         "milestones",
