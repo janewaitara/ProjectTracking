@@ -7,7 +7,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +46,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AllProjectsScreen(
     projectsViewModel: AllProjectsViewModel = hiltViewModel(),
+    onClickProject: (Int) -> Unit
 ) {
     val state = projectsViewModel.state.value
     val modalBottomSheetState =
@@ -97,7 +100,7 @@ fun AllProjectsScreen(
                         top = 24.dp
                     ),
                     projectsState = state,
-                    onClickProject = { /*TODO Navigate to project page */ },
+                    onClickProject = onClickProject,
                     onClickFilterBtn = {
                         scope.launch {
                             modalBottomSheetState.show()
@@ -191,6 +194,7 @@ fun AllProjectsScreenContent(
         StaggeredVerticalGrid(
             maxColumnWidth = 220.dp,
             modifier = Modifier.padding(horizontal = Space12dp)
+                .verticalScroll(rememberScrollState())
         ) {
             projectsState.projects.forEach { project ->
                 ProjectItem(
@@ -244,7 +248,7 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
 @Composable
 fun AllProjectsScreenPreview() {
     ProjectTrackingTheme {
-        AllProjectsScreen()
+        AllProjectsScreen(onClickProject = {})
     }
 }
 

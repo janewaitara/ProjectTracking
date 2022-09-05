@@ -43,6 +43,7 @@ import com.mumbicodes.data.sampleProjects
 import com.mumbicodes.presentation.components.BottomNavigationBar
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.navigation.ProjectNavHost
+import com.mumbicodes.presentation.util.navigation.Screens
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -77,7 +78,12 @@ fun MainScreen() {
                 BottomNavigationBar(
                     navController = navController,
                     onItemClick = {
-                        navController.navigate(it.route) {
+                        val route = if (it is Screens.AddAndEditScreens) {
+                            "${Screens.AddAndEditScreens.route}/${-1}"
+                        } else {
+                            it.route
+                        }
+                        navController.navigate(route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
