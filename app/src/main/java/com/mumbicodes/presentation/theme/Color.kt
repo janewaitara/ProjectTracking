@@ -27,4 +27,7 @@ val Red80 = Color(0xFFff999e)
 val Red90 = Color(0xFFffcccf)
 
 val Warning = Color(0xFFFFA900)
+val LightWarning = Color(0xFFFFF6E5)
+
 val Success = Color(0xFF00A49E)
+val LightSuccess = Color(0xFFE5F6F5)

@@ -22,6 +22,7 @@
     <string name="addTitle">Add</string>
     <string name="editTitle">Edit</string>
     <string name="saveProject">Save Project</string>
-
+    <string name="dayRemaining">%1$s day Left</string>
+    <string name="daysRemaining">%1$s days Left</string>
 
 </resources>
