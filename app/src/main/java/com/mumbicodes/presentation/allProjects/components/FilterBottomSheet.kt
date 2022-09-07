@@ -95,6 +95,7 @@ fun FilterBottomSheetContent(
 
         // need a way to compare whether the selected and project order have the same value
         PrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.applyFilters),
             onClick = onFiltersApplied,
             isEnabled = projectsOrder !is ProjectsOrder.DateAdded ||
@@ -106,6 +107,7 @@ fun FilterBottomSheetContent(
         Spacer(Modifier.height(Space8dp))
 
         SecondaryButton(
+            modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.resetFilters),
             onClick = onFiltersReset,
             isEnabled = projectsOrder !is ProjectsOrder.DateAdded || projectsOrder.orderType !is OrderType.Descending

@@ -24,5 +24,9 @@
     <string name="saveProject">Save Project</string>
     <string name="dayRemaining">%1$s day Left</string>
     <string name="daysRemaining">%1$s days Left</string>
+    <string name="schedule">SCHEDULE</string>
+    <string name="miniTasks">MINI TASKS</string>
+    <string name="modifyMilestone">Modify Milestone</string>
+    <string name="delete">Delete</string>
 
 </resources>

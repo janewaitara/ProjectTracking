@@ -60,7 +60,7 @@ fun MilestoneItem(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 milestone.tasks.forEach { task ->
-                    TaskItem(modifier = Modifier, taskTitle = task.taskTitle, checked = task.status)
+                    TaskItem(modifier = Modifier, task = task, descIsVisible = false)
                 }
             }
             Spacer(modifier = Modifier.height(Space8dp))
@@ -115,14 +115,17 @@ fun MilestoneItemPreview() {
                 tasks = listOf(
                     Task(
                         taskTitle = "Display Projects",
+                        taskDesc = "Display Projects",
                         status = true
                     ),
                     Task(
                         taskTitle = "Bottom navigation",
+                        taskDesc = "Bottom navigation",
                         status = false
                     ),
                     Task(
                         taskTitle = "Display Projects",
+                        taskDesc = "Display Projects",
                         status = true
                     ),
                 )

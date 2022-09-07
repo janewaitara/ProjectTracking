@@ -2,7 +2,6 @@ package com.mumbicodes.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
-import java.util.Locale
+import java.util.*
 
 @Composable
 fun PrimaryButton(
@@ -23,8 +22,7 @@ fun PrimaryButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         shape = MaterialTheme.shapes.small,
         enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
@@ -55,8 +53,7 @@ fun SecondaryButton(
     }
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         shape = MaterialTheme.shapes.small,
         enabled = isEnabled,
         border = BorderStroke(2.dp, borderColor),
@@ -64,7 +61,6 @@ fun SecondaryButton(
             contentColor = MaterialTheme.colorScheme.primary,
             disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
         ),
-
     ) {
         Text(
             text = text.uppercase(Locale.getDefault()),
@@ -78,6 +74,7 @@ fun SecondaryButton(
 fun PrimaryButtonPreview() {
     ProjectTrackingTheme {
         PrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
             text = "Primary button",
             onClick = {},
             isEnabled = true
@@ -90,6 +87,7 @@ fun PrimaryButtonPreview() {
 fun SecondaryButtonPreview() {
     ProjectTrackingTheme {
         SecondaryButton(
+            modifier = Modifier.fillMaxWidth(),
             text = "Primary button",
             onClick = {},
             isEnabled = false
