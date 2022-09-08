@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import com.mumbicodes.domain.model.Project
 import com.mumbicodes.presentation.allProjects.filters
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.components.PrimaryButton
+import com.mumbicodes.presentation.components.SecondaryButton
 import com.mumbicodes.presentation.projectDetails.components.MilestoneItem
 import com.mumbicodes.presentation.theme.*
 import kotlinx.coroutines.launch
@@ -115,6 +117,9 @@ fun ProjectDetailsScreen(
                     onEditProject = { projectId ->
                         onEditProject(projectId)
                     },
+                    onDeleteProjectClicked = {
+                        projectDetailsViewModel.onEvent(ProjectDetailsEvents.ToggleDeleteDialogVisibility)
+                    },
                     onDeleteProject = { project ->
                         projectDetailsViewModel.onEvent(ProjectDetailsEvents.DeleteProject(project))
                     }
@@ -134,67 +139,202 @@ fun ProjectDetailsScreenContent(
     onClickIconMenu: () -> Unit,
     onAddMilestoneClicked: () -> Unit,
     onEditProject: (Int) -> Unit,
+    onDeleteProjectClicked: () -> Unit,
     onDeleteProject: (Project) -> Unit,
 ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
 
-    Column(modifier = modifier) {
+        Column(modifier = modifier) {
 
-        ProjectScreenHeader(
-            modifier = Modifier.fillMaxWidth(),
-            projectName = projectState.project.projectName,
-            onClickBackIcon = onClickIconBack,
-            onClickMenuIcon = onClickIconMenu,
-            isMenuOptionsVisible = projectState.isMenuOptionsVisible,
-            onEditProject = { onEditProject(projectState.project.projectId) },
-            onDeleteProject = { onDeleteProject(projectState.project) }
-        )
-
-        Spacer(modifier = Modifier.height(Space16dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Space8dp),
-        ) {
-            Icon(
-                modifier = Modifier,
-                painter = painterResource(id = R.drawable.ic_time),
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = "Decoration",
+            ProjectScreenHeader(
+                modifier = Modifier.fillMaxWidth(),
+                projectName = projectState.project.projectName,
+                onClickBackIcon = onClickIconBack,
+                onClickMenuIcon = onClickIconMenu,
+                isMenuOptionsVisible = projectState.isMenuOptionsVisible,
+                onEditProject = { onEditProject(projectState.project.projectId) },
+                onDeleteProjectClicked = onDeleteProjectClicked
             )
-            Text(
+
+            Spacer(modifier = Modifier.height(Space16dp))
+
+            Row(
                 modifier = Modifier
-                    .weight(1f),
-                text = stringResource(id = R.string.dueDate, projectState.project.projectDeadline),
-                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary),
-            )
-        }
-
-        Spacer(modifier = Modifier.height(Space16dp))
-
-        ProjectDescriptionSection(
-            modifier = Modifier.fillMaxWidth(),
-            projectDesc = projectState.project.projectDesc
-        )
-
-        Spacer(modifier = Modifier.height(Space16dp))
-
-        when {
-            projectState.milestones.isEmpty() -> {
-                EmptyMilestonesSection(
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Space8dp),
+            ) {
+                Icon(
                     modifier = Modifier,
-                    onAddMilestoneClicked = onAddMilestoneClicked,
+                    painter = painterResource(id = R.drawable.ic_time),
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = "Decoration",
+                )
+                Text(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = stringResource(
+                        id = R.string.dueDate,
+                        projectState.project.projectDeadline
+                    ),
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary),
                 )
             }
-            else -> {
-                MilestonesSection(
-                    modifier = Modifier,
-                    milestones = projectState.milestones,
-                    onAddMilestoneClicked = onAddMilestoneClicked,
-                    selectedMilestoneStatus = projectState.selectedMilestoneStatus,
-                    onClickFilterMilestoneStatus = onClickFilterMilestoneStatus,
-                    onClickMilestone = onClickMilestone
+
+            Spacer(modifier = Modifier.height(Space16dp))
+
+            ProjectDescriptionSection(
+                modifier = Modifier.fillMaxWidth(),
+                projectDesc = projectState.project.projectDesc
+            )
+
+            Spacer(modifier = Modifier.height(Space16dp))
+
+            when {
+                projectState.milestones.isEmpty() -> {
+                    EmptyMilestonesSection(
+                        modifier = Modifier,
+                        onAddMilestoneClicked = onAddMilestoneClicked,
+                    )
+                }
+                else -> {
+                    MilestonesSection(
+                        modifier = Modifier,
+                        milestones = projectState.milestones,
+                        onAddMilestoneClicked = onAddMilestoneClicked,
+                        selectedMilestoneStatus = projectState.selectedMilestoneStatus,
+                        onClickFilterMilestoneStatus = onClickFilterMilestoneStatus,
+                        onClickMilestone = onClickMilestone
+                    )
+                }
+            }
+        }
+
+        if (projectState.isDeleteDialogVisible) {
+            DeleteDialog(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                toggleDialogVisibility = onDeleteProjectClicked,
+                onDeleteProject = { onDeleteProject(projectState.project) },
+                navigateBack = onClickIconBack
+            )
+        }
+    }
+}
+
+@Composable
+fun DeleteDialog(
+    modifier: Modifier,
+    toggleDialogVisibility: () -> Unit,
+    onDeleteProject: () -> Unit,
+    navigateBack: () -> Unit,
+) {
+    /*AlertDialog(
+        modifier = modifier
+            .padding(vertical = Space24dp),
+        shape = RoundedCornerShape(Space36dp),
+        onDismissRequest = toggleDialogVisibility,
+        title = {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.deleteProjectDialogTitle),
+                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+                textAlign = TextAlign.Center,
+            )
+        },
+        text = {
+            Text(
+                modifier = Modifier.padding(start = Space36dp, end = Space36dp),
+                text = stringResource(id = R.string.deleteProjectDialogText),
+                style = MaterialTheme.typography.bodySmall.copy(GreyNormal),
+                textAlign = TextAlign.Center
+            )
+        },
+        confirmButton = {
+            PrimaryButton(
+                modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.deleteProject),
+                onClick = {
+                    onDeleteProject()
+                    toggleDialogVisibility()
+                    navigateBack()
+                },
+                isEnabled = true)
+        },
+        dismissButton = {
+            SecondaryButton(
+                modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.cancel),
+                onClick = toggleDialogVisibility,
+                isEnabled = true)
+        }
+    )*/
+
+    // TODO research a better way to add onclick outside dismiss
+    // or ways to position the alert dialog at the bottom of the page
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = GreyDark.copy(alpha = 0.5f))
+            .clickable {
+                toggleDialogVisibility()
+            }
+    ) {
+        Box(
+            Modifier
+                .padding(horizontal = Space20dp, vertical = Space48dp)
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background, RoundedCornerShape(Space36dp))
+                .align(Alignment.BottomCenter)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = Space24dp, vertical = Space48dp)
+            ) {
+
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(id = R.string.deleteProjectDialogTitle),
+                    style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(Space12dp))
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = stringResource(id = R.string.deleteProjectDialogText),
+                    style = MaterialTheme.typography.bodySmall.copy(GreyNormal),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(Space24dp))
+
+                PrimaryButton(
+                    modifier.fillMaxWidth(),
+                    text = stringResource(id = R.string.deleteProject),
+                    onClick = {
+                        onDeleteProject()
+                        toggleDialogVisibility()
+                        navigateBack()
+                    },
+                    isEnabled = true,
+                    containerColor = MaterialTheme.colorScheme.onError,
+                    contentColor = MaterialTheme.colorScheme.error,
+                )
+
+                Spacer(modifier = Modifier.height(Space12dp))
+
+                SecondaryButton(
+                    modifier.fillMaxWidth(),
+                    text = stringResource(id = R.string.cancel),
+                    onClick = toggleDialogVisibility,
+                    isEnabled = true,
+                    enabledContentColor = MaterialTheme.colorScheme.outline,
+                    disabledContentColor = MaterialTheme.colorScheme.outline,
                 )
             }
         }
@@ -209,7 +349,7 @@ fun ProjectScreenHeader(
     onClickMenuIcon: () -> Unit,
     isMenuOptionsVisible: Boolean,
     onEditProject: () -> Unit,
-    onDeleteProject: () -> Unit,
+    onDeleteProjectClicked: () -> Unit,
 ) {
     Row(
         modifier = modifier,
@@ -291,7 +431,10 @@ fun ProjectScreenHeader(
                             style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
                         )
                     },
-                    onClick = onDeleteProject,
+                    onClick = {
+                        onDeleteProjectClicked()
+                        onClickMenuIcon()
+                    },
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_delete),
@@ -482,7 +625,7 @@ fun ProjectPreviews() {
             onClickMenuIcon = { },
             isMenuOptionsVisible = true,
             onEditProject = {},
-            onDeleteProject = {}
+            onDeleteProjectClicked = {}
         )
     }
 }

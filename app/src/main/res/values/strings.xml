@@ -38,5 +38,8 @@
     <string name="milestoneEmptyText">Break down your projects into small tasks for easier execution</string>
     <string name="readMore">Read More +</string>
     <string name="seeLess">See less</string>
+    <string name="deleteProjectDialogTitle">Delete this Project?</string>
+    <string name="deleteProjectDialogText">You will loose all your data associated with this project. This action can not be undone.</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
