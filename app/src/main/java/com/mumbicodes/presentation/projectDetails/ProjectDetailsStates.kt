@@ -14,7 +14,15 @@ data class ProjectDetailsStates(
         timeStamp = 1
     ),
     val milestones: List<Milestone> = emptyList(),
-    val mileStone: Milestone = milestones.first(),
+    val mileStone: Milestone = Milestone(
+        projectId = 0,
+        milestoneId = 0,
+        milestoneTitle = "",
+        milestoneSrtDate = 0,
+        milestoneEndDate = 0,
+        status = "",
+        tasks = emptyList()
+    ),
     val selectedMilestoneStatus: String = filters.first(),
     val isMenuOptionsVisible: Boolean = false,
     val isCongratsDialogVisible: Boolean = false,
