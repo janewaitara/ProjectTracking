@@ -2,17 +2,17 @@ package com.mumbicodes.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
-import java.util.Locale
+import java.util.*
 
 @Composable
 fun PrimaryButton(
@@ -20,16 +20,17 @@ fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     isEnabled: Boolean,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         shape = MaterialTheme.shapes.small,
         enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = containerColor,
+            contentColor = contentColor,
             disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
             disabledContentColor = MaterialTheme.colorScheme.onPrimary
         ),
@@ -48,23 +49,23 @@ fun SecondaryButton(
     text: String,
     onClick: () -> Unit,
     isEnabled: Boolean,
+    enabledContentColor: Color = MaterialTheme.colorScheme.primary,
+    disabledContentColor: Color = MaterialTheme.colorScheme.primaryContainer,
 ) {
     val borderColor = when (isEnabled) {
-        true -> MaterialTheme.colorScheme.primary
-        false -> MaterialTheme.colorScheme.primaryContainer
+        true -> enabledContentColor
+        false -> disabledContentColor
     }
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         shape = MaterialTheme.shapes.small,
         enabled = isEnabled,
         border = BorderStroke(2.dp, borderColor),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = MaterialTheme.colorScheme.primary,
-            disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = enabledContentColor,
+            disabledContentColor = disabledContentColor,
         ),
-
     ) {
         Text(
             text = text.uppercase(Locale.getDefault()),
@@ -78,6 +79,7 @@ fun SecondaryButton(
 fun PrimaryButtonPreview() {
     ProjectTrackingTheme {
         PrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
             text = "Primary button",
             onClick = {},
             isEnabled = true
@@ -90,6 +92,7 @@ fun PrimaryButtonPreview() {
 fun SecondaryButtonPreview() {
     ProjectTrackingTheme {
         SecondaryButton(
+            modifier = Modifier.fillMaxWidth(),
             text = "Primary button",
             onClick = {},
             isEnabled = false

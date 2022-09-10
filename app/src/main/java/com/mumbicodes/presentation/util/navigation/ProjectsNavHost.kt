@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.mumbicodes.presentation.add_edit_project.AddAndEditScreen
 import com.mumbicodes.presentation.allProjects.AllProjectsScreen
+import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
 
 @Composable
 fun ProjectNavHost(
@@ -26,7 +27,8 @@ fun ProjectNavHost(
             isBottomBarVisible(true)
             AllProjectsScreen(onClickProject = { projectId ->
                 navController.navigate(
-                    "${Screens.AddAndEditScreens.route}/$projectId"
+                    /*"${Screens.AddAndEditScreens.route}/$projectId"*/
+                    "${Screens.ProjectDetails.route}/$projectId"
                 )
             })
         }
@@ -37,9 +39,24 @@ fun ProjectNavHost(
             isBottomBarVisible(false)
             AddAndEditScreen(navController = navController)
         }
-        composable(route = Screens.ProjectDetails.route) {
+        composable(
+            route = Screens.ProjectDetails.routeWithArgs,
+            arguments = Screens.ProjectDetails.arguments
+        ) {
             isBottomBarVisible(false)
-            ProjectDetailsScreen()
+            ProjectDetailsScreen(
+                onEditProject = { projectId ->
+                    navController.navigate(
+                        "${Screens.AddAndEditScreens.route}/$projectId"
+                    )
+                },
+                onAddOrModifyMilestone = {
+                    // TODO add navigation to add and edit milestone screen
+                },
+                onClickIconBack = {
+                    navController.popBackStack()
+                }
+            )
             // TODO - add a milestones screen
         }
         composable(route = Screens.MilestonesScreens.route) {
@@ -63,9 +80,4 @@ fun MilestonesScreens() {
 @Composable
 fun NotificationsScreens() {
     Text(modifier = Modifier.testTag("heading"), text = "Notifications Screen")
-}
-
-@Composable
-fun ProjectDetailsScreen() {
-    Text(modifier = Modifier.testTag("heading"), text = "Project details Screen")
 }

@@ -22,6 +22,24 @@
     <string name="addTitle">Add</string>
     <string name="editTitle">Edit</string>
     <string name="saveProject">Save Project</string>
-
+    <string name="editProject">Edit Project</string>
+    <string name="deleteProject">Delete Project</string>
+    <string name="dayRemaining">%1$s day Left</string>
+    <string name="daysRemaining">%1$s days Left</string>
+    <string name="dueDate">Due on %1$s</string>
+    <string name="passedDeadline">%Deadline passed</string>
+    <string name="schedule">SCHEDULE</string>
+    <string name="miniTasks">MINI TASKS</string>
+    <string name="modifyMilestone">Modify Milestone</string>
+    <string name="createMilestone">Create Milestone</string>
+    <string name="delete">Delete</string>
+    <string name="description">Description</string>
+    <string name="milestones">Milestones</string>
+    <string name="milestoneEmptyText">Break down your projects into small tasks for easier execution</string>
+    <string name="readMore">Read More +</string>
+    <string name="seeLess">See less</string>
+    <string name="deleteProjectDialogTitle">Delete this Project?</string>
+    <string name="deleteProjectDialogText">You will loose all your data associated with this project. This action can not be undone.</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

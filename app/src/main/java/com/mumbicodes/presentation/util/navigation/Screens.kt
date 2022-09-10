@@ -50,7 +50,16 @@ sealed class Screens(
             R.drawable.ic_add_outlined,
             R.drawable.ic_add_filled,
             "Details"
+        ) {
+        const val projectId = PROJECT_ID
+        val routeWithArgs = "$route/{$projectId}"
+        val arguments = listOf(
+            navArgument(projectId) {
+                type = NavType.IntType
+                defaultValue = -1
+            }
         )
+    }
 
     object Notifications :
         Screens(
