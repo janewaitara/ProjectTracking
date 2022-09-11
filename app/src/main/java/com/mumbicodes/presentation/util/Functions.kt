@@ -38,3 +38,12 @@ fun Long.toDateAsString(pattern: String): String {
     val localDate = convertLongToLocalDate(this)
     return convertDateToString(localDate, pattern)
 }
+fun LocalDate.toLong(): Long = this.toEpochDay()
+fun LocalDate.toDateAsString(pattern: String): String {
+    val formatter = provideFormatter(pattern)
+    return this.format(formatter)
+}
+fun String.toLocalDate(pattern: String): LocalDate {
+    val formatter = provideFormatter(pattern)
+    return LocalDate.parse(this, formatter)
+}
