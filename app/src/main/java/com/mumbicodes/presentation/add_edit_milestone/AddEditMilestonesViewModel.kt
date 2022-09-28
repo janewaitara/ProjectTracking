@@ -13,9 +13,10 @@ import com.mumbicodes.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class AddEditMilestonesViewModel(
+class AddEditMilestonesViewModel @Inject constructor(
     private val milestonesUseCases: MilestonesUseCases,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
