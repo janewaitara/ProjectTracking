@@ -7,9 +7,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
@@ -21,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mumbicodes.R
-import com.mumbicodes.domain.model.Task
 import com.mumbicodes.presentation.components.LabelledInputField
 import com.mumbicodes.presentation.components.LabelledInputFieldWithIcon
 import com.mumbicodes.presentation.components.PrimaryButton
@@ -43,6 +41,7 @@ fun AddAndEditMilestoneScreen(
     val milestoneEndDateState = milestonesViewModel.milestoneEndDateState.value
     val passedMilestoneId = milestonesViewModel.passedMilestoneId
     val isCalendarVisible = milestonesViewModel.isCalendarVisible.value
+    val tasksState = milestonesViewModel.stateTasks
 
     LaunchedEffect(key1 = true) {
         milestonesViewModel.uiEvents.collectLatest { uIEvents ->
@@ -94,7 +93,7 @@ fun AddAndEditMilestoneScreen(
             isCalendarVisible = isCalendarVisible,
             onSaveMilestone = {
             },
-            tasks = emptyList(),
+            tasks = tasksState,
             addNewTaskInViewModel = {
                 // todo add a new task in the viewModel
             },
@@ -159,11 +158,11 @@ fun FieldForms(
     endDateTextValue: String,
     isCalendarVisible: Boolean,
     onSaveMilestone: () -> Unit,
-    tasks: List<Task>,
+    tasks: List<TaskState>,
     addNewTaskInViewModel: () -> Unit,
-    onCheckedChange: (Task) -> Unit,
-    onTaskTitleChange: (Task, String) -> Unit,
-    onTaskDescChange: (Task, String) -> Unit,
+    onCheckedChange: (TaskState) -> Unit,
+    onTaskTitleChange: (TaskState, String) -> Unit,
+    onTaskDescChange: (TaskState, String) -> Unit,
     onTaskTitleFocusChange: (FocusState) -> Unit,
     onTaskDescFocusChange: (FocusState) -> Unit,
 ) {
@@ -329,15 +328,21 @@ fun ScreenContentPreview() {
             onSaveMilestone = {
             },
             tasks = listOf(
-                Task(
-                    taskTitle = "Bottom navigation",
-                    taskDesc = " ",
-                    status = false
+                TaskState(
+                    taskTitleState = TaskTextFieldState(
+                        text = "Task Title 1"
+                    ),
+                    taskDescState = TaskTextFieldState(
+                        text = "Task Desc 1"
+                    )
                 ),
-                Task(
-                    taskTitle = "Bottom navigation",
-                    taskDesc = " This is for testing",
-                    status = false
+                TaskState(
+                    taskTitleState = TaskTextFieldState(
+                        text = "Task Title 2"
+                    ),
+                    taskDescState = TaskTextFieldState(
+                        text = "Task Desc 2"
+                    )
                 ),
             ),
             addNewTaskInViewModel = {},

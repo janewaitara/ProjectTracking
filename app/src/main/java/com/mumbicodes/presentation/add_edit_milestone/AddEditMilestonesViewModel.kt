@@ -1,8 +1,6 @@
 package com.mumbicodes.presentation.add_edit_milestone
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,17 +28,18 @@ class AddEditMilestonesViewModel @Inject constructor(
     private val _milestoneEndDateState: MutableState<String> = mutableStateOf("")
     val milestoneEndDateState: State<String> = _milestoneEndDateState
 
-    private val _taskTitleState = mutableStateOf("")
-    val taskTitleState = _taskTitleState
-
-    private val _taskDescState = mutableStateOf("")
-    val taskDescState = _taskDescState
-
-    private val _taskStates = mutableStateOf(TaskStates())
-    val taskStates = _taskStates
-
     private val _isCalendarVisible = mutableStateOf(false)
     val isCalendarVisible = _isCalendarVisible
+
+    private val _tasks = mutableStateListOf<Task>()
+
+    // tasks from the db and to
+    private var _storeTasks = mutableListOf<Task>()
+    val storedTasks = _storeTasks
+
+    // tasks from the screen and to screen
+    private val _stateTasks = mutableListOf<TaskState>().toMutableStateList()
+    val stateTasks: List<TaskState> = _stateTasks
 
     private val _uiEvents = MutableSharedFlow<UIEvents>()
     val uiEvents = _uiEvents
@@ -48,7 +47,6 @@ class AddEditMilestonesViewModel @Inject constructor(
     // Default milestone status is "Not Started" since it doesn't have any task
     private var currentMilestoneStatus: String = "Not Started"
 
-    private var tasksToAdd = mutableListOf<Task>()
     private var currentMilestoneId: Int = 0
     private var passedProjectId: Int = savedStateHandle.get<Int>(PROJECT_ID)!!
     var passedMilestoneId: Int? = savedStateHandle.get<Int>(MILESTONE_ID)
@@ -66,11 +64,17 @@ class AddEditMilestonesViewModel @Inject constructor(
                         _milestoneEndDateState.value =
                             milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
                         currentMilestoneStatus = milestone.status
-                        _taskStates.value = _taskStates.value.copy(
-                            tasks = milestone.tasks
-                        )
+                        _storeTasks = milestone.tasks.toMutableList()
                     }
                 }
+                // TODO fetch tasks with that milestone ID
+                // TODO remove hint visibility for tasks
+            } else {
+                // If new milestone, add one task
+                // TODO make this a reusable function
+                _stateTasks.add(
+                    TaskState()
+                )
             }
         }
     }
@@ -89,10 +93,6 @@ class AddEditMilestonesViewModel @Inject constructor(
                     addEditMilestoneEvents.value.toDateAsString("dd/MM/yyyy")
             }
             is AddEditMilestoneEvents.TaskUpdated -> {
-                tasksToAdd.add(addEditMilestoneEvents.value)
-                _taskStates.value = _taskStates.value.copy(
-                    tasks = tasksToAdd
-                )
             }
             is AddEditMilestoneEvents.ToggleCalendarVisibility -> {
                 _isCalendarVisible.value = !isCalendarVisible.value
@@ -110,7 +110,7 @@ class AddEditMilestonesViewModel @Inject constructor(
                             milestoneEndDate = milestoneEndDateState.value.toLocalDate("dd/MM/yyyy")
                                 .toLong(),
                             status = currentMilestoneStatus,
-                            tasks = taskStates.value.tasks
+                            tasks = storedTasks
                         )
                     )
                     uiEvents.emit(UIEvents.AddEditMilestone)
@@ -118,4 +118,31 @@ class AddEditMilestonesViewModel @Inject constructor(
             }
         }
     }
+
+    fun Task.toTaskState() = TaskState(
+        taskTitleState = TaskTextFieldState(
+            text = taskTitle
+        ),
+        taskDescState = TaskTextFieldState(
+            text = taskDesc
+        ),
+        statusState = status,
+    )
+
+    fun TaskState.toTask() = Task(
+        taskTitle = taskTitleState.text,
+        taskDesc = taskDescState.text,
+        status = statusState
+    )
+
+    fun transformTasksToTaskStates(tasks: List<Task>): List<TaskState> {
+        return tasks.map { task ->
+            task.toTaskState()
+        }
+    }
+
+    fun transformTaskStatesToTasks(taskStates: List<TaskState>): List<Task> =
+        taskStates.map { taskState ->
+            taskState.toTask()
+        }
 }

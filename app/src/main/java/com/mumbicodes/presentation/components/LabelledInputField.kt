@@ -18,7 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.mumbicodes.R
-import com.mumbicodes.domain.model.Task
+import com.mumbicodes.presentation.add_edit_milestone.TaskState
+import com.mumbicodes.presentation.add_edit_milestone.TaskTextFieldState
 import com.mumbicodes.presentation.theme.*
 
 @Composable
@@ -165,7 +166,7 @@ fun TransparentHintTextField(
 @Composable
 fun TaskItemField(
     modifier: Modifier,
-    task: Task,
+    task: TaskState,
     onCheckedChange: () -> Unit,
     onTaskTitleChange: (String) -> Unit,
     onTaskDescChange: (String) -> Unit,
@@ -193,7 +194,7 @@ fun TaskItemField(
                 .clickable {
                     onCheckedChange()
                 },
-            painter = painterResource(id = if (task.status) R.drawable.ic_checkbox_true else R.drawable.ic_checkbox_false),
+            painter = painterResource(id = if (task.statusState) R.drawable.ic_checkbox_true else R.drawable.ic_checkbox_false),
             contentDescription = "Checkbox"
         )
         TransparentHintTextField(
@@ -205,15 +206,16 @@ fun TaskItemField(
 
                     width = Dimension.fillToConstraints
                 },
-            text = task.taskTitle,
-            hint = "Task Title",
+            text = task.taskTitleState.text,
+            hint = task.taskTitleState.hint,
             onValueChange = {
                 onTaskTitleChange(it)
             },
             textStyle = MaterialTheme.typography.bodySmall,
             onFocusChange = {
                 onTaskTitleFocusChange(it)
-            }
+            },
+            isHintVisible = task.taskTitleState.isHintVisible
         )
 
         Spacer(modifier = Modifier.height(Space4dp))
@@ -227,15 +229,16 @@ fun TaskItemField(
 
                     width = Dimension.fillToConstraints
                 },
-            text = task.taskDesc,
-            hint = "Task Description",
+            text = task.taskDescState.text,
+            hint = task.taskDescState.hint,
             onValueChange = {
                 onTaskDescChange(it)
             },
             textStyle = MaterialTheme.typography.bodySmall,
             onFocusChange = {
                 onTaskDescFocusChange(it)
-            }
+            },
+            isHintVisible = task.taskDescState.isHintVisible
         )
     }
 }
@@ -291,10 +294,11 @@ fun TaskItemFieldPreview() {
             modifier = Modifier.background(
                 color = White
             ),
-            task = Task(
-                taskTitle = "Bottom navigation",
-                taskDesc = " ",
-                status = false
+            TaskState(
+                taskTitleState = TaskTextFieldState(
+                    text = "Task Title 1",
+                    hint = "thius is a placehol"
+                ),
             ),
             onCheckedChange = {},
             onTaskTitleChange = {},

@@ -1,7 +1,18 @@
 package com.mumbicodes.presentation.add_edit_milestone
 
-import com.mumbicodes.domain.model.Task
+data class TaskTextFieldState(
+    val text: String = "",
+    val hint: String = "",
+    val isHintVisible: Boolean = true,
+)
 
-data class TaskStates(
-    val tasks: List<Task> = emptyList()
+data class TaskState(
+    // TODO add an Id
+    val taskTitleState: TaskTextFieldState = TaskTextFieldState(
+        hint = "Task Title"
+    ),
+    val taskDescState: TaskTextFieldState = TaskTextFieldState(
+        hint = "Task Description"
+    ),
+    val statusState: Boolean = false,
 )
