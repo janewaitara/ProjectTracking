@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 fun ProjectDetailsScreen(
     projectDetailsViewModel: ProjectDetailsViewModel = hiltViewModel(),
     onEditProject: (Int) -> Unit,
-    onAddOrModifyMilestone: (Int) -> Unit,
+    onAddOrModifyMilestone: (Int, Int) -> Unit,
     onClickIconBack: () -> Unit,
 ) {
     val state = projectDetailsViewModel.state.value
@@ -67,7 +67,7 @@ fun ProjectDetailsScreen(
                     }
                 },
                 onModifyClicked = {
-                    onAddOrModifyMilestone(it)
+                    onAddOrModifyMilestone(state.project.projectId, it)
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
@@ -112,7 +112,7 @@ fun ProjectDetailsScreen(
                     },
                     onAddMilestoneClicked = {
                         // Used that int because the function navigates to shared add/edit milestone
-                        onAddOrModifyMilestone(-1)
+                        onAddOrModifyMilestone(state.project.projectId, -1)
                     },
                     onEditProject = { projectId ->
                         onEditProject(projectId)
