@@ -8,11 +8,12 @@ data class TaskTextFieldState(
 
 data class TaskState(
     // TODO add an Id
-    val taskTitleState: TaskTextFieldState = TaskTextFieldState(
+    val taskId: Int? = null,
+    var taskTitleState: TaskTextFieldState = TaskTextFieldState(
         hint = "Task Title"
     ),
-    val taskDescState: TaskTextFieldState = TaskTextFieldState(
+    var taskDescState: TaskTextFieldState = TaskTextFieldState(
         hint = "Task Description"
     ),
-    val statusState: Boolean = false,
+    var statusState: Boolean = false,
 )

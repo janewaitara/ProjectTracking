@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class AddEditMilestonesViewModel @Inject constructor(
@@ -72,33 +73,78 @@ class AddEditMilestonesViewModel @Inject constructor(
             } else {
                 // If new milestone, add one task
                 // TODO make this a reusable function
-                _stateTasks.add(
-                    TaskState()
-                )
+                addNewTaskState()
             }
         }
     }
 
     fun onEvent(addEditMilestoneEvents: AddEditMilestoneEvents) {
         when (addEditMilestoneEvents) {
-            is AddEditMilestoneEvents.TitleChanged -> {
+            is AddEditMilestoneEvents.MilestoneTitleChanged -> {
                 _milestoneTitleState.value = addEditMilestoneEvents.value
-            }
-            is AddEditMilestoneEvents.StartDateChanged -> {
-                _milestoneStartDateState.value =
-                    addEditMilestoneEvents.value.toDateAsString("dd/MM/yyyy")
-            }
-            is AddEditMilestoneEvents.EndDateChanged -> {
-                _milestoneEndDateState.value =
-                    addEditMilestoneEvents.value.toDateAsString("dd/MM/yyyy")
-            }
-            is AddEditMilestoneEvents.TaskUpdated -> {
             }
             is AddEditMilestoneEvents.ToggleCalendarVisibility -> {
                 _isCalendarVisible.value = !isCalendarVisible.value
             }
+            is AddEditMilestoneEvents.MilestoneStartDateChanged -> {
+                _milestoneStartDateState.value =
+                    addEditMilestoneEvents.value.toDateAsString("dd/MM/yyyy")
+            }
+            is AddEditMilestoneEvents.MilestoneEndDateChanged -> {
+                _milestoneEndDateState.value =
+                    addEditMilestoneEvents.value.toDateAsString("dd/MM/yyyy")
+            }
+            // on clicking + for tasks
+            is AddEditMilestoneEvents.NewTaskAdded -> {
+                addNewTaskState()
+            }
+            is AddEditMilestoneEvents.ChangeTaskDescFocus -> {
+                _stateTasks.find {
+                    it.taskId == addEditMilestoneEvents.task.taskId
+                }?.let { foundTaskState ->
+                    foundTaskState.taskDescState = foundTaskState.taskDescState.copy(
+                        isHintVisible = !addEditMilestoneEvents.focusState.isFocused &&
+                            foundTaskState.taskDescState.text.isBlank()
+                    )
+                }
+            }
+            is AddEditMilestoneEvents.ChangeTaskTitleFocus -> {
+                _stateTasks.find {
+                    it.taskId == addEditMilestoneEvents.task.taskId
+                }?.let { foundTaskState ->
+                    foundTaskState.taskTitleState = foundTaskState.taskTitleState.copy(
+                        isHintVisible = !addEditMilestoneEvents.focusState.isFocused &&
+                            foundTaskState.taskTitleState.text.isBlank()
+                    )
+                }
+            }
+            is AddEditMilestoneEvents.TaskDescChanged -> {
+                _stateTasks.find {
+                    it.taskId == addEditMilestoneEvents.task.taskId
+                }?.let { foundTaskState ->
+                    foundTaskState.taskDescState = foundTaskState.taskDescState.copy(
+                        text = addEditMilestoneEvents.value
+                    )
+                }
+            }
+            is AddEditMilestoneEvents.TaskTitleChanged -> {
+                _stateTasks.find {
+                    it.taskId == addEditMilestoneEvents.task.taskId
+                }?.let { foundTaskState ->
+                    foundTaskState.taskTitleState = foundTaskState.taskTitleState.copy(
+                        text = addEditMilestoneEvents.value
+                    )
+                }
+            }
+            is AddEditMilestoneEvents.ToggleTaskStatus -> {
+                _stateTasks.find {
+                    it.taskId == addEditMilestoneEvents.task.taskId
+                }?.let { foundTaskState ->
+                    foundTaskState.statusState = !foundTaskState.statusState
+                }
+            }
             // TODO check for status the best way and also update project status based on it milestones
-            is AddEditMilestoneEvents.AddEditProject -> {
+            is AddEditMilestoneEvents.AddEditMilestone -> {
                 viewModelScope.launch {
                     milestonesUseCases.addMilestoneUseCase(
                         Milestone(
@@ -117,6 +163,15 @@ class AddEditMilestonesViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun addNewTaskState() {
+        val randomNumber = Random.nextInt()
+        _stateTasks.add(
+            TaskState(
+                taskId = randomNumber
+            )
+        )
     }
 
     fun Task.toTaskState() = TaskState(

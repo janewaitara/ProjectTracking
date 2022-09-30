@@ -78,39 +78,68 @@ fun AddAndEditMilestoneScreen(
         FieldForms(
             modifier = Modifier.fillMaxWidth(),
             onTitleChanged = { title ->
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.MilestoneTitleChanged(title)
+                )
             },
-
             onDatesClicked = {
                 milestonesViewModel.onEvent(AddEditMilestoneEvents.ToggleCalendarVisibility)
             },
             onStartDateChanged = { startDate ->
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.MilestoneStartDateChanged(startDate)
+                )
             },
             onEndDateChanged = { endDate ->
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.MilestoneEndDateChanged(endDate)
+                )
             },
             titleTextValue = milestoneTitleState,
             startDateTextValue = milestoneStartDateState,
             endDateTextValue = milestoneEndDateState,
             isCalendarVisible = isCalendarVisible,
-            onSaveMilestone = {
-            },
             tasks = tasksState,
             addNewTaskInViewModel = {
                 // todo add a new task in the viewModel
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.NewTaskAdded
+                )
             },
             onCheckedChange = { task ->
                 // TODO update the task status
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.ToggleTaskStatus(task)
+                )
             },
             onTaskTitleChange = { task, taskTitle ->
                 // TODO update the task title
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.TaskTitleChanged(task, taskTitle)
+                )
             },
             onTaskDescChange = { task, taskDesc ->
                 // TODO update the task desc
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.TaskDescChanged(task, taskDesc)
+                )
             },
-            onTaskTitleFocusChange = {
+            onTaskTitleFocusChange = { task, focusState ->
                 // TODO update the task title focus
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.ChangeTaskTitleFocus(task, focusState)
+                )
             },
-            onTaskDescFocusChange = {
+            onTaskDescFocusChange = { task, focusState ->
                 // TODO update the task desc focus
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.ChangeTaskDescFocus(task, focusState)
+                )
+            },
+            onSaveMilestone = {
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.AddEditMilestone
+                )
             },
         )
     }
@@ -163,8 +192,8 @@ fun FieldForms(
     onCheckedChange: (TaskState) -> Unit,
     onTaskTitleChange: (TaskState, String) -> Unit,
     onTaskDescChange: (TaskState, String) -> Unit,
-    onTaskTitleFocusChange: (FocusState) -> Unit,
-    onTaskDescFocusChange: (FocusState) -> Unit,
+    onTaskTitleFocusChange: (TaskState, FocusState) -> Unit,
+    onTaskDescFocusChange: (TaskState, FocusState) -> Unit,
 ) {
 
     // helps determine which date to update
@@ -282,11 +311,11 @@ fun FieldForms(
                 onTaskDescChange = { taskDesc ->
                     onTaskDescChange(task, taskDesc)
                 },
-                onTaskTitleFocusChange = {
-                    onTaskTitleFocusChange(it)
+                onTaskTitleFocusChange = { focusState ->
+                    onTaskTitleFocusChange(task, focusState)
                 },
-                onTaskDescFocusChange = {
-                    onTaskDescFocusChange(it)
+                onTaskDescFocusChange = { focusState ->
+                    onTaskDescFocusChange(task, focusState)
                 }
             )
         }
@@ -349,8 +378,8 @@ fun ScreenContentPreview() {
             onCheckedChange = {},
             onTaskTitleChange = { _, _ -> },
             onTaskDescChange = { _, _ -> },
-            onTaskTitleFocusChange = {},
-            onTaskDescFocusChange = {}
+            onTaskTitleFocusChange = { _, _ -> },
+            onTaskDescFocusChange = { _, _ -> }
         )
     }
 }

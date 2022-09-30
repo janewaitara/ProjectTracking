@@ -1,15 +1,20 @@
 package com.mumbicodes.presentation.add_edit_milestone
 
-import com.mumbicodes.domain.model.Task
+import androidx.compose.ui.focus.FocusState
 import java.time.LocalDate
 
 sealed class AddEditMilestoneEvents {
-    data class TitleChanged(val value: String) : AddEditMilestoneEvents()
-    data class StartDateChanged(val value: LocalDate) : AddEditMilestoneEvents()
-    data class EndDateChanged(val value: LocalDate) : AddEditMilestoneEvents()
-    data class TaskUpdated(val value: Task) : AddEditMilestoneEvents()
+    data class MilestoneTitleChanged(val value: String) : AddEditMilestoneEvents()
     object ToggleCalendarVisibility : AddEditMilestoneEvents()
-    object AddEditProject : AddEditMilestoneEvents()
+    data class MilestoneStartDateChanged(val value: LocalDate) : AddEditMilestoneEvents()
+    data class MilestoneEndDateChanged(val value: LocalDate) : AddEditMilestoneEvents()
+    object NewTaskAdded : AddEditMilestoneEvents()
+    data class TaskTitleChanged(val task: TaskState, val value: String) : AddEditMilestoneEvents()
+    data class ChangeTaskTitleFocus(val task: TaskState, val focusState: FocusState) : AddEditMilestoneEvents()
+    data class TaskDescChanged(val task: TaskState, val value: String) : AddEditMilestoneEvents()
+    data class ChangeTaskDescFocus(val task: TaskState, val focusState: FocusState) : AddEditMilestoneEvents()
+    data class ToggleTaskStatus(val task: TaskState) : AddEditMilestoneEvents()
+    object AddEditMilestone : AddEditMilestoneEvents()
 }
 
 sealed class UIEvents {
