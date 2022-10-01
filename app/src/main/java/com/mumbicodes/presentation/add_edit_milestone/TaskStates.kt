@@ -1,19 +1,30 @@
 package com.mumbicodes.presentation.add_edit_milestone
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 data class TaskTextFieldState(
     val text: String = "",
     val hint: String = "",
     val isHintVisible: Boolean = true,
 )
 
-data class TaskState(
-    // TODO add an Id
+class TaskState(
     val taskId: Int? = null,
-    var taskTitleState: TaskTextFieldState = TaskTextFieldState(
+    initialTaskTitleState: TaskTextFieldState = TaskTextFieldState(
         hint = "Task Title"
     ),
-    var taskDescState: TaskTextFieldState = TaskTextFieldState(
+    initialTaskDescState: TaskTextFieldState = TaskTextFieldState(
         hint = "Task Description"
     ),
-    var statusState: Boolean = false,
-)
+    initialStatusState: Boolean = false,
+) {
+    var taskTitleState by mutableStateOf(
+        initialTaskTitleState
+    )
+    var taskDescState by mutableStateOf(
+        initialTaskDescState
+    )
+    var statusState by mutableStateOf(initialStatusState)
+}

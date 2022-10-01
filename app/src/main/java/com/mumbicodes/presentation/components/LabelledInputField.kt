@@ -295,7 +295,7 @@ fun TaskItemFieldPreview() {
                 color = White
             ),
             TaskState(
-                taskTitleState = TaskTextFieldState(
+                initialTaskTitleState = TaskTextFieldState(
                     text = "Task Title 1",
                     hint = "thius is a placehol"
                 ),

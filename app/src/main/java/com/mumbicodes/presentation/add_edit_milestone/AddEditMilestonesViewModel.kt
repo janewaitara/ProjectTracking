@@ -61,9 +61,9 @@ class AddEditMilestonesViewModel @Inject constructor(
                         currentMilestoneId = milestoneId
                         _milestoneTitleState.value = milestone.milestoneTitle
                         _milestoneStartDateState.value =
-                            milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
-                        _milestoneEndDateState.value =
                             milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
+                        _milestoneEndDateState.value =
+                            milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
                         currentMilestoneStatus = milestone.status
                         _storeTasks = milestone.tasks.toMutableList()
                     }
@@ -89,10 +89,12 @@ class AddEditMilestonesViewModel @Inject constructor(
             is AddEditMilestoneEvents.MilestoneStartDateChanged -> {
                 _milestoneStartDateState.value =
                     addEditMilestoneEvents.value.toDateAsString("dd/MM/yyyy")
+                _isCalendarVisible.value = !isCalendarVisible.value
             }
             is AddEditMilestoneEvents.MilestoneEndDateChanged -> {
                 _milestoneEndDateState.value =
                     addEditMilestoneEvents.value.toDateAsString("dd/MM/yyyy")
+                _isCalendarVisible.value = !isCalendarVisible.value
             }
             // on clicking + for tasks
             is AddEditMilestoneEvents.NewTaskAdded -> {
@@ -174,7 +176,7 @@ class AddEditMilestonesViewModel @Inject constructor(
         )
     }
 
-    fun Task.toTaskState() = TaskState(
+    /*fun Task.toTaskState() = TaskState(
         taskTitleState = TaskTextFieldState(
             text = taskTitle
         ),
@@ -182,6 +184,15 @@ class AddEditMilestonesViewModel @Inject constructor(
             text = taskDesc
         ),
         statusState = status,
+    )*/
+    fun Task.toTaskState() = TaskState(
+        initialTaskTitleState = TaskTextFieldState(
+            text = taskTitle
+        ),
+        initialTaskDescState = TaskTextFieldState(
+            text = taskDesc
+        ),
+        initialStatusState = status,
     )
 
     fun TaskState.toTask() = Task(

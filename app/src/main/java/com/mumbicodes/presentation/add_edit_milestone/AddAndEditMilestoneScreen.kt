@@ -7,8 +7,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
@@ -197,7 +196,9 @@ fun FieldForms(
 ) {
 
     // helps determine which date to update
-    var calendarTrigger = ""
+    var calendarTrigger by remember {
+        mutableStateOf("test")
+    }
 
     Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(Space20dp))
@@ -331,7 +332,6 @@ fun FieldForms(
         )
     }
 }
-
 @Composable
 @Preview
 fun ScreenContentPreview() {
@@ -358,18 +358,18 @@ fun ScreenContentPreview() {
             },
             tasks = listOf(
                 TaskState(
-                    taskTitleState = TaskTextFieldState(
+                    initialTaskTitleState = TaskTextFieldState(
                         text = "Task Title 1"
                     ),
-                    taskDescState = TaskTextFieldState(
+                    initialTaskDescState = TaskTextFieldState(
                         text = "Task Desc 1"
                     )
                 ),
                 TaskState(
-                    taskTitleState = TaskTextFieldState(
+                    initialTaskTitleState = TaskTextFieldState(
                         text = "Task Title 2"
                     ),
-                    taskDescState = TaskTextFieldState(
+                    initialTaskDescState = TaskTextFieldState(
                         text = "Task Desc 2"
                     )
                 ),
