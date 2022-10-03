@@ -3,8 +3,12 @@ package com.mumbicodes.di
 import android.app.Application
 import com.mumbicodes.domain.repository.MilestonesRepository
 import com.mumbicodes.domain.repository.ProjectsRepository
+import com.mumbicodes.domain.repository.TasksRepository
 import com.mumbicodes.domain.use_case.milestones.*
 import com.mumbicodes.domain.use_case.projects.*
+import com.mumbicodes.domain.use_case.tasks.AddTasksUseCase
+import com.mumbicodes.domain.use_case.tasks.DeleteTaskUseCase
+import com.mumbicodes.domain.use_case.tasks.TasksUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +29,9 @@ object UseCaseModule {
         return ProjectsUseCases(
             addProjectsUseCase = AddProjectsUseCase(projectRepository),
             getProjectByIdUseCase = GetProjectByIdUseCase(projectRepository),
-            getProjectByIdWithMilestonesUseCase = GetProjectByIdWithMilestonesUseCase(projectRepository),
+            getProjectByIdWithMilestonesUseCase = GetProjectByIdWithMilestonesUseCase(
+                projectRepository
+            ),
             getProjectsUseCase = GetProjectsUseCase(projectRepository, app),
             deleteProjectUseCase = DeleteProjectUseCase(projectRepository),
             deleteAllProjectsUseCase = DeleteAllProjectsUseCase(projectRepository),
@@ -47,6 +53,17 @@ object UseCaseModule {
             deleteMilestonesForProjectUseCase = DeleteMilestonesForProjectUseCase(repository),
             deleteAllMilestonesUseCase = DeleteAllMilestonesUseCase(repository),
             checkMilestoneStatusUseCase = CheckMilestoneStatusUseCase(repository, app),
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTasksUseCases(
+        repository: TasksRepository,
+    ): TasksUseCases {
+        return TasksUseCases(
+            addTasksUseCase = AddTasksUseCase(repository),
+            deleteTaskUseCase = DeleteTaskUseCase(repository)
         )
     }
 }
