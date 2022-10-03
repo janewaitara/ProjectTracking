@@ -10,5 +10,5 @@ data class ProjectWithMilestones(
         parentColumn = "projectId",
         entityColumn = "projectId"
     )
-    val milestone: List<MilestoneWithTasks>
+    val milestones: List<MilestoneWithTasks>
 )

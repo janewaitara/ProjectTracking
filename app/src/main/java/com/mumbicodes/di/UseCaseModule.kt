@@ -25,6 +25,7 @@ object UseCaseModule {
         return ProjectsUseCases(
             addProjectsUseCase = AddProjectsUseCase(projectRepository),
             getProjectByIdUseCase = GetProjectByIdUseCase(projectRepository),
+            getProjectByIdWithMilestonesUseCase = GetProjectByIdWithMilestonesUseCase(projectRepository),
             getProjectsUseCase = GetProjectsUseCase(projectRepository, app),
             deleteProjectUseCase = DeleteProjectUseCase(projectRepository),
             deleteAllProjectsUseCase = DeleteAllProjectsUseCase(projectRepository),
