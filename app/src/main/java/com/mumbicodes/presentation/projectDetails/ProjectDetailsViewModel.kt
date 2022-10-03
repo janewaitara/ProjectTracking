@@ -25,6 +25,7 @@ class ProjectDetailsViewModel @Inject constructor(
     val state = _state
 
     private var getMilestonesJob: Job? = null
+    private var getProjectJob: Job? = null
 
     private val projectId = savedStateHandle.get<Int>(PROJECT_ID)
 
@@ -36,10 +37,8 @@ class ProjectDetailsViewModel @Inject constructor(
                         project = projectPassed,
                     )
                 }
-                getProjectMilestones(
-                    projectId,
-                    state.value.selectedMilestoneStatus
-                )
+
+                getProject(projectId, state.value.selectedMilestoneStatus)
             }
         }
     }
@@ -50,7 +49,7 @@ class ProjectDetailsViewModel @Inject constructor(
                 if (state.value.selectedMilestoneStatus == projectDetailsEvents.milestoneStatus) {
                     return
                 }
-                getProjectMilestones(projectId!!, projectDetailsEvents.milestoneStatus)
+                getProject(projectId!!, projectDetailsEvents.milestoneStatus)
             }
             is ProjectDetailsEvents.GetMilestone -> {
                 getMilestoneById(projectDetailsEvents.milestoneId)
@@ -83,7 +82,8 @@ class ProjectDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun getProjectMilestones(projectId: Int, milestoneStatus: String) {
+    // TODO delete this
+  /*  private fun getProjectMilestones(projectId: Int, milestoneStatus: String) {
         getMilestonesJob?.cancel()
         getMilestonesJob =
             milestonesUseCases.getMilestonesUseCase(projectId, milestoneStatus)
@@ -94,7 +94,7 @@ class ProjectDetailsViewModel @Inject constructor(
                     )
                 }
                 .launchIn(viewModelScope)
-    }
+    }*/
 
     private fun getMilestoneById(milestoneId: Int) {
         viewModelScope.launch {
@@ -104,5 +104,21 @@ class ProjectDetailsViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    // TODO: Think of How best can I filter the milestones to avoid fetching from DB all the time
+    private fun getProject(projectId: Int, milestoneStatus: String) {
+        getProjectJob?.cancel()
+        getProjectJob = projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
+            .onEach { projectWithMilestones ->
+                _state.value = state.value.copy(
+                    project = projectWithMilestones.project,
+                    milestones = projectWithMilestones.milestones.filter {
+                        it.milestone.status == milestoneStatus
+                    },
+                    selectedMilestoneStatus = milestoneStatus,
+                )
+            }
+            .launchIn(viewModelScope)
     }
 }

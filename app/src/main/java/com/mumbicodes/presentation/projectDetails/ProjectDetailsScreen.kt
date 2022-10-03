@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mumbicodes.R
-import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.allProjects.filters
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.components.PrimaryButton
@@ -505,7 +505,7 @@ fun ProjectDescriptionSection(
 @Composable
 fun MilestonesSection(
     modifier: Modifier,
-    milestones: List<Milestone>,
+    milestones: List<MilestoneWithTasks>,
     onAddMilestoneClicked: () -> Unit,
     selectedMilestoneStatus: String,
     onClickMilestone: (Int) -> Unit,
@@ -562,7 +562,7 @@ fun MilestonesSection(
         ) {
             itemsIndexed(milestones) { _, milestone ->
                 MilestoneItem(
-                    milestone = milestone,
+                    milestoneWithTasks = milestone,
                     onClickMilestone = onClickMilestone
                 )
             }

@@ -12,5 +12,5 @@ data class MilestoneWithTasks(
         parentColumn = "milestoneId",
         entityColumn = "milestoneId"
     )
-    val task: List<Task>,
+    val tasks: List<Task>,
 )
