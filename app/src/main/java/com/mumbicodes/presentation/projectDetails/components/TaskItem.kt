@@ -81,6 +81,8 @@ fun TaskItemPreview() {
         TaskItem(
             modifier = Modifier.fillMaxWidth(),
             task = Task(
+                milestoneId = 1,
+                taskId = 2,
                 taskTitle = "Display Projects",
                 taskDesc = "Display Projects",
                 status = true

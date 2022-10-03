@@ -9,7 +9,10 @@ import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
@@ -52,23 +55,14 @@ class AddEditMilestonesViewModel @Inject constructor(
     private var passedProjectId: Int = savedStateHandle.get<Int>(PROJECT_ID)!!
     var passedMilestoneId: Int? = savedStateHandle.get<Int>(MILESTONE_ID)
 
+    private var getMilestonesJob: Job? = null
+
     init {
         passedMilestoneId?.let { milestoneId ->
             if (milestoneId != -1) {
-                viewModelScope.launch {
 
-                    milestonesUseCases.getMilestoneByIdUseCase(milestoneId).also { milestone ->
-                        currentMilestoneId = milestoneId
-                        _milestoneTitleState.value = milestone.milestoneTitle
-                        _milestoneStartDateState.value =
-                            milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
-                        _milestoneEndDateState.value =
-                            milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
-                        currentMilestoneStatus = milestone.status
-                        _storeTasks = milestone.tasks.toMutableList()
-                    }
-                }
-                // TODO fetch tasks with that milestone ID
+                getMilestoneByIdWithTasks(milestoneId)
+
                 // TODO remove hint visibility for tasks
             } else {
                 // If new milestone, add one task
@@ -158,13 +152,28 @@ class AddEditMilestonesViewModel @Inject constructor(
                             milestoneEndDate = milestoneEndDateState.value.toLocalDate("dd/MM/yyyy")
                                 .toLong(),
                             status = currentMilestoneStatus,
-                            tasks = storedTasks
                         )
                     )
                     uiEvents.emit(UIEvents.AddEditMilestone)
                 }
             }
         }
+    }
+
+    private fun getMilestoneByIdWithTasks(milestoneId: Int) {
+        getMilestonesJob?.cancel()
+        getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
+            .onEach { milestoneWithTask ->
+                currentMilestoneId = milestoneId
+                _milestoneTitleState.value = milestoneWithTask.milestone.milestoneTitle
+                _milestoneStartDateState.value =
+                    milestoneWithTask.milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
+                _milestoneEndDateState.value =
+                    milestoneWithTask.milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
+                currentMilestoneStatus = milestoneWithTask.milestone.status
+                _storeTasks = milestoneWithTask.tasks.toMutableList()
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun addNewTaskState() {
@@ -186,6 +195,7 @@ class AddEditMilestonesViewModel @Inject constructor(
         statusState = status,
     )*/
     fun Task.toTaskState() = TaskState(
+        taskId = taskId,
         initialTaskTitleState = TaskTextFieldState(
             text = taskTitle
         ),
@@ -196,6 +206,8 @@ class AddEditMilestonesViewModel @Inject constructor(
     )
 
     fun TaskState.toTask() = Task(
+        milestoneId = currentMilestoneId,
+        taskId = taskId ?: 0,
         taskTitle = taskTitleState.text,
         taskDesc = taskDescState.text,
         status = statusState

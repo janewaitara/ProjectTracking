@@ -59,7 +59,7 @@ fun ProjectDetailsScreen(
     ModalBottomSheetLayout(
         sheetContent = {
             MilestoneDetailsBottomSheetContent(
-                milestone = state.mileStone,
+                milestoneWithTasks = state.mileStone,
                 onDeleteClicked = {
                     projectDetailsViewModel.onEvent(ProjectDetailsEvents.DeleteMilestone(it))
                     scope.launch {

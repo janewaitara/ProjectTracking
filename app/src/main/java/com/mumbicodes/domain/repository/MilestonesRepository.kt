@@ -1,13 +1,14 @@
 package com.mumbicodes.domain.repository
 
 import com.mumbicodes.domain.model.Milestone
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import kotlinx.coroutines.flow.Flow
 
 interface MilestonesRepository {
 
     suspend fun insertMilestone(milestone: Milestone)
 
-    suspend fun getMilestoneById(milestoneId: Int): Milestone
+    fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks>
 
     fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,

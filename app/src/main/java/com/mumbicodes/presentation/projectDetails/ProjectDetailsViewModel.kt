@@ -32,6 +32,7 @@ class ProjectDetailsViewModel @Inject constructor(
     init {
         projectId?.let { projectId ->
             viewModelScope.launch {
+                // todo delete
                 projectsUseCases.getProjectByIdUseCase(projectId).also { projectPassed ->
                     _state.value = _state.value.copy(
                         project = projectPassed,
@@ -97,13 +98,14 @@ class ProjectDetailsViewModel @Inject constructor(
     }*/
 
     private fun getMilestoneById(milestoneId: Int) {
-        viewModelScope.launch {
-            milestonesUseCases.getMilestoneByIdUseCase(milestoneId).also { milestone ->
+        getMilestonesJob?.cancel()
+        getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
+            .onEach { milestoneWithTask ->
                 _state.value = _state.value.copy(
-                    mileStone = milestone
+                    mileStone = milestoneWithTask
                 )
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     // TODO: Think of How best can I filter the milestones to avoid fetching from DB all the time

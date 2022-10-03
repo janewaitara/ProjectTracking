@@ -47,7 +47,7 @@ object UseCaseModule {
     ): MilestonesUseCases {
         return MilestonesUseCases(
             addMilestoneUseCase = AddMilestoneUseCase(repository),
-            getMilestoneByIdUseCase = GetMilestoneByIdUseCase(repository),
+            getMilestoneByIdWithTasksUseCase = GetMilestoneByIdWithTasksUseCase(repository),
             getMilestonesUseCase = GetMilestonesUseCase(repository),
             deleteMilestoneUseCase = DeleteMilestoneUseCase(repository),
             deleteMilestonesForProjectUseCase = DeleteMilestonesForProjectUseCase(repository),

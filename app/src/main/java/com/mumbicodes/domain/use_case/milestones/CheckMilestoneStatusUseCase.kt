@@ -4,6 +4,8 @@ import android.app.Application
 import com.mumbicodes.R
 import com.mumbicodes.domain.repository.MilestonesRepository
 import com.mumbicodes.domain.util.ProgressStatus
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 
 class CheckMilestoneStatusUseCase(
     private val repository: MilestonesRepository,
@@ -12,9 +14,12 @@ class CheckMilestoneStatusUseCase(
 
     suspend operator fun invoke(milestoneId: Int): ProgressStatus {
 
-        val milestone = repository.getMilestoneById(milestoneId)
+        val milestoneWithTasks = repository.getMilestoneByIdWithTasks(milestoneId)
 
-        val tasksStatusList: List<Boolean> = milestone.tasks.map { it.status }
+        var tasksStatusList: List<Boolean> = listOf()
+        milestoneWithTasks.collectLatest { milestoneTasks ->
+            tasksStatusList = milestoneTasks.tasks.map { it.status }
+        }
 
         return when {
             tasksStatusList.contains(true) && !tasksStatusList.contains(false) -> ProgressStatus.Completed(
