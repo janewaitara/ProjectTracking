@@ -18,11 +18,10 @@ import androidx.room.PrimaryKey
 )
 data class Milestone(
     val projectId: Int,
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     val milestoneId: Int = 0,
     val milestoneTitle: String,
     val milestoneSrtDate: Long,
     val milestoneEndDate: Long,
     val status: String,
-    val tasks: List<Task>,
 )
