@@ -11,7 +11,8 @@ data class TaskTextFieldState(
 )
 
 class TaskState(
-    val taskId: Int? = null,
+    val milestoneId: Int,
+    val taskId: Int,
     initialTaskTitleState: TaskTextFieldState = TaskTextFieldState(
         hint = "Task Title"
     ),

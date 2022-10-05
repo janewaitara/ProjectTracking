@@ -3,7 +3,6 @@ package com.mumbicodes.di
 import android.content.Context
 import androidx.room.Room
 import com.mumbicodes.data.db.ProjectsDatabase
-import com.mumbicodes.data.db.TaskConverter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +22,7 @@ object LocalModule {
             ProjectsDatabase::class.java,
             DATABASE_NAME
         )
-            .addTypeConverter(TaskConverter())
+            // .addTypeConverter(TaskConverter())
             .build()
     }
 

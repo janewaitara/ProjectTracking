@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.add_edit_milestone
 
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
+import com.mumbicodes.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -14,12 +16,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class AddEditMilestonesViewModel @Inject constructor(
     private val milestonesUseCases: MilestonesUseCases,
+    private val tasksUseCases: TasksUseCases,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -38,11 +41,11 @@ class AddEditMilestonesViewModel @Inject constructor(
     private val _tasks = mutableStateListOf<Task>()
 
     // tasks from the db and to
-    private var _storeTasks = mutableListOf<Task>()
+    private var _storeTasks = listOf<Task>()
     val storedTasks = _storeTasks
 
     // tasks from the screen and to screen
-    private val _stateTasks = mutableListOf<TaskState>().toMutableStateList()
+    private var _stateTasks = mutableListOf<TaskState>().toMutableStateList()
     val stateTasks: List<TaskState> = _stateTasks
 
     private val _uiEvents = MutableSharedFlow<UIEvents>()
@@ -51,7 +54,7 @@ class AddEditMilestonesViewModel @Inject constructor(
     // Default milestone status is "Not Started" since it doesn't have any task
     private var currentMilestoneStatus: String = "Not Started"
 
-    private var currentMilestoneId: Int = 0
+    private var currentMilestoneId: Int? = null
     private var passedProjectId: Int = savedStateHandle.get<Int>(PROJECT_ID)!!
     var passedMilestoneId: Int? = savedStateHandle.get<Int>(MILESTONE_ID)
 
@@ -65,6 +68,7 @@ class AddEditMilestonesViewModel @Inject constructor(
 
                 // TODO remove hint visibility for tasks
             } else {
+                currentMilestoneId = System.currentTimeMillis().toInt()
                 // If new milestone, add one task
                 // TODO make this a reusable function
                 addNewTaskState()
@@ -130,6 +134,7 @@ class AddEditMilestonesViewModel @Inject constructor(
                     foundTaskState.taskTitleState = foundTaskState.taskTitleState.copy(
                         text = addEditMilestoneEvents.value
                     )
+                    Log.d("Task changed", "${foundTaskState.taskId} = ${foundTaskState.taskTitleState}  + ${foundTaskState.taskDescState} ")
                 }
             }
             is AddEditMilestoneEvents.ToggleTaskStatus -> {
@@ -145,7 +150,7 @@ class AddEditMilestonesViewModel @Inject constructor(
                     milestonesUseCases.addMilestoneUseCase(
                         Milestone(
                             projectId = passedProjectId,
-                            milestoneId = currentMilestoneId,
+                            milestoneId = currentMilestoneId!!,
                             milestoneTitle = milestoneTitleState.value,
                             milestoneSrtDate = milestoneStartDateState.value.toLocalDate("dd/MM/yyyy")
                                 .toLong(),
@@ -153,6 +158,17 @@ class AddEditMilestonesViewModel @Inject constructor(
                                 .toLong(),
                             status = currentMilestoneStatus,
                         )
+                    )
+                    Log.d("Tasks", "${stateTasks.size}")
+
+                    tasksUseCases.addTasksUseCase(
+                        transformTaskStatesToTasks(stateTasks)
+                    )
+                    Log.d(
+                        "Task add",
+                        stateTasks.map {
+                            it.toTask()
+                        }.first().taskTitle
                     )
                     uiEvents.emit(UIEvents.AddEditMilestone)
                 }
@@ -171,30 +187,25 @@ class AddEditMilestonesViewModel @Inject constructor(
                 _milestoneEndDateState.value =
                     milestoneWithTask.milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
                 currentMilestoneStatus = milestoneWithTask.milestone.status
-                _storeTasks = milestoneWithTask.tasks.toMutableList()
+                // _storeTasks = milestoneWithTask.tasks.toMutableList()
+                _stateTasks = transformTasksToTaskStates(milestoneWithTask.tasks).toMutableStateList()
             }
             .launchIn(viewModelScope)
     }
 
     private fun addNewTaskState() {
-        val randomNumber = Random.nextInt()
+        // val randomNumber = Random.nextInt()
+        val randomNumber = System.currentTimeMillis().toInt()
         _stateTasks.add(
             TaskState(
-                taskId = randomNumber
+                taskId = randomNumber,
+                milestoneId = currentMilestoneId!!
             )
         )
     }
 
-    /*fun Task.toTaskState() = TaskState(
-        taskTitleState = TaskTextFieldState(
-            text = taskTitle
-        ),
-        taskDescState = TaskTextFieldState(
-            text = taskDesc
-        ),
-        statusState = status,
-    )*/
     fun Task.toTaskState() = TaskState(
+        milestoneId = milestoneId,
         taskId = taskId,
         initialTaskTitleState = TaskTextFieldState(
             text = taskTitle
@@ -206,8 +217,8 @@ class AddEditMilestonesViewModel @Inject constructor(
     )
 
     fun TaskState.toTask() = Task(
-        milestoneId = currentMilestoneId,
-        taskId = taskId ?: 0,
+        milestoneId = milestoneId,
+        taskId = taskId,
         taskTitle = taskTitleState.text,
         taskDesc = taskDescState.text,
         status = statusState

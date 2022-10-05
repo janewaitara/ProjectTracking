@@ -358,6 +358,8 @@ fun ScreenContentPreview() {
             },
             tasks = listOf(
                 TaskState(
+                    milestoneId = 234,
+                    taskId = 432,
                     initialTaskTitleState = TaskTextFieldState(
                         text = "Task Title 1"
                     ),
@@ -366,6 +368,8 @@ fun ScreenContentPreview() {
                     )
                 ),
                 TaskState(
+                    milestoneId = 234,
+                    taskId = 433,
                     initialTaskTitleState = TaskTextFieldState(
                         text = "Task Title 2"
                     ),
