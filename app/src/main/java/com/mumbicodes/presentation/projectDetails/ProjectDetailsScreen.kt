@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.projectDetails
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -97,6 +98,9 @@ fun ProjectDetailsScreen(
                         projectDetailsViewModel.onEvent(
                             ProjectDetailsEvents.GetMilestone(milestoneId)
                         )
+                        scope.launch {
+                            modalBottomSheetState.show()
+                        }
                     },
                     onClickFilterMilestoneStatus = { selectedMilestoneStatus ->
                         projectDetailsViewModel.onEvent(
@@ -193,6 +197,7 @@ fun ProjectDetailsScreenContent(
 
             Spacer(modifier = Modifier.height(Space16dp))
 
+            Log.e("Milestones", projectState.milestones.toString())
             when {
                 projectState.milestones.isEmpty() -> {
                     EmptyMilestonesSection(

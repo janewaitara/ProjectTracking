@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.projectDetails
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -84,18 +85,18 @@ class ProjectDetailsViewModel @Inject constructor(
     }
 
     // TODO delete this
-  /*  private fun getProjectMilestones(projectId: Int, milestoneStatus: String) {
-        getMilestonesJob?.cancel()
-        getMilestonesJob =
-            milestonesUseCases.getMilestonesUseCase(projectId, milestoneStatus)
-                .onEach { milestones ->
-                    _state.value = _state.value.copy(
-                        milestones = milestones,
-                        selectedMilestoneStatus = milestoneStatus
-                    )
-                }
-                .launchIn(viewModelScope)
-    }*/
+    /*  private fun getProjectMilestones(projectId: Int, milestoneStatus: String) {
+          getMilestonesJob?.cancel()
+          getMilestonesJob =
+              milestonesUseCases.getMilestonesUseCase(projectId, milestoneStatus)
+                  .onEach { milestones ->
+                      _state.value = _state.value.copy(
+                          milestones = milestones,
+                          selectedMilestoneStatus = milestoneStatus
+                      )
+                  }
+                  .launchIn(viewModelScope)
+      }*/
 
     private fun getMilestoneById(milestoneId: Int) {
         getMilestonesJob?.cancel()
@@ -113,10 +114,15 @@ class ProjectDetailsViewModel @Inject constructor(
         getProjectJob?.cancel()
         getProjectJob = projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
             .onEach { projectWithMilestones ->
+                Log.e("Project", projectWithMilestones.toString())
                 _state.value = state.value.copy(
                     project = projectWithMilestones.project,
-                    milestones = projectWithMilestones.milestones.filter {
-                        it.milestone.status == milestoneStatus
+                    milestones = if (milestoneStatus == "All") {
+                        projectWithMilestones.milestones
+                    } else {
+                        projectWithMilestones.milestones.filter {
+                            it.milestone.status == milestoneStatus
+                        }
                     },
                     selectedMilestoneStatus = milestoneStatus,
                 )
