@@ -23,6 +23,7 @@ object LocalModule {
             DATABASE_NAME
         )
             // .addTypeConverter(TaskConverter())
+            .fallbackToDestructiveMigration()
             .build()
     }
 
