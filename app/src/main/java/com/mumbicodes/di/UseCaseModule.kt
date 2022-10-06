@@ -32,7 +32,7 @@ object UseCaseModule {
             getProjectByIdWithMilestonesUseCase = GetProjectByIdWithMilestonesUseCase(
                 projectRepository
             ),
-            getProjectsUseCase = GetProjectsUseCase(projectRepository, app),
+            getProjectsUseCase = GetProjectsUseCase(projectRepository),
             deleteProjectUseCase = DeleteProjectUseCase(projectRepository),
             deleteAllProjectsUseCase = DeleteAllProjectsUseCase(projectRepository),
             checkProjectStatusUseCase = CheckProjectStatusUseCase(milestonesRepository, app),

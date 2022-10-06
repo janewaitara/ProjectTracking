@@ -12,7 +12,7 @@ interface ProjectsRepository {
 
     fun getProjectByIdWithMilestones(projectId: Int): Flow<ProjectWithMilestones>
 
-    fun getAllProjectsBasedOnStatus(projectStatus: String?): Flow<List<Project>>
+    fun getAllProjects(): Flow<List<Project>>
 
     suspend fun deleteProject(project: Project)
 

@@ -1,8 +1,10 @@
 package com.mumbicodes.presentation.allProjects
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.R
 import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.domain.util.OrderType
@@ -17,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AllProjectsViewModel @Inject constructor(
     private val projectsUseCases: ProjectsUseCases,
+    private val appContext: Application,
 ) : ViewModel() {
 
     private val _state = mutableStateOf(AllProjectsStates())
@@ -60,7 +63,7 @@ class AllProjectsViewModel @Inject constructor(
                 if (state.value.selectedProjectStatus == projectsEvent.projectStatus) {
                     return
                 }
-                getProjects(state.value.projectsOrder, projectsEvent.projectStatus)
+                state.value.projects.filterProjects(projectsEvent.projectStatus)
             }
 
             is AllProjectsEvent.ToggleBottomSheetVisibility -> {
@@ -77,15 +80,30 @@ class AllProjectsViewModel @Inject constructor(
     private fun getProjects(projectsOrder: ProjectsOrder, projectStatus: String) {
         getProjectsJob?.cancel()
         getProjectsJob =
-            projectsUseCases.getProjectsUseCase(projectStatus, projectsOrder)
+            projectsUseCases.getProjectsUseCase(projectsOrder)
                 // map the flow to AllProjects compose State
                 .onEach { projects ->
                     _state.value = state.value.copy(
                         projects = projects,
                         projectsOrder = projectsOrder,
-                        selectedProjectStatus = projectStatus
                     )
+                    projects.filterProjects(projectStatus)
                 }
                 .launchIn(viewModelScope)
+    }
+
+    private fun List<Project>.filterProjects(
+        projectStatus: String,
+    ) {
+        _state.value = state.value.copy(
+            filteredProjects = if (projectStatus == appContext.getString(R.string.all)) {
+                this
+            } else {
+                this.filter {
+                    it.projectStatus == projectStatus
+                }
+            },
+            selectedProjectStatus = projectStatus
+        )
     }
 }

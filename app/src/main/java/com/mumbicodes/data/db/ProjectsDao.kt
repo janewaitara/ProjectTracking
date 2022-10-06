@@ -22,8 +22,8 @@ interface ProjectsDao {
     ): Flow<ProjectWithMilestones>
 
     // Used when with status and timestamp filter(recently added)
-    @Query("SELECT * FROM projects_table Where projectStatus = :projectStatus")
-    fun getAllProjectsBasedOnStatus(projectStatus: String?): Flow<List<Project>>
+    @Query("SELECT * FROM projects_table")
+    fun getAllProjects(): Flow<List<Project>>
 
     /** Deletion */
     @Delete

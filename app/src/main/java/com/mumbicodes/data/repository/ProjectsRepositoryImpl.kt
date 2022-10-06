@@ -19,8 +19,8 @@ class ProjectsRepositoryImpl(
     override fun getProjectByIdWithMilestones(projectId: Int): Flow<ProjectWithMilestones> =
         projectsDao.getProjectByIdWithMilestones(projectId)
 
-    override fun getAllProjectsBasedOnStatus(projectStatus: String?): Flow<List<Project>> =
-        projectsDao.getAllProjectsBasedOnStatus(projectStatus)
+    override fun getAllProjects(): Flow<List<Project>> =
+        projectsDao.getAllProjects()
 
     override suspend fun deleteProject(project: Project) {
         projectsDao.deleteProject(project)
