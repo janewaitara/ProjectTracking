@@ -15,6 +15,7 @@ data class ProjectDetailsStates(
         timeStamp = 1
     ),
     val milestones: List<MilestoneWithTasks> = emptyList(),
+    val filteredMilestones: List<MilestoneWithTasks> = emptyList(),
     val mileStone: MilestoneWithTasks = MilestoneWithTasks(
         milestone = Milestone(
             projectId = 0,

@@ -208,7 +208,7 @@ fun ProjectDetailsScreenContent(
                 else -> {
                     MilestonesSection(
                         modifier = Modifier,
-                        milestones = projectState.milestones,
+                        milestones = projectState.filteredMilestones,
                         onAddMilestoneClicked = onAddMilestoneClicked,
                         selectedMilestoneStatus = projectState.selectedMilestoneStatus,
                         onClickFilterMilestoneStatus = onClickFilterMilestoneStatus,

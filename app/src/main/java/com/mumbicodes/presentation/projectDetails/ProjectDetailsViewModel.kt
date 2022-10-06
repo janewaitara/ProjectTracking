@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.presentation.util.PROJECT_ID
@@ -51,7 +52,8 @@ class ProjectDetailsViewModel @Inject constructor(
                 if (state.value.selectedMilestoneStatus == projectDetailsEvents.milestoneStatus) {
                     return
                 }
-                getProject(projectId!!, projectDetailsEvents.milestoneStatus)
+                state.value.milestones.filterMilestones(projectDetailsEvents.milestoneStatus)
+                // getProject(projectId!!, projectDetailsEvents.milestoneStatus)
             }
             is ProjectDetailsEvents.GetMilestone -> {
                 getMilestoneById(projectDetailsEvents.milestoneId)
@@ -109,7 +111,6 @@ class ProjectDetailsViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    // TODO: Think of How best can I filter the milestones to avoid fetching from DB all the time
     private fun getProject(projectId: Int, milestoneStatus: String) {
         getProjectJob?.cancel()
         getProjectJob = projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
@@ -117,16 +118,26 @@ class ProjectDetailsViewModel @Inject constructor(
                 Log.e("Project", projectWithMilestones.toString())
                 _state.value = state.value.copy(
                     project = projectWithMilestones.project,
-                    milestones = if (milestoneStatus == "All") {
-                        projectWithMilestones.milestones
-                    } else {
-                        projectWithMilestones.milestones.filter {
-                            it.milestone.status == milestoneStatus
-                        }
-                    },
+                    milestones = projectWithMilestones.milestones,
+                    filteredMilestones = projectWithMilestones.milestones,
                     selectedMilestoneStatus = milestoneStatus,
                 )
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun List<MilestoneWithTasks>.filterMilestones(
+        milestoneStatus: String,
+    ) {
+        _state.value = state.value.copy(
+            filteredMilestones = if (milestoneStatus == "All") {
+                this
+            } else {
+                this.filter {
+                    it.milestone.status == milestoneStatus
+                }
+            },
+            selectedMilestoneStatus = milestoneStatus,
+        )
     }
 }
