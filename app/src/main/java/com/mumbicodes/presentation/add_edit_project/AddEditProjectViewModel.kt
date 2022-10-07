@@ -68,6 +68,7 @@ class AddEditProjectViewModel @Inject constructor(
                                 "dd MMM yyyy",
                                 "dd/MM/yyyy"
                             )
+                        projectDeadlineStateDb.value = projectPassed.projectDeadline
                         currentProjectStatus = projectPassed.projectStatus
                     }
                 }
