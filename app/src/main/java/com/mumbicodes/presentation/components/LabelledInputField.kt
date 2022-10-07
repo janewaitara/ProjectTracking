@@ -30,6 +30,7 @@ fun LabelledInputField(
     textValue: String = "",
     onValueChange: (String) -> Unit,
     singleLine: Boolean = true,
+    maxLine: Int = 1,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -47,6 +48,8 @@ fun LabelledInputField(
                 .heightIn(min = Space48dp)
                 .fillMaxWidth(),
             value = textValue,
+            textStyle = MaterialTheme.typography.bodySmall
+                .copy(color = MaterialTheme.colorScheme.onSurface),
             onValueChange = onValueChange,
             placeholder = {
                 Text(
@@ -63,7 +66,7 @@ fun LabelledInputField(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
             ),
-            maxLines = 1,
+            maxLines = maxLine,
             singleLine = singleLine,
         )
     }
@@ -95,6 +98,9 @@ fun LabelledInputFieldWithIcon(
                 .heightIn(min = Space48dp)
                 .fillMaxWidth(),
             value = textValue,
+            enabled = false,
+            textStyle = MaterialTheme.typography.bodySmall
+                .copy(color = MaterialTheme.colorScheme.onSurface),
             onValueChange = onValueChange,
             leadingIcon = {
                 Icon(
