@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.projectDetails
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,8 +31,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mumbicodes.R
-import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.allProjects.filters
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.components.PrimaryButton
@@ -45,7 +46,7 @@ import kotlinx.coroutines.launch
 fun ProjectDetailsScreen(
     projectDetailsViewModel: ProjectDetailsViewModel = hiltViewModel(),
     onEditProject: (Int) -> Unit,
-    onAddOrModifyMilestone: (Int) -> Unit,
+    onAddOrModifyMilestone: (Int, Int) -> Unit,
     onClickIconBack: () -> Unit,
 ) {
     val state = projectDetailsViewModel.state.value
@@ -59,7 +60,7 @@ fun ProjectDetailsScreen(
     ModalBottomSheetLayout(
         sheetContent = {
             MilestoneDetailsBottomSheetContent(
-                milestone = state.mileStone,
+                milestoneWithTasks = state.mileStone,
                 onDeleteClicked = {
                     projectDetailsViewModel.onEvent(ProjectDetailsEvents.DeleteMilestone(it))
                     scope.launch {
@@ -67,7 +68,7 @@ fun ProjectDetailsScreen(
                     }
                 },
                 onModifyClicked = {
-                    onAddOrModifyMilestone(it)
+                    onAddOrModifyMilestone(state.project.projectId, it)
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
@@ -97,6 +98,9 @@ fun ProjectDetailsScreen(
                         projectDetailsViewModel.onEvent(
                             ProjectDetailsEvents.GetMilestone(milestoneId)
                         )
+                        scope.launch {
+                            modalBottomSheetState.show()
+                        }
                     },
                     onClickFilterMilestoneStatus = { selectedMilestoneStatus ->
                         projectDetailsViewModel.onEvent(
@@ -112,7 +116,7 @@ fun ProjectDetailsScreen(
                     },
                     onAddMilestoneClicked = {
                         // Used that int because the function navigates to shared add/edit milestone
-                        onAddOrModifyMilestone(-1)
+                        onAddOrModifyMilestone(state.project.projectId, -1)
                     },
                     onEditProject = { projectId ->
                         onEditProject(projectId)
@@ -193,6 +197,7 @@ fun ProjectDetailsScreenContent(
 
             Spacer(modifier = Modifier.height(Space16dp))
 
+            Log.e("Milestones", projectState.milestones.toString())
             when {
                 projectState.milestones.isEmpty() -> {
                     EmptyMilestonesSection(
@@ -203,7 +208,7 @@ fun ProjectDetailsScreenContent(
                 else -> {
                     MilestonesSection(
                         modifier = Modifier,
-                        milestones = projectState.milestones,
+                        milestones = projectState.filteredMilestones,
                         onAddMilestoneClicked = onAddMilestoneClicked,
                         selectedMilestoneStatus = projectState.selectedMilestoneStatus,
                         onClickFilterMilestoneStatus = onClickFilterMilestoneStatus,
@@ -505,7 +510,7 @@ fun ProjectDescriptionSection(
 @Composable
 fun MilestonesSection(
     modifier: Modifier,
-    milestones: List<Milestone>,
+    milestones: List<MilestoneWithTasks>,
     onAddMilestoneClicked: () -> Unit,
     selectedMilestoneStatus: String,
     onClickMilestone: (Int) -> Unit,
@@ -562,7 +567,7 @@ fun MilestonesSection(
         ) {
             itemsIndexed(milestones) { _, milestone ->
                 MilestoneItem(
-                    milestone = milestone,
+                    milestoneWithTasks = milestone,
                     onClickMilestone = onClickMilestone
                 )
             }

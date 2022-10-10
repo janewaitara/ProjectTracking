@@ -41,5 +41,11 @@
     <string name="deleteProjectDialogTitle">Delete this Project?</string>
     <string name="deleteProjectDialogText">You will loose all your data associated with this project. This action can not be undone.</string>
     <string name="cancel">Cancel</string>
+    <string name="addEditMilestoneTitle">%1$s Milestone</string>
+    <string name="milestoneTitle">Name of milestone</string>
+    <string name="milestoneStartDate">Start Date</string>
+    <string name="milestoneEndDate">End Date</string>
+    <string name="saveMilestone">Save Milestone</string>
+    <string name="miniTasksSmall">Mini tasks</string>
 
 </resources>

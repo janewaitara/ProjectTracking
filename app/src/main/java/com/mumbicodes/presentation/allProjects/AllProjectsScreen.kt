@@ -196,7 +196,7 @@ fun AllProjectsScreenContent(
             modifier = Modifier.padding(horizontal = Space12dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            projectsState.projects.forEach { project ->
+            projectsState.filteredProjects.forEach { project ->
                 ProjectItem(
                     modifier = Modifier.padding(Space8dp),
                     project = project,

@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mumbicodes.R
 import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Task
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.components.PrimaryButton
 import com.mumbicodes.presentation.components.SecondaryButton
 import com.mumbicodes.presentation.projectDetails.components.TaskItem
@@ -24,7 +25,7 @@ import com.mumbicodes.presentation.util.toDateAsString
 @Composable
 fun MilestoneDetailsBottomSheetContent(
     modifier: Modifier = Modifier,
-    milestone: Milestone,
+    milestoneWithTasks: MilestoneWithTasks,
     onDeleteClicked: (Milestone) -> Unit,
     onModifyClicked: (Int) -> Unit,
 ) {
@@ -37,7 +38,7 @@ fun MilestoneDetailsBottomSheetContent(
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = milestone.milestoneTitle,
+            text = milestoneWithTasks.milestone.milestoneTitle,
             style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
             textAlign = TextAlign.Center,
         )
@@ -61,7 +62,7 @@ fun MilestoneDetailsBottomSheetContent(
                     style = MaterialTheme.typography.bodySmall.toSpanStyle()
                         .copy(GreyNormal)
                 ) {
-                    append(milestone.milestoneSrtDate.toDateAsString("dd MMM yyyy"))
+                    append(milestoneWithTasks.milestone.milestoneSrtDate.toDateAsString("dd MMM yyyy"))
                 }
                 withStyle(
                     style = MaterialTheme.typography.bodySmall.toSpanStyle()
@@ -73,7 +74,7 @@ fun MilestoneDetailsBottomSheetContent(
                     style = MaterialTheme.typography.bodySmall.toSpanStyle()
                         .copy(GreyNormal)
                 ) {
-                    append(milestone.milestoneEndDate.toDateAsString("dd MMM yyyy"))
+                    append(milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy"))
                 }
             }
         )
@@ -95,7 +96,7 @@ fun MilestoneDetailsBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(Space16dp)
         ) {
-            milestone.tasks.forEach { task ->
+            milestoneWithTasks.tasks.forEach { task ->
                 TaskItem(modifier = Modifier, task = task, descIsVisible = true)
             }
         }
@@ -109,14 +110,14 @@ fun MilestoneDetailsBottomSheetContent(
             SecondaryButton(
                 modifier = Modifier,
                 text = stringResource(id = R.string.delete),
-                onClick = { onDeleteClicked(milestone) },
+                onClick = { onDeleteClicked(milestoneWithTasks.milestone) },
                 isEnabled = true
             )
 
             PrimaryButton(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = R.string.modifyMilestone),
-                onClick = { onModifyClicked(milestone.milestoneId) },
+                onClick = { onModifyClicked(milestoneWithTasks.milestone.milestoneId) },
                 isEnabled = true
             )
         }
@@ -129,27 +130,35 @@ fun MilestoneBottomSheetContent() {
     ProjectTrackingTheme {
         MilestoneDetailsBottomSheetContent(
             modifier = Modifier,
-            milestone = Milestone(
-                projectId = 1,
-                milestoneId = 2,
-                milestoneTitle = "This is a milestone title",
-                milestoneSrtDate = 19236,
-                milestoneEndDate = 19247,
-                status = "Not started",
+            milestoneWithTasks = MilestoneWithTasks(
+                Milestone(
+                    projectId = 1,
+                    milestoneId = 2,
+                    milestoneTitle = "This is a milestone title",
+                    milestoneSrtDate = 19236,
+                    milestoneEndDate = 19247,
+                    status = "Not started",
+                ),
                 tasks = listOf(
                     Task(
+                        taskId = 1,
+                        milestoneId = 2,
                         taskTitle = "Display Projects",
-                        taskDesc = "The user should be able to view the recent projects added and on a click, view all projects available.",
+                        taskDesc = "Display Projects",
                         status = true
                     ),
                     Task(
+                        taskId = 2,
+                        milestoneId = 2,
                         taskTitle = "Bottom navigation",
-                        taskDesc = "The user should be able to view the recent projects added and on a click, view all projects available.",
+                        taskDesc = "Bottom navigation",
                         status = false
                     ),
                     Task(
+                        taskId = 3,
+                        milestoneId = 2,
                         taskTitle = "Display Projects",
-                        taskDesc = "The user should be able to view the recent projects added and on a click, view all projects available.",
+                        taskDesc = "Display Projects",
                         status = true
                     ),
                 )

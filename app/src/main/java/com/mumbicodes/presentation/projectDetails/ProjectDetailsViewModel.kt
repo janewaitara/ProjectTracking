@@ -1,9 +1,11 @@
 package com.mumbicodes.presentation.projectDetails
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.presentation.util.PROJECT_ID
@@ -25,21 +27,21 @@ class ProjectDetailsViewModel @Inject constructor(
     val state = _state
 
     private var getMilestonesJob: Job? = null
+    private var getProjectJob: Job? = null
 
     private val projectId = savedStateHandle.get<Int>(PROJECT_ID)
 
     init {
         projectId?.let { projectId ->
             viewModelScope.launch {
+                // todo delete
                 projectsUseCases.getProjectByIdUseCase(projectId).also { projectPassed ->
                     _state.value = _state.value.copy(
                         project = projectPassed,
                     )
                 }
-                getProjectMilestones(
-                    projectId,
-                    state.value.selectedMilestoneStatus
-                )
+
+                getProject(projectId, state.value.selectedMilestoneStatus)
             }
         }
     }
@@ -50,7 +52,8 @@ class ProjectDetailsViewModel @Inject constructor(
                 if (state.value.selectedMilestoneStatus == projectDetailsEvents.milestoneStatus) {
                     return
                 }
-                getProjectMilestones(projectId!!, projectDetailsEvents.milestoneStatus)
+                state.value.milestones.filterMilestones(projectDetailsEvents.milestoneStatus)
+                // getProject(projectId!!, projectDetailsEvents.milestoneStatus)
             }
             is ProjectDetailsEvents.GetMilestone -> {
                 getMilestoneById(projectDetailsEvents.milestoneId)
@@ -83,26 +86,58 @@ class ProjectDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun getProjectMilestones(projectId: Int, milestoneStatus: String) {
-        getMilestonesJob?.cancel()
-        getMilestonesJob =
-            milestonesUseCases.getMilestonesUseCase(projectId, milestoneStatus)
-                .onEach { milestones ->
-                    _state.value = _state.value.copy(
-                        milestones = milestones,
-                        selectedMilestoneStatus = milestoneStatus
-                    )
-                }
-                .launchIn(viewModelScope)
-    }
+    // TODO delete this
+    /*  private fun getProjectMilestones(projectId: Int, milestoneStatus: String) {
+          getMilestonesJob?.cancel()
+          getMilestonesJob =
+              milestonesUseCases.getMilestonesUseCase(projectId, milestoneStatus)
+                  .onEach { milestones ->
+                      _state.value = _state.value.copy(
+                          milestones = milestones,
+                          selectedMilestoneStatus = milestoneStatus
+                      )
+                  }
+                  .launchIn(viewModelScope)
+      }*/
 
     private fun getMilestoneById(milestoneId: Int) {
-        viewModelScope.launch {
-            milestonesUseCases.getMilestoneByIdUseCase(milestoneId).also { milestone ->
+        getMilestonesJob?.cancel()
+        getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
+            .onEach { milestoneWithTask ->
                 _state.value = _state.value.copy(
-                    mileStone = milestone
+                    mileStone = milestoneWithTask
                 )
             }
-        }
+            .launchIn(viewModelScope)
+    }
+
+    private fun getProject(projectId: Int, milestoneStatus: String) {
+        getProjectJob?.cancel()
+        getProjectJob = projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
+            .onEach { projectWithMilestones ->
+                Log.e("Project", projectWithMilestones.toString())
+                _state.value = state.value.copy(
+                    project = projectWithMilestones.project,
+                    milestones = projectWithMilestones.milestones,
+                    filteredMilestones = projectWithMilestones.milestones,
+                    selectedMilestoneStatus = milestoneStatus,
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun List<MilestoneWithTasks>.filterMilestones(
+        milestoneStatus: String,
+    ) {
+        _state.value = state.value.copy(
+            filteredMilestones = if (milestoneStatus == "All") {
+                this
+            } else {
+                this.filter {
+                    it.milestone.status == milestoneStatus
+                }
+            },
+            selectedMilestoneStatus = milestoneStatus,
+        )
     }
 }

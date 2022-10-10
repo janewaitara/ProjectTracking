@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.mumbicodes.presentation.add_edit_milestone.AddAndEditMilestoneScreen
 import com.mumbicodes.presentation.add_edit_project.AddAndEditScreen
 import com.mumbicodes.presentation.allProjects.AllProjectsScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
@@ -39,6 +40,17 @@ fun ProjectNavHost(
             isBottomBarVisible(false)
             AddAndEditScreen(navController = navController)
         }
+
+        composable(
+            route = Screens.AddAndEditMilestoneScreen.routeWithArgs,
+            arguments = Screens.AddAndEditMilestoneScreen.arguments
+        ) {
+            isBottomBarVisible(false)
+            AddAndEditMilestoneScreen(
+                onAddEditMilestone = { navController.navigateUp() },
+                onClickIconBack = { navController.popBackStack() }
+            )
+        }
         composable(
             route = Screens.ProjectDetails.routeWithArgs,
             arguments = Screens.ProjectDetails.arguments
@@ -50,8 +62,12 @@ fun ProjectNavHost(
                         "${Screens.AddAndEditScreens.route}/$projectId"
                     )
                 },
-                onAddOrModifyMilestone = {
+                onAddOrModifyMilestone = { projectId, milestoneId ->
                     // TODO add navigation to add and edit milestone screen
+                    navController.navigate(
+                        "${Screens.AddAndEditMilestoneScreen.route}/$projectId/$milestoneId"
+                        //  "${Screens.AddAndEditScreens.route}/${-1}"
+                    )
                 },
                 onClickIconBack = {
                     navController.popBackStack()

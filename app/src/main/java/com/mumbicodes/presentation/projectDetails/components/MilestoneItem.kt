@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Task
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.components.TagItem
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.presentation.theme.Space16dp
@@ -25,7 +26,7 @@ import com.mumbicodes.presentation.util.toDateAsString
 @Composable
 fun MilestoneItem(
     modifier: Modifier = Modifier,
-    milestone: Milestone,
+    milestoneWithTasks: MilestoneWithTasks,
     onClickMilestone: (Int) -> Unit = {},
 ) {
     Card(
@@ -35,7 +36,7 @@ fun MilestoneItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 60.dp),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            onClickMilestone(milestone.milestoneId)
+            onClickMilestone(milestoneWithTasks.milestone.milestoneId)
         },
         modifier = modifier
             .fillMaxWidth()
@@ -50,7 +51,7 @@ fun MilestoneItem(
         Column(modifier = Modifier.padding(Space16dp)) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = milestone.milestoneTitle,
+                text = milestoneWithTasks.milestone.milestoneTitle,
                 style = MaterialTheme.typography.titleMedium.copy(MaterialTheme.colorScheme.onBackground)
             )
             Spacer(modifier = Modifier.height(Space8dp))
@@ -59,7 +60,7 @@ fun MilestoneItem(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                milestone.tasks.forEach { task ->
+                milestoneWithTasks.tasks.forEach { task ->
                     TaskItem(modifier = Modifier, task = task, descIsVisible = false)
                 }
             }
@@ -76,7 +77,7 @@ fun MilestoneItem(
                             style = MaterialTheme.typography.labelSmall.toSpanStyle()
                                 .copy(MaterialTheme.colorScheme.outline)
                         ) {
-                            append(milestone.milestoneSrtDate.toDateAsString("dd MMM yyyy"))
+                            append(milestoneWithTasks.milestone.milestoneSrtDate.toDateAsString("dd MMM yyyy"))
                         }
                         withStyle(
                             style = MaterialTheme.typography.labelSmall.toSpanStyle()
@@ -88,12 +89,12 @@ fun MilestoneItem(
                             style = MaterialTheme.typography.labelSmall.toSpanStyle()
                                 .copy(MaterialTheme.colorScheme.outline)
                         ) {
-                            append(milestone.milestoneEndDate.toDateAsString("dd MMM yyyy"))
+                            append(milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy"))
                         }
                     }
                 )
 
-                TagItem(numberOfDaysRemaining = milestone.milestoneEndDate.getNumberOfDays())
+                TagItem(numberOfDaysRemaining = milestoneWithTasks.milestone.milestoneEndDate.getNumberOfDays())
             }
         }
     }
@@ -105,31 +106,40 @@ fun MilestoneItemPreview() {
     ProjectTrackingTheme {
         MilestoneItem(
             modifier = Modifier,
-            milestone = Milestone(
-                projectId = 1,
-                milestoneId = 2,
-                milestoneTitle = "This is a milestone title",
-                milestoneSrtDate = 19236,
-                milestoneEndDate = 19247,
-                status = "Not started",
+            milestoneWithTasks =
+            MilestoneWithTasks(
+                Milestone(
+                    projectId = 1,
+                    milestoneId = 2,
+                    milestoneTitle = "This is a milestone title",
+                    milestoneSrtDate = 19236,
+                    milestoneEndDate = 19247,
+                    status = "Not started",
+                ),
                 tasks = listOf(
                     Task(
+                        taskId = 1,
+                        milestoneId = 2,
                         taskTitle = "Display Projects",
                         taskDesc = "Display Projects",
                         status = true
                     ),
                     Task(
+                        taskId = 2,
+                        milestoneId = 2,
                         taskTitle = "Bottom navigation",
                         taskDesc = "Bottom navigation",
                         status = false
                     ),
                     Task(
+                        taskId = 3,
+                        milestoneId = 2,
                         taskTitle = "Display Projects",
                         taskDesc = "Display Projects",
                         status = true
                     ),
                 )
-            ),
+            )
         )
     }
 }
