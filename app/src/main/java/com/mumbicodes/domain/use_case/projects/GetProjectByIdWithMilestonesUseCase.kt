@@ -9,6 +9,6 @@ class GetProjectByIdWithMilestonesUseCase(
 ) {
     operator fun invoke(
         projectId: Int,
-    ): Flow<ProjectWithMilestones> =
+    ): Flow<ProjectWithMilestones?> =
         repository.getProjectByIdWithMilestones(projectId)
 }

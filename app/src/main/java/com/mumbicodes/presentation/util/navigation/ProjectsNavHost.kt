@@ -71,6 +71,9 @@ fun ProjectNavHost(
                 },
                 onClickIconBack = {
                     navController.popBackStack()
+                },
+                navigateToAllProjects = {
+                    navController.navigateUp() // navigate(Screens.AllProjectsScreens.route)
                 }
             )
             // TODO - add a milestones screen

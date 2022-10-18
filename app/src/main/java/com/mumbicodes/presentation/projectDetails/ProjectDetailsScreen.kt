@@ -14,10 +14,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,6 +36,7 @@ import com.mumbicodes.presentation.components.PrimaryButton
 import com.mumbicodes.presentation.components.SecondaryButton
 import com.mumbicodes.presentation.projectDetails.components.MilestoneItem
 import com.mumbicodes.presentation.theme.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -48,12 +46,24 @@ fun ProjectDetailsScreen(
     onEditProject: (Int) -> Unit,
     onAddOrModifyMilestone: (Int, Int) -> Unit,
     onClickIconBack: () -> Unit,
+    navigateToAllProjects: () -> Unit,
 ) {
     val state = projectDetailsViewModel.state.value
     val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(key1 = true) {
+        projectDetailsViewModel.uiEvents.collectLatest { uIEvents ->
+            when (uIEvents) {
+                ProjectUIEvents.DeleteProject -> {
+                    navigateToAllProjects()
+                }
+                is ProjectUIEvents.ShowCongratsDialog -> TODO()
+            }
+        }
+    }
 
     // TODO add logic to restore milestone
 

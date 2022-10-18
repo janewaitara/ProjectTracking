@@ -15,6 +15,7 @@ sealed class ProjectDetailsEvents {
 
 // TODO the congrats dialog depends on whether all milestones are done
 // Check status everytime a milestone is updated
-sealed class UIEvents {
-    data class ShowCongratsDialog(val message: String) : UIEvents()
+sealed class ProjectUIEvents {
+    data class ShowCongratsDialog(val message: String) : ProjectUIEvents()
+    object DeleteProject : ProjectUIEvents()
 }

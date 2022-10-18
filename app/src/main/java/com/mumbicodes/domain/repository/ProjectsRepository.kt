@@ -10,7 +10,7 @@ interface ProjectsRepository {
 
     suspend fun getProjectById(projectId: Int): Project
 
-    fun getProjectByIdWithMilestones(projectId: Int): Flow<ProjectWithMilestones>
+    fun getProjectByIdWithMilestones(projectId: Int): Flow<ProjectWithMilestones?>
 
     fun getAllProjects(): Flow<List<Project>>
 
