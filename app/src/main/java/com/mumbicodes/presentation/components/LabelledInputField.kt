@@ -9,8 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -181,12 +183,19 @@ fun TaskItemField(
 ) {
     ConstraintLayout(
         modifier = modifier
+            .shadow(
+                elevation = 20.dp,
+                shape = MaterialTheme.shapes.small,
+                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
+                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+            )
             .fillMaxWidth()
-            .padding(Space8dp)
             .background(
                 color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.small
             )
+            .padding(Space8dp)
+
     ) {
         // Create references for the composables to constrain
         val (icon, taskTitle, taskDesc) = createRefs()
@@ -217,7 +226,7 @@ fun TaskItemField(
             onValueChange = {
                 onTaskTitleChange(it)
             },
-            textStyle = MaterialTheme.typography.bodySmall,
+            textStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface),
             onFocusChange = {
                 onTaskTitleFocusChange(it)
             },
@@ -240,7 +249,7 @@ fun TaskItemField(
             onValueChange = {
                 onTaskDescChange(it)
             },
-            textStyle = MaterialTheme.typography.bodySmall,
+            textStyle = MaterialTheme.typography.labelMedium.copy(color = GreyNormal),
             onFocusChange = {
                 onTaskDescFocusChange(it)
             },

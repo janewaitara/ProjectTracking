@@ -319,12 +319,13 @@ fun FieldForms(
                     onTaskDescFocusChange(task, focusState)
                 }
             )
+            Spacer(modifier = Modifier.height(Space8dp))
         }
 
         Spacer(modifier = Modifier.height(Space48dp))
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(id = R.string.saveProject),
+            text = stringResource(id = R.string.saveMilestone),
             onClick = onSaveMilestone,
             isEnabled = titleTextValue.isNotBlank() &&
                 startDateTextValue.isNotBlank() &&
