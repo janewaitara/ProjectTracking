@@ -19,7 +19,7 @@ interface ProjectsDao {
     @Query("SELECT * FROM projects_table WHERE projectId = :projectId")
     fun getProjectByIdWithMilestones(
         projectId: Int,
-    ): Flow<ProjectWithMilestones>
+    ): Flow<ProjectWithMilestones?>
 
     // Used when with status and timestamp filter(recently added)
     @Query("SELECT * FROM projects_table")

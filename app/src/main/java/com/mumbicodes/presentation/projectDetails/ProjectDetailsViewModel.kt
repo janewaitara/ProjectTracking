@@ -1,16 +1,17 @@
 package com.mumbicodes.presentation.projectDetails
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.presentation.util.PROJECT_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -30,6 +31,9 @@ class ProjectDetailsViewModel @Inject constructor(
     private var getProjectJob: Job? = null
 
     private val projectId = savedStateHandle.get<Int>(PROJECT_ID)
+
+    private val _uiEvents = MutableSharedFlow<ProjectUIEvents>()
+    val uiEvents = _uiEvents
 
     init {
         projectId?.let { projectId ->
@@ -61,6 +65,8 @@ class ProjectDetailsViewModel @Inject constructor(
             is ProjectDetailsEvents.DeleteProject -> {
                 viewModelScope.launch {
                     projectsUseCases.deleteProjectUseCase(projectDetailsEvents.project)
+
+                    uiEvents.emit(ProjectUIEvents.DeleteProject)
                 }
             }
             is ProjectDetailsEvents.DeleteMilestone -> {
@@ -111,15 +117,25 @@ class ProjectDetailsViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    /**
+     * Because the query returns a flow which is reactive, had to make the return type nullable
+     * Needed when someone deletes a project before navigating up
+     * */
     private fun getProject(projectId: Int, milestoneStatus: String) {
         getProjectJob?.cancel()
         getProjectJob = projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
             .onEach { projectWithMilestones ->
-                Log.e("Project", projectWithMilestones.toString())
                 _state.value = state.value.copy(
-                    project = projectWithMilestones.project,
-                    milestones = projectWithMilestones.milestones,
-                    filteredMilestones = projectWithMilestones.milestones,
+                    project = projectWithMilestones?.project ?: Project(
+                        projectId = 0,
+                        projectName = "",
+                        projectDesc = "",
+                        projectDeadline = "",
+                        projectStatus = "",
+                        timeStamp = 1
+                    ),
+                    milestones = projectWithMilestones?.milestones ?: emptyList(),
+                    filteredMilestones = projectWithMilestones?.milestones ?: emptyList(),
                     selectedMilestoneStatus = milestoneStatus,
                 )
             }

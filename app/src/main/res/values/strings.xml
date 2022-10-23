@@ -47,5 +47,6 @@
     <string name="milestoneEndDate">End Date</string>
     <string name="saveMilestone">Save Milestone</string>
     <string name="miniTasksSmall">Mini tasks</string>
+    <string name="completeEmptyText">It seems like you haven’t completed any projects yet. But I’m certain you are tirelessly working on them.</string>
 
 </resources>

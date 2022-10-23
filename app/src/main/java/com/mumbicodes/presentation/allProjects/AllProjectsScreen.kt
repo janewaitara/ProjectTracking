@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.allProjects
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AllProjectsScreen(
     projectsViewModel: AllProjectsViewModel = hiltViewModel(),
-    onClickProject: (Int) -> Unit
+    onClickProject: (Int) -> Unit,
 ) {
     val state = projectsViewModel.state.value
     val modalBottomSheetState =
@@ -193,7 +195,8 @@ fun AllProjectsScreenContent(
 
         StaggeredVerticalGrid(
             maxColumnWidth = 220.dp,
-            modifier = Modifier.padding(horizontal = Space12dp)
+            modifier = Modifier
+                .padding(horizontal = Space12dp)
                 .verticalScroll(rememberScrollState())
         ) {
             projectsState.filteredProjects.forEach { project ->
@@ -203,6 +206,10 @@ fun AllProjectsScreenContent(
                     onClickProject = onClickProject
                 )
             }
+        }
+
+        if (projectsState.filteredProjects.isEmpty()) {
+            EmptyStateSection(filter = projectsState.selectedProjectStatus)
         }
     }
 }
@@ -240,6 +247,41 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
                 }
             },
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun EmptyStateSection(
+    modifier: Modifier = Modifier,
+    filter: String,
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Spacer(modifier = Modifier.height(Space8dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_incomplete_projects),
+            contentDescription = "Empty state illustration"
+        )
+
+        Spacer(modifier = Modifier.height(Space24dp))
+
+        val emptyText: String = when (filter) {
+            "Not Started" -> ""
+            "In Progress" -> ""
+            "Completed" -> stringResource(id = R.string.completeEmptyText)
+            else -> ""
+        }
+        Text(
+            modifier = Modifier.padding(start = Space36dp, end = Space36dp),
+            text = emptyText,
+            style = MaterialTheme.typography.bodySmall.copy(GreyNormal),
+            textAlign = TextAlign.Center
         )
     }
 }
