@@ -25,6 +25,9 @@ class AllProjectsViewModel @Inject constructor(
     private val _state = mutableStateOf(AllProjectsStates())
     val state = _state
 
+    private val _searchParam = mutableStateOf("")
+    val searchParam = _searchParam
+
     private var recentlyDeletedProject: Project? = null
 
     private var getProjectsJob: Job? = null
@@ -63,12 +66,23 @@ class AllProjectsViewModel @Inject constructor(
                 if (state.value.selectedProjectStatus == projectsEvent.projectStatus) {
                     return
                 }
-                state.value.projects.filterProjects(projectsEvent.projectStatus)
+                state.value.projects.filterProjects(
+                    projectStatus = projectsEvent.projectStatus,
+                    searchParam = searchParam.value
+                )
             }
 
             is AllProjectsEvent.ToggleBottomSheetVisibility -> {
                 _state.value = state.value.copy(
                     isFilterBottomSheetVisible = !state.value.isFilterBottomSheetVisible
+                )
+            }
+            is AllProjectsEvent.SearchProject -> {
+                _searchParam.value = projectsEvent.searchParam
+
+                state.value.projects.filterProjects(
+                    projectStatus = state.value.selectedProjectStatus,
+                    searchParam = projectsEvent.searchParam,
                 )
             }
         }
@@ -87,20 +101,25 @@ class AllProjectsViewModel @Inject constructor(
                         projects = projects,
                         projectsOrder = projectsOrder,
                     )
-                    projects.filterProjects(projectStatus)
+                    projects.filterProjects(projectStatus, searchParam.value)
                 }
                 .launchIn(viewModelScope)
     }
 
     private fun List<Project>.filterProjects(
         projectStatus: String,
+        searchParam: String,
     ) {
         _state.value = state.value.copy(
             filteredProjects = if (projectStatus == appContext.getString(R.string.all)) {
-                this
+                this.filter {
+                    it.projectName.contains(searchParam)
+                }
             } else {
                 this.filter {
                     it.projectStatus == projectStatus
+                }.filter {
+                    it.projectName.contains(searchParam)
                 }
             },
             selectedProjectStatus = projectStatus

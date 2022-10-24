@@ -20,11 +20,13 @@ import com.mumbicodes.presentation.theme.*
 /**
  * TODO research on how to reduce the icon and text spacing and the whole margin
  * Todo - With the custom size < 56, the text is cut off - how to solve that
-*/
+ */
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    searchParamType: String
+    searchParamType: String,
+    searchedText: String = "",
+    onSearchParamChanged: (String) -> Unit = {},
 ) {
     Surface(
         modifier = modifier
@@ -38,8 +40,10 @@ fun SearchBar(
         color = White,
     ) {
         TextField(
-            value = "",
-            onValueChange = {},
+            value = searchedText,
+            onValueChange = {
+                onSearchParamChanged(it)
+            },
             leadingIcon = {
                 Icon(
                     modifier = Modifier.alpha(0.5f),
