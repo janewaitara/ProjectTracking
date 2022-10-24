@@ -1,6 +1,5 @@
 package com.mumbicodes.presentation.allProjects.components
 
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -30,7 +29,7 @@ fun SearchBar(
 ) {
     Surface(
         modifier = modifier
-            .height(Space48dp)
+            // .height(Space48dp)
             .shadow(
                 elevation = 60.dp,
                 ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
