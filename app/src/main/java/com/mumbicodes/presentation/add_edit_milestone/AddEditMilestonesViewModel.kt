@@ -187,8 +187,9 @@ class AddEditMilestonesViewModel @Inject constructor(
                 _milestoneEndDateState.value =
                     milestoneWithTask.milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
                 currentMilestoneStatus = milestoneWithTask.milestone.status
-                // _storeTasks = milestoneWithTask.tasks.toMutableList()
-                _stateTasks = transformTasksToTaskStates(milestoneWithTask.tasks).toMutableStateList()
+                _stateTasks.apply {
+                    addAll(transformTasksToTaskStates(milestoneWithTask.tasks))
+                }
             }
             .launchIn(viewModelScope)
     }
