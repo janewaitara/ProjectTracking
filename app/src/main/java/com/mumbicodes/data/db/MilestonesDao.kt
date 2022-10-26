@@ -13,7 +13,7 @@ interface MilestonesDao {
 
     /** Fetch */
     @Query("SELECT * from milestones_table WHERE milestoneId = :milestoneId")
-    fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks>
+    fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?>
 
     @Query("SELECT * from milestones_table Where projectId = :projectId AND status = :status")
     fun getAllMilestonesBasedOnProjIdAndStatus(

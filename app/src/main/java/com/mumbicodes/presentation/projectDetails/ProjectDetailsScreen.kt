@@ -61,6 +61,11 @@ fun ProjectDetailsScreen(
                     navigateToAllProjects()
                 }
                 is ProjectUIEvents.ShowCongratsDialog -> TODO()
+                ProjectUIEvents.DeleteMilestone -> {
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                }
             }
         }
     }

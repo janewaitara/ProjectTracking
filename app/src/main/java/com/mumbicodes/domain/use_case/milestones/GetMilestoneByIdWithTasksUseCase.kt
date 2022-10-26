@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 class GetMilestoneByIdWithTasksUseCase(
     private val repository: MilestonesRepository
 ) {
-    operator fun invoke(milestoneId: Int): Flow<MilestoneWithTasks> =
+    operator fun invoke(milestoneId: Int): Flow<MilestoneWithTasks?> =
         repository.getMilestoneByIdWithTasks(milestoneId)
 }

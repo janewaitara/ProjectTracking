@@ -189,7 +189,7 @@ class AddEditMilestonesViewModel @Inject constructor(
         getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
             .onEach { milestoneWithTask ->
                 currentMilestoneId = milestoneId
-                _milestoneTitleState.value = milestoneWithTask.milestone.milestoneTitle
+                _milestoneTitleState.value = milestoneWithTask!!.milestone.milestoneTitle
                 _milestoneStartDateState.value =
                     milestoneWithTask.milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
                 _milestoneEndDateState.value =
