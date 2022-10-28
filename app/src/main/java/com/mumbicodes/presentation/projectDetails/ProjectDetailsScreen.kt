@@ -104,6 +104,9 @@ fun ProjectDetailsScreen(
             floatingActionButton = {
                 if (state.milestones.isNotEmpty()) {
                     ExtendedFloatingActionButton(
+                        modifier = Modifier.padding(
+                            bottom = Space24dp, end = Space4dp,
+                        ),
                         text = {
                             Text(
                                 modifier = Modifier,
@@ -111,6 +114,7 @@ fun ProjectDetailsScreen(
                                     id = R.string.addMilestone
                                 ),
                                 style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         },
                         expanded = lazyListState.isScrollingUp(),
@@ -130,15 +134,17 @@ fun ProjectDetailsScreen(
                         shape = RoundedCornerShape(Space12dp)
                     )
                 }
-            }
+            },
         ) { padding ->
             Box(modifier = Modifier.padding(padding)) {
                 ProjectDetailsScreenContent(
-                    modifier = Modifier.padding(
-                        top = 24.dp,
-                        start = Space20dp,
-                        end = Space20dp,
-                    ),
+                    modifier = Modifier
+                        .padding(
+                            top = 24.dp,
+                            start = Space20dp,
+                            end = Space20dp,
+                        )
+                        .safeContentPadding(),
                     projectState = state,
                     onClickMilestone = { milestoneId ->
                         // TODO - it might be best to pass the milestone than the Id
@@ -215,6 +221,14 @@ fun ProjectDetailsScreenContent(
 
             Spacer(modifier = Modifier.height(Space16dp))
 
+            Text(
+                text = projectState.project.projectName,
+                style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+            )
+            Spacer(modifier = Modifier.height(Space16dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -259,7 +273,6 @@ fun ProjectDetailsScreenContent(
                     MilestonesSection(
                         modifier = Modifier,
                         milestones = projectState.filteredMilestones,
-                        onAddMilestoneClicked = onAddMilestoneClicked,
                         selectedMilestoneStatus = projectState.selectedMilestoneStatus,
                         onClickFilterMilestoneStatus = onClickFilterMilestoneStatus,
                         onClickMilestone = onClickMilestone,
@@ -421,13 +434,14 @@ fun ProjectScreenHeader(
             tint = MaterialTheme.colorScheme.onBackground,
             contentDescription = "Back button",
         )
-        Text(
+        /*Text(
             text = projectName,
             style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
-        )
+        )*/
+        Spacer(modifier = Modifier.weight(1f))
 
         Box(
             modifier = Modifier,
@@ -528,7 +542,7 @@ fun ProjectDescriptionSection(
             modifier = Modifier
                 .fillMaxWidth(),
             text = stringResource(id = R.string.description),
-            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.outline),
         )
 
         Spacer(modifier = Modifier.height(Space4dp))
@@ -562,7 +576,6 @@ fun ProjectDescriptionSection(
 fun MilestonesSection(
     modifier: Modifier,
     milestones: List<MilestoneWithTasks>,
-    onAddMilestoneClicked: () -> Unit,
     selectedMilestoneStatus: String,
     onClickMilestone: (Int) -> Unit,
     onClickFilterMilestoneStatus: (String) -> Unit,
@@ -581,16 +594,7 @@ fun MilestonesSection(
                 modifier = Modifier
                     .weight(1f),
                 text = stringResource(id = R.string.milestones),
-                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
-            )
-            Icon(
-                modifier = Modifier
-                    .size(24.dp, 24.dp)
-                    .clickable {
-                        onAddMilestoneClicked()
-                    },
-                painter = painterResource(id = R.drawable.ic_add_milestone),
-                contentDescription = "add new milestone",
+                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.outline),
             )
         }
 
@@ -642,7 +646,7 @@ fun EmptyMilestonesSection(
             modifier = Modifier
                 .fillMaxWidth(),
             text = stringResource(id = R.string.milestones),
-            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.outline),
         )
         Spacer(modifier = Modifier.height(Space8dp))
 
