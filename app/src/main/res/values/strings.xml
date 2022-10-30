@@ -32,6 +32,7 @@
     <string name="miniTasks">MINI TASKS</string>
     <string name="modifyMilestone">Modify Milestone</string>
     <string name="createMilestone">Create Milestone</string>
+    <string name="addMilestone">Add Milestone</string>
     <string name="delete">Delete</string>
     <string name="description">Description</string>
     <string name="milestones">Milestones</string>

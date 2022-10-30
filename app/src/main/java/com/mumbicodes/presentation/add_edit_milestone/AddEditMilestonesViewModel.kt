@@ -9,6 +9,7 @@ import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.domain.use_case.tasks.TasksUseCases
+import com.mumbicodes.domain.util.ProgressStatus
 import com.mumbicodes.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -134,7 +135,10 @@ class AddEditMilestonesViewModel @Inject constructor(
                     foundTaskState.taskTitleState = foundTaskState.taskTitleState.copy(
                         text = addEditMilestoneEvents.value
                     )
-                    Log.d("Task changed", "${foundTaskState.taskId} = ${foundTaskState.taskTitleState}  + ${foundTaskState.taskDescState} ")
+                    Log.d(
+                        "Task changed",
+                        "${foundTaskState.taskId} = ${foundTaskState.taskTitleState}  + ${foundTaskState.taskDescState} "
+                    )
                 }
             }
             is AddEditMilestoneEvents.ToggleTaskStatus -> {
@@ -146,7 +150,11 @@ class AddEditMilestonesViewModel @Inject constructor(
             }
             // TODO check for status the best way and also update project status based on it milestones
             is AddEditMilestoneEvents.AddEditMilestone -> {
+                val tasks = transformTaskStatesToTasks(stateTasks)
+                checkMilestoneStatus(tasks)
+
                 viewModelScope.launch {
+
                     milestonesUseCases.addMilestoneUseCase(
                         Milestone(
                             projectId = passedProjectId,
@@ -181,14 +189,15 @@ class AddEditMilestonesViewModel @Inject constructor(
         getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
             .onEach { milestoneWithTask ->
                 currentMilestoneId = milestoneId
-                _milestoneTitleState.value = milestoneWithTask.milestone.milestoneTitle
+                _milestoneTitleState.value = milestoneWithTask!!.milestone.milestoneTitle
                 _milestoneStartDateState.value =
                     milestoneWithTask.milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
                 _milestoneEndDateState.value =
                     milestoneWithTask.milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
                 currentMilestoneStatus = milestoneWithTask.milestone.status
-                // _storeTasks = milestoneWithTask.tasks.toMutableList()
-                _stateTasks = transformTasksToTaskStates(milestoneWithTask.tasks).toMutableStateList()
+                _stateTasks.apply {
+                    addAll(transformTasksToTaskStates(milestoneWithTask.tasks))
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -234,4 +243,17 @@ class AddEditMilestonesViewModel @Inject constructor(
         taskStates.map { taskState ->
             taskState.toTask()
         }
+
+    fun checkMilestoneStatus(tasks: List<Task>) {
+        viewModelScope.launch {
+            val progress = milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
+
+            currentMilestoneStatus = when (progress) {
+
+                is ProgressStatus.Completed -> progress.status
+                is ProgressStatus.InProgress -> progress.status
+                is ProgressStatus.NotStarted -> progress.status
+            }
+        }
+    }
 }

@@ -14,7 +14,7 @@ class MilestonesRepositoryImpl(
         milestonesDao.insertMilestone(milestone)
     }
 
-    override fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks> =
+    override fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?> =
         milestonesDao.getMilestoneByIdWithTasks(milestoneId)
 
     override fun getAllMilestonesBasedOnProjIdAndStatus(

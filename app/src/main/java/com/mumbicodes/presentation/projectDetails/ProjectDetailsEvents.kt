@@ -18,4 +18,5 @@ sealed class ProjectDetailsEvents {
 sealed class ProjectUIEvents {
     data class ShowCongratsDialog(val message: String) : ProjectUIEvents()
     object DeleteProject : ProjectUIEvents()
+    object DeleteMilestone : ProjectUIEvents()
 }

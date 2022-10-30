@@ -1,6 +1,5 @@
 package com.mumbicodes.presentation.allProjects.components
 
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -20,15 +19,17 @@ import com.mumbicodes.presentation.theme.*
 /**
  * TODO research on how to reduce the icon and text spacing and the whole margin
  * Todo - With the custom size < 56, the text is cut off - how to solve that
-*/
+ */
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    searchParamType: String
+    searchParamType: String,
+    searchedText: String = "",
+    onSearchParamChanged: (String) -> Unit = {},
 ) {
     Surface(
         modifier = modifier
-            .height(Space48dp)
+            // .height(Space48dp)
             .shadow(
                 elevation = 60.dp,
                 ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
@@ -38,8 +39,10 @@ fun SearchBar(
         color = White,
     ) {
         TextField(
-            value = "",
-            onValueChange = {},
+            value = searchedText,
+            onValueChange = {
+                onSearchParamChanged(it)
+            },
             leadingIcon = {
                 Icon(
                     modifier = Modifier.alpha(0.5f),

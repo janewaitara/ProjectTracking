@@ -51,6 +51,7 @@ fun AllProjectsScreen(
     onClickProject: (Int) -> Unit,
 ) {
     val state = projectsViewModel.state.value
+    val searchedTextState = projectsViewModel.searchParam.value
     val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
@@ -116,6 +117,14 @@ fun AllProjectsScreen(
                                 selectedStatus
                             )
                         )
+                    },
+                    searchedText = searchedTextState,
+                    onSearchParamChanged = { searchParam ->
+                        projectsViewModel.onEvent(
+                            AllProjectsEvent.SearchProject(
+                                searchParam
+                            )
+                        )
                     }
                 )
             }
@@ -130,6 +139,8 @@ fun AllProjectsScreenContent(
     onClickProject: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
+    searchedText: String,
+    onSearchParamChanged: (String) -> Unit,
 ) {
 
     Column(modifier = modifier) {
@@ -155,7 +166,9 @@ fun AllProjectsScreenContent(
         ) {
             SearchBar(
                 modifier = Modifier.weight(1f),
-                searchParamType = stringResource(id = R.string.projects)
+                searchParamType = stringResource(id = R.string.projects),
+                searchedText = searchedText,
+                onSearchParamChanged = onSearchParamChanged
             )
 
             Spacer(modifier = Modifier.width(8.dp))

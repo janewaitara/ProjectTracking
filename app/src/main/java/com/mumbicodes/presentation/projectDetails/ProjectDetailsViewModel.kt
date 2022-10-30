@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
@@ -72,6 +73,8 @@ class ProjectDetailsViewModel @Inject constructor(
             is ProjectDetailsEvents.DeleteMilestone -> {
                 viewModelScope.launch {
                     milestonesUseCases.deleteMilestoneUseCase(projectDetailsEvents.milestone)
+
+                    uiEvents.emit(ProjectUIEvents.DeleteMilestone)
                 }
             }
             is ProjectDetailsEvents.ToggleMenuOptionsVisibility -> {
@@ -111,7 +114,17 @@ class ProjectDetailsViewModel @Inject constructor(
         getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
             .onEach { milestoneWithTask ->
                 _state.value = _state.value.copy(
-                    mileStone = milestoneWithTask
+                    mileStone = milestoneWithTask ?: MilestoneWithTasks(
+                        milestone = Milestone(
+                            projectId = 0,
+                            milestoneId = 0,
+                            milestoneTitle = "",
+                            milestoneSrtDate = 0,
+                            milestoneEndDate = 0,
+                            status = "",
+                        ),
+                        tasks = listOf()
+                    )
                 )
             }
             .launchIn(viewModelScope)

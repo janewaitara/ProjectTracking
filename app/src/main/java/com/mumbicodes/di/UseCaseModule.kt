@@ -52,7 +52,7 @@ object UseCaseModule {
             deleteMilestoneUseCase = DeleteMilestoneUseCase(repository),
             deleteMilestonesForProjectUseCase = DeleteMilestonesForProjectUseCase(repository),
             deleteAllMilestonesUseCase = DeleteAllMilestonesUseCase(repository),
-            checkMilestoneStatusUseCase = CheckMilestoneStatusUseCase(repository, app),
+            checkMilestoneStatusUseCase = CheckMilestoneStatusUseCase(app),
         )
     }
 

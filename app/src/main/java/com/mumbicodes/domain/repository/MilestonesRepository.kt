@@ -8,7 +8,7 @@ interface MilestonesRepository {
 
     suspend fun insertMilestone(milestone: Milestone)
 
-    fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks>
+    fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?>
 
     fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,

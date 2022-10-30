@@ -1,8 +1,8 @@
 package com.mumbicodes.presentation.add_edit_milestone
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -75,7 +75,9 @@ fun AddAndEditMilestoneScreen(
         )
 
         FieldForms(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             onTitleChanged = { title ->
                 milestonesViewModel.onEvent(
                     AddEditMilestoneEvents.MilestoneTitleChanged(title)
@@ -129,18 +131,28 @@ fun AddAndEditMilestoneScreen(
                     AddEditMilestoneEvents.ChangeTaskTitleFocus(task, focusState)
                 )
             },
-            onTaskDescFocusChange = { task, focusState ->
-                // TODO update the task desc focus
-                milestonesViewModel.onEvent(
-                    AddEditMilestoneEvents.ChangeTaskDescFocus(task, focusState)
-                )
-            },
-            onSaveMilestone = {
+        ) { task, focusState ->
+            // TODO update the task desc focus
+            milestonesViewModel.onEvent(
+                AddEditMilestoneEvents.ChangeTaskDescFocus(task, focusState)
+            )
+        }
+        Spacer(modifier = Modifier.height(Space48dp))
+
+        PrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.saveMilestone),
+            onClick = {
                 milestonesViewModel.onEvent(
                     AddEditMilestoneEvents.AddEditMilestone
                 )
             },
+            isEnabled = milestoneTitleState.isNotBlank() &&
+                milestoneStartDateState.isNotBlank() &&
+                milestoneEndDateState.isNotBlank()
         )
+
+        Spacer(modifier = Modifier.height(Space24dp))
     }
 }
 
@@ -174,6 +186,7 @@ fun ScreenHeader(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FieldForms(
     modifier: Modifier = Modifier,
@@ -185,7 +198,6 @@ fun FieldForms(
     startDateTextValue: String,
     endDateTextValue: String,
     isCalendarVisible: Boolean,
-    onSaveMilestone: () -> Unit,
     tasks: List<TaskState>,
     addNewTaskInViewModel: () -> Unit,
     onCheckedChange: (TaskState) -> Unit,
@@ -200,138 +212,143 @@ fun FieldForms(
         mutableStateOf("test")
     }
 
-    Column(modifier = modifier) {
-        Spacer(modifier = Modifier.height(Space20dp))
+    LazyColumn(
+        modifier = modifier
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(Space20dp))
 
-        LabelledInputField(
-            modifier = Modifier
-                .fillMaxWidth(),
-            onValueChange = onTitleChanged,
-            fieldLabel = stringResource(id = R.string.milestoneTitle),
-            placeholder = "Milestone Title",
-            textValue = titleTextValue,
-            singleLine = false,
-        )
-        Spacer(modifier = Modifier.height(Space20dp))
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Surface(
+            LabelledInputField(
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        onDatesClicked()
-                        calendarTrigger = "StartDate"
-                    },
-                color = Color.Transparent
-            ) {
-                LabelledInputFieldWithIcon(
+                    .fillMaxWidth(),
+                onValueChange = onTitleChanged,
+                fieldLabel = stringResource(id = R.string.milestoneTitle),
+                placeholder = "Milestone Title",
+                textValue = titleTextValue,
+                singleLine = false,
+            )
+            Spacer(modifier = Modifier.height(Space20dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Surface(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    onValueChange = {},
-                    fieldLabel = stringResource(id = R.string.milestoneStartDate),
-                    placeholder = "DD/MM/YYYY",
-                    textValue = startDateTextValue,
-                    singleLine = true,
-                    vectorIconId = R.drawable.ic_calendar,
-                )
-            }
-
-            Spacer(modifier = Modifier.width(Space8dp))
-
-            Surface(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        onDatesClicked()
-                        calendarTrigger = "EndDate"
-                    },
-                color = Color.Transparent
-            ) {
-                LabelledInputFieldWithIcon(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    onValueChange = {},
-                    fieldLabel = stringResource(id = R.string.milestoneEndDate),
-                    placeholder = "DD/MM/YYYY",
-                    textValue = endDateTextValue,
-                    singleLine = true,
-                    vectorIconId = R.drawable.ic_calendar,
-                )
-            }
-        }
-
-        if (isCalendarVisible) {
-            ComposeCalendar(
-                onDone = { userDateSelection ->
-                    if (calendarTrigger == "StartDate") {
-                        onStartDateChanged(userDateSelection)
-                    } else {
-                        onEndDateChanged(userDateSelection)
-                    }
-                },
-                onDismiss =
-                onDatesClicked
-            )
-        }
-
-        Spacer(modifier = Modifier.height(Space20dp))
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            // TODO - make the string one and update the caps area
-            Text(
-                text = stringResource(id = R.string.miniTasksSmall),
-                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onBackground),
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .weight(1f)
-            )
-
-            Spacer(modifier = Modifier.width(Space8dp))
-
-            Icon(
-                modifier = Modifier
-                    .size(24.dp, 24.dp)
-                    .clickable {
-                        addNewTaskInViewModel()
-                    },
-                painter = painterResource(id = R.drawable.ic_add_filled),
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = "Add task",
-            )
-        }
-
-        Spacer(modifier = Modifier.height(Space8dp))
-        tasks.forEach { task ->
-            TaskItemField(
-                modifier = Modifier,
-                task = task,
-                onCheckedChange = { onCheckedChange(task) },
-                onTaskTitleChange = { taskTitle ->
-                    onTaskTitleChange(task, taskTitle)
-                },
-                onTaskDescChange = { taskDesc ->
-                    onTaskDescChange(task, taskDesc)
-                },
-                onTaskTitleFocusChange = { focusState ->
-                    onTaskTitleFocusChange(task, focusState)
-                },
-                onTaskDescFocusChange = { focusState ->
-                    onTaskDescFocusChange(task, focusState)
+                        .weight(1f)
+                        .clickable {
+                            onDatesClicked()
+                            calendarTrigger = "StartDate"
+                        },
+                    color = Color.Transparent
+                ) {
+                    LabelledInputFieldWithIcon(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onValueChange = {},
+                        fieldLabel = stringResource(id = R.string.milestoneStartDate),
+                        placeholder = "DD/MM/YYYY",
+                        textValue = startDateTextValue,
+                        singleLine = true,
+                        vectorIconId = R.drawable.ic_calendar,
+                    )
                 }
-            )
+
+                Spacer(modifier = Modifier.width(Space8dp))
+
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            onDatesClicked()
+                            calendarTrigger = "EndDate"
+                        },
+                    color = Color.Transparent
+                ) {
+                    LabelledInputFieldWithIcon(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onValueChange = {},
+                        fieldLabel = stringResource(id = R.string.milestoneEndDate),
+                        placeholder = "DD/MM/YYYY",
+                        textValue = endDateTextValue,
+                        singleLine = true,
+                        vectorIconId = R.drawable.ic_calendar,
+                    )
+                }
+            }
+
+            if (isCalendarVisible) {
+                ComposeCalendar(
+                    onDone = { userDateSelection ->
+                        if (calendarTrigger == "StartDate") {
+                            onStartDateChanged(userDateSelection)
+                        } else {
+                            onEndDateChanged(userDateSelection)
+                        }
+                    },
+                    onDismiss =
+                    onDatesClicked
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Space20dp))
+        }
+        stickyHeader {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(32.dp)
+                    .background(color = MaterialTheme.colorScheme.background)
+            ) {
+                // TODO - make the string one and update the caps area
+                Text(
+                    text = stringResource(id = R.string.miniTasksSmall),
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onBackground),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(Space8dp))
+
+                Icon(
+                    modifier = Modifier
+                        .size(24.dp, 24.dp)
+                        .clickable {
+                            addNewTaskInViewModel()
+                        },
+                    painter = painterResource(id = R.drawable.ic_add_filled),
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = "Add task",
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Space8dp))
         }
 
-        Spacer(modifier = Modifier.height(Space48dp))
-        PrimaryButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(id = R.string.saveProject),
-            onClick = onSaveMilestone,
-            isEnabled = titleTextValue.isNotBlank() &&
-                startDateTextValue.isNotBlank() &&
-                endDateTextValue.isNotBlank()
-        )
+        item {
+            tasks.forEach { task ->
+                TaskItemField(
+                    modifier = Modifier,
+                    task = task,
+                    onCheckedChange = { onCheckedChange(task) },
+                    onTaskTitleChange = { taskTitle ->
+                        onTaskTitleChange(task, taskTitle)
+                    },
+                    onTaskDescChange = { taskDesc ->
+                        onTaskDescChange(task, taskDesc)
+                    },
+                    onTaskTitleFocusChange = { focusState ->
+                        onTaskTitleFocusChange(task, focusState)
+                    },
+                    onTaskDescFocusChange = { focusState ->
+                        onTaskDescFocusChange(task, focusState)
+                    }
+                )
+                Spacer(modifier = Modifier.height(Space8dp))
+            }
+        }
     }
 }
+
 @Composable
 @Preview
 fun ScreenContentPreview() {
@@ -354,8 +371,6 @@ fun ScreenContentPreview() {
             startDateTextValue = "",
             endDateTextValue = "",
             isCalendarVisible = false,
-            onSaveMilestone = {
-            },
             tasks = listOf(
                 TaskState(
                     milestoneId = 234,
@@ -382,8 +397,7 @@ fun ScreenContentPreview() {
             onCheckedChange = {},
             onTaskTitleChange = { _, _ -> },
             onTaskDescChange = { _, _ -> },
-            onTaskTitleFocusChange = { _, _ -> },
-            onTaskDescFocusChange = { _, _ -> }
-        )
+            onTaskTitleFocusChange = { _, _ -> }
+        ) { _, _ -> }
     }
 }
