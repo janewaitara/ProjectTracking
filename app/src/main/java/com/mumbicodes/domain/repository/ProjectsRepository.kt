@@ -8,6 +8,8 @@ interface ProjectsRepository {
 
     suspend fun insertProject(project: Project)
 
+    suspend fun updateProject(project: Project)
+
     suspend fun getProjectById(projectId: Int): Project
 
     fun getProjectByIdWithMilestones(projectId: Int): Flow<ProjectWithMilestones?>
