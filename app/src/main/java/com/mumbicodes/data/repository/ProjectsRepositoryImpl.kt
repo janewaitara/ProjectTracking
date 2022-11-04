@@ -13,6 +13,10 @@ class ProjectsRepositoryImpl(
         projectsDao.insertProject(project = project)
     }
 
+    override suspend fun updateProject(project: Project) {
+        projectsDao.updateProject(project = project)
+    }
+
     override suspend fun getProjectById(projectId: Int): Project =
         projectsDao.getProjectById(projectId)
 

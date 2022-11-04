@@ -7,7 +7,7 @@ import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.model.Task
 
-@Database(entities = [Project::class, Milestone::class, Task::class], version = 2, exportSchema = false)
+@Database(entities = [Project::class, Milestone::class, Task::class], version = 3, exportSchema = false)
 @TypeConverters(TaskConverter::class)
 abstract class ProjectsDatabase : RoomDatabase() {
 
