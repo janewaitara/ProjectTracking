@@ -1,6 +1,6 @@
 # ProjectTracking
 
-A Jetpack Compose App
+A project tracking application build with Jetpack Compose
 
 # Architecture
 The app uses MVVM (Model View View Model) architecture to have a unidirectional flow of data, separation of concern, testability, and a lot more.
