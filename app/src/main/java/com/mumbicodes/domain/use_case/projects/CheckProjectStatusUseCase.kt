@@ -28,7 +28,6 @@ class CheckProjectStatusUseCase(
             Log.e("Mini me z2", "milestones 2: ${milestonesStatusList.size}")
         }
 
-
         Log.e("Mini me z3", "${milestonesStatusList.size}")
 
         val completed = milestonesStatusList.contains(appContext.getString(R.string.completed)) &&
@@ -40,13 +39,12 @@ class CheckProjectStatusUseCase(
             !milestonesStatusList.contains(appContext.getString(R.string.completed)) &&
             !milestonesStatusList.contains(appContext.getString(R.string.inProgress))
 
-        Log.e("Mini me zl 2", "${completed}")
+        Log.e("Mini me zl 2", "$completed")
 
         return when {
             completed -> ProgressStatus.Completed(appContext.getString(R.string.completed))
             notStarted -> ProgressStatus.NotStarted(appContext.getString(R.string.notStarted))
             else -> ProgressStatus.InProgress(appContext.getString(R.string.inProgress))
-
         }
     }
 }

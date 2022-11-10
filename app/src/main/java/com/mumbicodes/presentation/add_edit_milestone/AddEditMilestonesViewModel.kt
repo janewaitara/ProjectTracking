@@ -114,7 +114,7 @@ class AddEditMilestonesViewModel @Inject constructor(
                 }?.let { foundTaskState ->
                     foundTaskState.taskDescState = foundTaskState.taskDescState.copy(
                         isHintVisible = !addEditMilestoneEvents.focusState.isFocused &&
-                                foundTaskState.taskDescState.text.isBlank()
+                            foundTaskState.taskDescState.text.isBlank()
                     )
                 }
             }
@@ -124,7 +124,7 @@ class AddEditMilestonesViewModel @Inject constructor(
                 }?.let { foundTaskState ->
                     foundTaskState.taskTitleState = foundTaskState.taskTitleState.copy(
                         isHintVisible = !addEditMilestoneEvents.focusState.isFocused &&
-                                foundTaskState.taskTitleState.text.isBlank()
+                            foundTaskState.taskTitleState.text.isBlank()
                     )
                 }
             }
@@ -275,7 +275,7 @@ class AddEditMilestonesViewModel @Inject constructor(
         viewModelScope.launch {
 
             Log.e("Mini me", "This passes")
-            //val progress = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
+            // val progress = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
             checkStatus(passedProjectId)
             Log.e("Mini me", "This passes too")
             val pro = when (_projectProgress) {
@@ -286,7 +286,7 @@ class AddEditMilestonesViewModel @Inject constructor(
             }
             Log.e("Mini me 1", pro)
 
-            //TODO complete the logic to update the project status update - Test the function below
+            // TODO complete the logic to update the project status update - Test the function below
             val project: Project = projectsUseCases.getProjectByIdUseCase(passedProjectId)
 
             /*  projectsUseCases.updateProjectsUseCase.invoke(
@@ -312,22 +312,21 @@ class AddEditMilestonesViewModel @Inject constructor(
                     }
                     val completed =
                         milestonesStatus.contains(appContext.getString(R.string.completed)) &&
-                                !milestonesStatus.contains(appContext.getString(R.string.notStarted)) &&
-                                !milestonesStatus.contains(appContext.getString(R.string.inProgress))
+                            !milestonesStatus.contains(appContext.getString(R.string.notStarted)) &&
+                            !milestonesStatus.contains(appContext.getString(R.string.inProgress))
                     Log.e("Mini me zl", "${milestonesStatus.size}")
 
                     val notStarted =
                         milestonesStatus.contains(appContext.getString(R.string.notStarted)) &&
-                                !milestonesStatus.contains(appContext.getString(R.string.completed)) &&
-                                !milestonesStatus.contains(appContext.getString(R.string.inProgress))
+                            !milestonesStatus.contains(appContext.getString(R.string.completed)) &&
+                            !milestonesStatus.contains(appContext.getString(R.string.inProgress))
 
                     _projectProgress = when {
                         completed -> ProgressStatus.Completed(appContext.getString(R.string.completed))
                         notStarted -> ProgressStatus.NotStarted(appContext.getString(R.string.notStarted))
                         else -> ProgressStatus.InProgress(appContext.getString(R.string.inProgress))
-
                     }
-                    Log.e("Mini me zl 2", "${completed}")
+                    Log.e("Mini me zl 2", "$completed")
                 }.launchIn(viewModelScope)
     }
 }
