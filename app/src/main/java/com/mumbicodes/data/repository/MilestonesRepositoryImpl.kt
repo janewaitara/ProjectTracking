@@ -21,7 +21,7 @@ class MilestonesRepositoryImpl(
         projectId: Int,
         status: String?,
     ): Flow<List<Milestone>> =
-        milestonesDao.getAllMilestonesBasedOnProjIdAndStatus(projectId, status)
+        milestonesDao.getAllMilestonesBasedOnProjIdAndStatus(projectId,)
 
     override suspend fun deleteMilestone(milestone: Milestone) {
         milestonesDao.deleteMilestone(milestone)
