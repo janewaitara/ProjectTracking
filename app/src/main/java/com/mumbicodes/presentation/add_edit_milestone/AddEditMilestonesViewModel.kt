@@ -1,21 +1,23 @@
 package com.mumbicodes.presentation.add_edit_milestone
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.R
 import com.mumbicodes.domain.model.Milestone
+import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
+import com.mumbicodes.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.domain.util.ProgressStatus
 import com.mumbicodes.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -24,7 +26,9 @@ import javax.inject.Inject
 class AddEditMilestonesViewModel @Inject constructor(
     private val milestonesUseCases: MilestonesUseCases,
     private val tasksUseCases: TasksUseCases,
+    private val projectsUseCases: ProjectsUseCases,
     savedStateHandle: SavedStateHandle,
+    private val appContext: Application,
 ) : ViewModel() {
 
     private val _milestoneTitleState = mutableStateOf("")
@@ -60,6 +64,11 @@ class AddEditMilestonesViewModel @Inject constructor(
     var passedMilestoneId: Int? = savedStateHandle.get<Int>(MILESTONE_ID)
 
     private var getMilestonesJob: Job? = null
+    private var getProjectMilestonesJob: Job? = null
+
+    private var _projectProgress: ProgressStatus = ProgressStatus.InProgress(
+        appContext.getString(R.string.inProgress)
+    )
 
     init {
         passedMilestoneId?.let { milestoneId ->
@@ -179,7 +188,12 @@ class AddEditMilestonesViewModel @Inject constructor(
                         }.first().taskTitle
                     )
                     uiEvents.emit(UIEvents.AddEditMilestone)
+
+                    Log.d("Reached 1", "Reached")
                 }
+
+                checkAndUpdateProjectStatus()
+                Log.d("Reached 2", "Reached")
             }
         }
     }
@@ -255,5 +269,64 @@ class AddEditMilestonesViewModel @Inject constructor(
                 is ProgressStatus.NotStarted -> progress.status
             }
         }
+    }
+
+    fun checkAndUpdateProjectStatus() {
+        viewModelScope.launch {
+
+            Log.e("Mini me", "This passes")
+            // val progress = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
+            checkStatus(passedProjectId)
+            Log.e("Mini me", "This passes too")
+            val pro = when (_projectProgress) {
+
+                is ProgressStatus.Completed -> _projectProgress.status
+                is ProgressStatus.InProgress -> _projectProgress.status
+                is ProgressStatus.NotStarted -> _projectProgress.status
+            }
+            Log.e("Mini me 1", pro)
+
+            // TODO complete the logic to update the project status update - Test the function below
+            val project: Project = projectsUseCases.getProjectByIdUseCase(passedProjectId)
+
+            /*  projectsUseCases.updateProjectsUseCase.invoke(
+                  project.copy(projectStatus = when (progress) {
+
+                      is ProgressStatus.Completed -> progress.status
+                      is ProgressStatus.InProgress -> progress.status
+                      is ProgressStatus.NotStarted -> progress.status
+                  })
+              )*/
+        }
+    }
+
+    fun checkStatus(projectId: Int) {
+
+        Log.e("Mini me ", "Wierd, right")
+        getProjectMilestonesJob?.cancel()
+        getProjectMilestonesJob =
+            milestonesUseCases.getMilestonesUseCase(projectId = projectId, status = "")
+                .onEach { milestones ->
+                    val milestonesStatus: List<String> = milestones.map {
+                        it.status
+                    }
+                    val completed =
+                        milestonesStatus.contains(appContext.getString(R.string.completed)) &&
+                            !milestonesStatus.contains(appContext.getString(R.string.notStarted)) &&
+                            !milestonesStatus.contains(appContext.getString(R.string.inProgress))
+                    Log.e("Mini me zl", "${milestonesStatus.size}")
+
+                    val notStarted =
+                        milestonesStatus.contains(appContext.getString(R.string.notStarted)) &&
+                            !milestonesStatus.contains(appContext.getString(R.string.completed)) &&
+                            !milestonesStatus.contains(appContext.getString(R.string.inProgress))
+
+                    _projectProgress = when {
+                        completed -> ProgressStatus.Completed(appContext.getString(R.string.completed))
+                        notStarted -> ProgressStatus.NotStarted(appContext.getString(R.string.notStarted))
+                        else -> ProgressStatus.InProgress(appContext.getString(R.string.inProgress))
+                    }
+                    Log.e("Mini me zl 2", "$completed")
+                }.launchIn(viewModelScope)
     }
 }
