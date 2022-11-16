@@ -16,9 +16,9 @@ interface MilestonesDao {
     fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?>
 
     @Query("SELECT * from milestones_table Where projectId = :projectId")
-    fun getAllMilestonesBasedOnProjIdAndStatus(
+    suspend fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,
-    ): Flow<List<Milestone>>
+    ): List<Milestone>
 
     /** Deletion */
     @Delete

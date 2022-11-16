@@ -17,10 +17,10 @@ class MilestonesRepositoryImpl(
     override fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?> =
         milestonesDao.getMilestoneByIdWithTasks(milestoneId)
 
-    override fun getAllMilestonesBasedOnProjIdAndStatus(
+    override suspend fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,
         status: String?,
-    ): Flow<List<Milestone>> =
+    ): List<Milestone> =
         milestonesDao.getAllMilestonesBasedOnProjIdAndStatus(projectId,)
 
     override suspend fun deleteMilestone(milestone: Milestone) {
