@@ -10,10 +10,10 @@ interface MilestonesRepository {
 
     fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?>
 
-    fun getAllMilestonesBasedOnProjIdAndStatus(
+    suspend fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,
         status: String?,
-    ): Flow<List<Milestone>>
+    ): List<Milestone>
 
     suspend fun deleteMilestone(milestone: Milestone)
 
