@@ -40,7 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mumbicodes.R
 import com.mumbicodes.data.Project
 import com.mumbicodes.data.sampleProjects
-import com.mumbicodes.presentation.components.BottomNavigationBar
+import com.mumbicodes.presentation.components.BottomBar
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.navigation.ProjectNavHost
 import com.mumbicodes.presentation.util.navigation.Screens
@@ -75,7 +75,7 @@ fun MainScreen() {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             if (bottomBarState.value)
-                BottomNavigationBar(
+                BottomBar(
                     navController = navController,
                     onItemClick = {
                         val route = if (it is Screens.AddAndEditScreens) {
