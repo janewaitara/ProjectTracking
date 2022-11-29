@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.projectDetails.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -18,7 +19,6 @@ import com.mumbicodes.presentation.components.TagItem
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.presentation.theme.Space16dp
 import com.mumbicodes.presentation.theme.Space8dp
-import com.mumbicodes.presentation.theme.White
 import com.mumbicodes.presentation.util.getNumberOfDays
 import com.mumbicodes.presentation.util.toDateAsString
 
@@ -29,11 +29,7 @@ fun MilestoneItem(
     milestoneWithTasks: MilestoneWithTasks,
     onClickMilestone: (Int) -> Unit = {},
 ) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = White
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 60.dp),
+    Surface(
         shape = MaterialTheme.shapes.small,
         onClick = {
             onClickMilestone(milestoneWithTasks.milestone.milestoneId)
@@ -45,7 +41,8 @@ fun MilestoneItem(
                 shape = MaterialTheme.shapes.small,
                 ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
                 spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
-            ),
+            )
+            .background(color = MaterialTheme.colorScheme.surface),
     ) {
 
         Column(modifier = Modifier.padding(Space16dp)) {
