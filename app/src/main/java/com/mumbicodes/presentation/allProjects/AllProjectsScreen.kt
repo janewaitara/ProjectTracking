@@ -233,7 +233,7 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
 
         Text(
             text = stringResource(id = R.string.greetings),
-            style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .fillMaxWidth()
         )
