@@ -49,5 +49,8 @@
     <string name="saveMilestone">Save Milestone</string>
     <string name="miniTasksSmall">Mini tasks</string>
     <string name="completeEmptyText">It seems like you haven’t completed any projects yet. But I’m certain you are tirelessly working on them.</string>
+    <string name="inProgressEmptyText">To move your projects to In progress, some of your milestones have to be started. </string>
+    <string name="notStartedEmptyText">Yeeeey!! 🎉. You have started all your projects.</string>
+    <string name="allEmptyText">Click on the  ➕  button below to add projects.</string>
 
 </resources>

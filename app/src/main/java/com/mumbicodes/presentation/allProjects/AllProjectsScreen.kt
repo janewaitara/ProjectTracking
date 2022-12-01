@@ -222,7 +222,10 @@ fun AllProjectsScreenContent(
         }
 
         if (projectsState.filteredProjects.isEmpty()) {
-            EmptyStateSection(filter = projectsState.selectedProjectStatus)
+            EmptyStateSection(
+                filter = projectsState.selectedProjectStatus,
+                projects = projectsState.projects
+            )
         }
     }
 }
@@ -268,6 +271,7 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
 fun EmptyStateSection(
     modifier: Modifier = Modifier,
     filter: String,
+    projects: List<Project>,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -276,24 +280,39 @@ fun EmptyStateSection(
     ) {
 
         Spacer(modifier = Modifier.height(Space8dp))
-
+        val illustration =
+            if (projects.isEmpty()) {
+                R.drawable.new_project_illustration
+            } else {
+                when (filter) {
+                    "Not Started" -> R.drawable.ic_incomplete_projects
+                    "In Progress" -> R.drawable.inprogress
+                    "Completed" -> R.drawable.ic_incomplete_projects
+                    else -> R.drawable.new_project_illustration
+                }
+            }
         Image(
-            painter = painterResource(id = R.drawable.ic_incomplete_projects),
+            painter = painterResource(id = illustration),
             contentDescription = "Empty state illustration"
         )
 
         Spacer(modifier = Modifier.height(Space24dp))
 
-        val emptyText: String = when (filter) {
-            "Not Started" -> ""
-            "In Progress" -> ""
-            "Completed" -> stringResource(id = R.string.completeEmptyText)
-            else -> ""
-        }
+        val emptyText: String =
+            if (projects.isEmpty()) {
+                stringResource(id = R.string.allEmptyText)
+            } else {
+                when (filter) {
+                    "Not Started" -> stringResource(id = R.string.notStartedEmptyText)
+                    "In Progress" -> stringResource(id = R.string.inProgressEmptyText)
+                    "Completed" -> stringResource(id = R.string.completeEmptyText)
+                    else -> stringResource(id = R.string.allEmptyText)
+                }
+            }
         Text(
             modifier = Modifier.padding(start = Space36dp, end = Space36dp),
             text = emptyText,
-            style = MaterialTheme.typography.bodySmall.copy(GreyNormal),
+            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
             textAlign = TextAlign.Center
         )
     }
