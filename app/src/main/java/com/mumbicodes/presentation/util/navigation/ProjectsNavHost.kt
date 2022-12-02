@@ -1,9 +1,7 @@
 package com.mumbicodes.presentation.util.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,6 +9,7 @@ import com.mumbicodes.presentation.add_edit_milestone.AddAndEditMilestoneScreen
 import com.mumbicodes.presentation.add_edit_project.AddAndEditScreen
 import com.mumbicodes.presentation.allProjects.AllProjectsScreen
 import com.mumbicodes.presentation.all_milestones.AllMilestonesScreen
+import com.mumbicodes.presentation.notifications.NotificationScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
 
 @Composable
@@ -86,18 +85,8 @@ fun ProjectNavHost(
         }
         composable(route = Screens.Notifications.route) {
             isBottomBarVisible(true)
-            NotificationsScreens()
+            NotificationScreen()
             // TODO - add a milestones screen
         }
     }
-}
-
-@Composable
-fun MilestonesScreens() {
-    Text(modifier = Modifier.testTag("heading"), text = "Milestones Screen")
-}
-
-@Composable
-fun NotificationsScreens() {
-    Text(modifier = Modifier.testTag("heading"), text = "Notifications Screen")
 }

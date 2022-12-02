@@ -57,5 +57,6 @@
     <string name="milestonesInProgressEmptyText">Move your milestones to In progress by marking their tasks as done. </string>
     <string name="milestonesNotStartedEmptyText">Yeeeey!! 🎉. You have started all your milestones.</string>
     <string name="coming_soon">This feature is coming soon.</string>
+    <string name="notifications">Notifications.</string>
 
 </resources>
