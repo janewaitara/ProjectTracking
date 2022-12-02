@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.mumbicodes.presentation.add_edit_milestone.AddAndEditMilestoneScreen
 import com.mumbicodes.presentation.add_edit_project.AddAndEditScreen
 import com.mumbicodes.presentation.allProjects.AllProjectsScreen
+import com.mumbicodes.presentation.all_milestones.AllMilestonesScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
 
 @Composable
@@ -80,7 +81,7 @@ fun ProjectNavHost(
         }
         composable(route = Screens.MilestonesScreens.route) {
             isBottomBarVisible(true)
-            MilestonesScreens()
+            AllMilestonesScreen()
             // TODO - add a milestones screen
         }
         composable(route = Screens.Notifications.route) {

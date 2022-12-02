@@ -33,6 +33,7 @@
     <string name="modifyMilestone">Modify Milestone</string>
     <string name="createMilestone">Create Milestone</string>
     <string name="addMilestone">Add Milestone</string>
+    <string name="allMilestones">All Milestones</string>
     <string name="delete">Delete</string>
     <string name="description">Description</string>
     <string name="milestones">Milestones</string>
@@ -55,5 +56,6 @@
     <string name="milestonesCompleteEmptyText">It seems like you haven’t completed any milestones yet. Mark all tasks as done.</string>
     <string name="milestonesInProgressEmptyText">Move your milestones to In progress by marking their tasks as done. </string>
     <string name="milestonesNotStartedEmptyText">Yeeeey!! 🎉. You have started all your milestones.</string>
+    <string name="coming_soon">This feature is coming soon.</string>
 
 </resources>
