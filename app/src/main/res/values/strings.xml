@@ -52,5 +52,8 @@
     <string name="inProgressEmptyText">To move your projects to In progress, some of your milestones have to be started. </string>
     <string name="notStartedEmptyText">Yeeeey!! 🎉. You have started all your projects.</string>
     <string name="allEmptyText">Click on the  ➕  button below to add projects.</string>
+    <string name="milestonesCompleteEmptyText">It seems like you haven’t completed any milestones yet. Mark all tasks as done.</string>
+    <string name="milestonesInProgressEmptyText">Move your milestones to In progress by marking their tasks as done. </string>
+    <string name="milestonesNotStartedEmptyText">Yeeeey!! 🎉. You have started all your milestones.</string>
 
 </resources>
