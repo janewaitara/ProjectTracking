@@ -60,6 +60,7 @@ dependencies {
     implementation(Libraries.activityCompose)
     implementation(Libraries.constraintLayoutCompose)
     implementation(Libraries.composeMaterial2)
+    implementation(Libraries.materialWindowClassSize)
 
     // Lifecycle
     implementation(Libraries.lifecycle)
@@ -67,6 +68,7 @@ dependencies {
 
     // Room
     implementation(Libraries.roomRuntime)
+    implementation("androidx.window:window:1.0.0")
     kapt(Libraries.roomCompiler)
     implementation(Libraries.roomKtx)
 
