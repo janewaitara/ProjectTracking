@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,6 +24,7 @@ import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.DevicePosture
 import com.mumbicodes.presentation.util.isBookPosture
 import com.mumbicodes.presentation.util.isSeparating
+import com.mumbicodes.presentation.util.navigation.ProjectAppComposable
 import com.mumbicodes.presentation.util.navigation.ProjectNavHost
 import com.mumbicodes.presentation.util.navigation.Screens
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,27 +64,20 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ProjectTrackingTheme {
-                val windowSize = calculateWindowSizeClass(activity = this)
+                val windowSizeClass = calculateWindowSizeClass(activity = this)
                 // observe device posture
                 val devicePosture = devicePostureFlow.collectAsState().value
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     MainScreen()
                 }
-                ProjectsApp(
-                    windowSize = windowSize.widthSizeClass,
+                ProjectAppComposable(
+                    windowWidthSizeClass = windowSizeClass.widthSizeClass,
                     foldingPosture = devicePosture,
                 )
             }
         }
     }
-}
-
-@Composable
-fun ProjectsApp(
-    windowSize: WindowWidthSizeClass,
-    foldingPosture: DevicePosture,
-) {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
