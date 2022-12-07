@@ -277,6 +277,7 @@ fun ProjectDetailsScreenContent(
                         onClickFilterMilestoneStatus = onClickFilterMilestoneStatus,
                         onClickMilestone = onClickMilestone,
                         lazyListState = lazyListState,
+                        filter = projectState.selectedMilestoneStatus
                     )
                 }
             }
@@ -580,6 +581,7 @@ fun MilestonesSection(
     onClickMilestone: (Int) -> Unit,
     onClickFilterMilestoneStatus: (String) -> Unit,
     lazyListState: LazyListState,
+    filter: String,
 ) {
     Column(
         modifier = modifier,
@@ -617,16 +619,20 @@ fun MilestonesSection(
 
         Spacer(modifier = Modifier.height(Space8dp))
 
-        LazyColumn(
-            modifier = Modifier,
-            verticalArrangement = Arrangement.spacedBy(Space8dp),
-            state = lazyListState,
-        ) {
-            itemsIndexed(milestones) { _, milestone ->
-                MilestoneItem(
-                    milestoneWithTasks = milestone,
-                    onClickMilestone = onClickMilestone
-                )
+        if (milestones.isEmpty()) {
+            EmptyStateSection(filter = filter)
+        } else {
+            LazyColumn(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.spacedBy(Space8dp),
+                state = lazyListState,
+            ) {
+                itemsIndexed(milestones) { _, milestone ->
+                    MilestoneItem(
+                        milestoneWithTasks = milestone,
+                        onClickMilestone = onClickMilestone
+                    )
+                }
             }
         }
     }
@@ -671,6 +677,51 @@ fun EmptyMilestonesSection(
             text = stringResource(id = R.string.createMilestone),
             onClick = onAddMilestoneClicked,
             isEnabled = true,
+        )
+    }
+}
+
+@Composable
+fun EmptyStateSection(
+    modifier: Modifier = Modifier,
+    filter: String,
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+
+        Spacer(modifier = Modifier.height(Space24dp))
+        val illustration =
+            when (filter) {
+                "Not Started" -> R.drawable.ic_incomplete_projects
+                "In Progress" -> R.drawable.inprogress
+                "Completed" -> R.drawable.ic_incomplete_projects
+                else -> R.drawable.new_project_illustration
+            }
+
+        Image(
+            modifier = Modifier.height(200.dp),
+            painter = painterResource(id = illustration),
+            contentDescription = "Empty state illustration"
+        )
+
+        Spacer(modifier = Modifier.height(Space24dp))
+
+        val emptyText: String =
+            when (filter) {
+                "Not Started" -> stringResource(id = R.string.milestonesNotStartedEmptyText)
+                "In Progress" -> stringResource(id = R.string.milestonesInProgressEmptyText)
+                "Completed" -> stringResource(id = R.string.milestonesCompleteEmptyText)
+                else -> stringResource(id = R.string.allEmptyText)
+            }
+
+        Text(
+            modifier = Modifier.padding(start = Space32dp, end = Space32dp),
+            text = emptyText,
+            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
+            textAlign = TextAlign.Center
         )
     }
 }

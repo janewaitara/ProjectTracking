@@ -24,8 +24,8 @@ sealed class Screens(
     object AddAndEditScreens :
         Screens(
             "addAndEdit",
-            R.drawable.ic_add_outlined,
-            R.drawable.ic_add_filled,
+            R.drawable.material_symbols_add_circle_rounded,
+            R.drawable.material_symbols_add_circle_rounded,
             "Add"
         ) {
         const val projectId = PROJECT_ID
@@ -94,7 +94,7 @@ sealed class Screens(
 
 val bottomNavigationDestinations = listOf(
     Screens.AllProjectsScreens,
-    Screens.AddAndEditScreens,
     Screens.MilestonesScreens,
     Screens.Notifications,
+    Screens.AddAndEditScreens,
 )

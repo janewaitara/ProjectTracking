@@ -37,7 +37,7 @@ object Versions {
     const val navVersion = "2.5.1"
 
     // Hilt
-    const val hilt= "2.42"
+    const val hilt = "2.42"
     const val hiltWithOtherLibs = "1.0.0"
 
     // Moshi
@@ -71,19 +71,23 @@ object Libraries {
     const val activityCompose = "androidx.activity:activity-compose:${Versions.activityCompose}"
     const val constraintLayoutCompose =
         "androidx.constraintlayout:constraintlayout-compose:${Versions.constraintLayoutCompose}"
-    const val composeMaterial2 =  "androidx.compose.material:material:${Versions.composeMaterial2}"
+    const val composeMaterial2 = "androidx.compose.material:material:${Versions.composeMaterial2}"
+    const val materialWindowClassSize =
+        "androidx.compose.material3:material3-window-size-class:${Versions.composeMaterial3}"
+
 
     //Navigation
-   const val navigationCompose = "androidx.navigation:navigation-compose:${Versions.navVersion}"
+    const val navigationCompose = "androidx.navigation:navigation-compose:${Versions.navVersion}"
 
     //Lifecycle
     const val lifecycle = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
-    const val lifecycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}"
+    const val lifecycleViewModel =
+        "androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}"
 
     //Room
     const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
-    const val roomCompiler =  "androidx.room:room-compiler:${Versions.room}"
-    const val roomKtx =  "androidx.room:room-ktx:${Versions.room}"
+    const val roomCompiler = "androidx.room:room-compiler:${Versions.room}"
+    const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
 
     // Coroutines
     const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
