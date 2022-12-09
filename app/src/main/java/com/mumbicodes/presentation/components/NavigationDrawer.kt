@@ -21,43 +21,52 @@ import androidx.navigation.NavDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mumbicodes.R
-import com.mumbicodes.presentation.theme.ProjectTrackingTheme
-import com.mumbicodes.presentation.theme.Space16dp
-import com.mumbicodes.presentation.theme.Space32dp
-import com.mumbicodes.presentation.theme.Space36dp
+import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.navigation.Screens
 import com.mumbicodes.presentation.util.navigation.navigationRailDestinations
 
 @Composable
 @Preview
-fun NavigationRailComposable(
+fun NavigationDrawerComposable(
     navController: NavController = rememberNavController(),
     onItemClick: (Screens) -> Unit = {},
     onAddClick: () -> Unit = {},
 ) {
-
     val navStackBackEntry by navController.currentBackStackEntryAsState()
     val selectedDestination = navStackBackEntry?.destination
 
-    NavigationRail(modifier = Modifier.fillMaxHeight()) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = Space24dp, vertical = Space32dp),
+    ) {
 
         Spacer(modifier = Modifier.height(Space32dp))
 
-        FloatingActionButton(
+        ExtendedFloatingActionButton(
+            modifier = Modifier.fillMaxWidth(),
             onClick = onAddClick,
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
-            shape = MaterialTheme.shapes.large
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = stringResource(id = R.string.addTitle),
             )
+
+            Spacer(modifier = Modifier.width(Space12dp))
+            Text(
+                text = stringResource(id = R.string.addProject),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+
+            )
         }
-        Spacer(Modifier.height(Space16dp))
+        Spacer(modifier = Modifier.height(Space32dp))
 
         navigationRailDestinations.forEach { screen ->
-            AddRailItem(
+            AddDrawerItem(
                 screen = screen,
                 selectedDestination = selectedDestination,
                 onItemClick = onItemClick,
@@ -67,7 +76,7 @@ fun NavigationRailComposable(
 }
 
 @Composable
-fun AddRailItem(
+fun AddDrawerItem(
     screen: Screens,
     selectedDestination: NavDestination?,
     onItemClick: (Screens) -> Unit,
@@ -87,11 +96,13 @@ fun AddRailItem(
     val dividerColor =
         if (selected) MaterialTheme.colorScheme.primary else Color.Transparent
 
+    val textTypography =
+        if (selected) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall
     Box(
         modifier = Modifier
-            .height(64.dp)
+            .height(80.dp)
             .fillMaxWidth()
-            .background(background)
+            .background(MaterialTheme.colorScheme.surface)
             .clickable(
                 onClick = {
                     onItemClick(screen)
@@ -99,36 +110,51 @@ fun AddRailItem(
             ),
     ) {
 
-        Divider(
+        Row(
             modifier = Modifier
-                .height(Space36dp)
-                .width(2.dp)
-                .clip(shape = MaterialTheme.shapes.small)
-                .align(Alignment.CenterStart),
-            color = dividerColor, thickness = 4.dp,
-        )
+                .align(Alignment.Center)
+                .padding(vertical = Space8dp)
+                .clip(shape = MaterialTheme.shapes.medium)
+                .background(background),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Space16dp)
+        ) {
 
-        Icon(
-            modifier = Modifier.align(Alignment.Center),
-            painter = painterResource(id = if (selected) screen.filledIcon else screen.outlinedIcon),
-            contentDescription = screen.title,
-            tint = contentColor
-        )
+            Divider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(4.dp)
+                    .clip(shape = MaterialTheme.shapes.small),
+                color = dividerColor, thickness = 4.dp,
+            )
+            Icon(
+                painter = painterResource(id = if (selected) screen.filledIcon else screen.outlinedIcon),
+                contentDescription = screen.title,
+                tint = contentColor
+            )
+
+            Text(
+                text = screen.title,
+                style = textTypography.copy(color = contentColor),
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
     }
 }
 
 @Composable
 @Preview
-fun RailLightPreview() {
+fun DrawerLightPreview() {
     ProjectTrackingTheme {
-        NavigationRailComposable()
+        NavigationDrawerComposable()
     }
 }
 
 @Composable
 @Preview
-fun RailDarkPreview() {
+fun DrawerDarkPreview() {
     ProjectTrackingTheme(darkTheme = true) {
-        NavigationRailComposable()
+        NavigationDrawerComposable()
     }
 }
