@@ -68,9 +68,9 @@ class MainActivity : ComponentActivity() {
                 // observe device posture
                 val devicePosture = devicePostureFlow.collectAsState().value
 
-                Box(modifier = Modifier.fillMaxSize()) {
+                /*Box(modifier = Modifier.fillMaxSize()) {
                     MainScreen()
-                }
+                }*/
                 ProjectAppComposable(
                     windowWidthSizeClass = windowSizeClass.widthSizeClass,
                     foldingPosture = devicePosture,
