@@ -41,5 +41,8 @@ fun ProjectAppComposable(
         }
     }
 
-    NavigationWrapperUi(navigationType = navigationType)
+    NavigationWrapperUi(
+        navigationType = navigationType,
+        contentType = contentType,
+    )
 }

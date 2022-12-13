@@ -5,28 +5,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
-import com.mumbicodes.presentation.components.BottomBar
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.DevicePosture
 import com.mumbicodes.presentation.util.isBookPosture
 import com.mumbicodes.presentation.util.isSeparating
 import com.mumbicodes.presentation.util.navigation.ProjectAppComposable
-import com.mumbicodes.presentation.util.navigation.ProjectNavHost
-import com.mumbicodes.presentation.util.navigation.Screens
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -80,7 +70,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -119,6 +109,4 @@ fun MainScreen() {
             }
         )
     }
-}
-
-// TODO research on how to reduce the icon and text spacing and the whole margin
+}*/

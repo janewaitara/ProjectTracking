@@ -18,11 +18,11 @@ import com.mumbicodes.presentation.util.navigation.Screens
 fun ProjectAppContent(
     modifier: Modifier = Modifier,
     navigationType: NavigationType,
+    contentType: ContentType,
     navController: NavHostController,
     navigateToDestination: (String) -> Unit,
     onDrawerClicked: () -> Unit,
 ) {
-    // val navController = rememberNavController()
 
     val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
 
@@ -44,7 +44,8 @@ fun ProjectAppContent(
                 navController = navController,
                 isBottomBarVisible = {
                     bottomBarState.value = it
-                }
+                },
+                contentType = contentType,
             )
             AnimatedVisibility(visible = navigationType == NavigationType.BOTTOM_NAVIGATION) {
                 if (bottomBarState.value)

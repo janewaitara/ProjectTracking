@@ -8,6 +8,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.mumbicodes.presentation.components.NavigationDrawerComposable
+import com.mumbicodes.presentation.util.ContentType
 import com.mumbicodes.presentation.util.NavigationType
 import com.mumbicodes.presentation.util.ProjectAppContent
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationWrapperUi(
     navigationType: NavigationType,
+    contentType: ContentType,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -42,6 +44,7 @@ fun NavigationWrapperUi(
         ) {
             ProjectAppContent(
                 navigationType = navigationType,
+                contentType = contentType,
                 navController = navController,
                 navigateToDestination = navigationActions::navigateTo,
                 onDrawerClicked = {},
@@ -65,6 +68,7 @@ fun NavigationWrapperUi(
         ) {
             ProjectAppContent(
                 navigationType = navigationType,
+                contentType = contentType,
                 navController = navController,
                 navigateToDestination = navigationActions::navigateTo,
                 onDrawerClicked = {

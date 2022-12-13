@@ -3,7 +3,7 @@ object Versions {
     //Version codes for all the libraries
     const val androidApplication = "7.2.1"
     const val androidLibrary = "7.2.1"
-    const val kotlin = "1.7.0"
+    const val kotlin = "1.7.10"
 
     const val appCompat = "1.4.1"
     const val ktx = "1.7.0"
@@ -15,7 +15,7 @@ object Versions {
     const val espresso = "3.5.0-alpha03"
 
     //Compose
-    const val composeUi = "1.2.0"
+    const val composeUi = "1.3.0"
     const val composeMaterial3 = "1.0.0-alpha14"
     const val composeMaterial2 = "1.2.1"
     const val constraintLayoutCompose = "1.0.0-beta02"
@@ -75,7 +75,6 @@ object Libraries {
     const val materialWindowClassSize =
         "androidx.compose.material3:material3-window-size-class:${Versions.composeMaterial3}"
 
-
     //Navigation
     const val navigationCompose = "androidx.navigation:navigation-compose:${Versions.navVersion}"
 
@@ -120,7 +119,7 @@ object TestLibraries {
 
 object AndroidSdk {
     const val minSdkVersion = 21
-    const val compileSdkVersion = 32
+    const val compileSdkVersion = 33
     const val targetSdkVersion = compileSdkVersion
     const val versionCode = 1
     const val versionName = "1.0"
