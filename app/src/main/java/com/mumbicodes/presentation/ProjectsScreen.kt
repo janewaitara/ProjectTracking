@@ -24,7 +24,6 @@ fun ProjectsScreen(
 
     if (contentType == ContentType.DUAL_PANE) {
         ProjectsListDetailComposable(
-            onClickProject = onClickProject,
             projectId = projectId,
             navController = navController
         )
@@ -35,7 +34,6 @@ fun ProjectsScreen(
 
 @Composable
 fun ProjectsListDetailComposable(
-    onClickProject: (Int) -> Unit,
     projectId: MutableState<Int> = rememberSaveable { mutableStateOf(-1) },
     navController: NavHostController,
 ) {
@@ -53,7 +51,7 @@ fun ProjectsListDetailComposable(
             )
         }
 
-        //TODO find a way to pass the project ID wihtout navigating to a new screen
+        // TODO find a way to pass the project ID without navigating to a new screen
         if (projectId.value != -1) {
             Box(
                 modifier = Modifier
@@ -76,7 +74,8 @@ fun ProjectsListDetailComposable(
                     },
                     navigateToAllProjects = {
                         navController.navigateUp()
-                    }
+                    },
+                    projectId = projectId.value
                 )
             }
         }

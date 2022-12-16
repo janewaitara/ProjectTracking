@@ -38,16 +38,19 @@ class ProjectDetailsViewModel @Inject constructor(
 
     init {
         projectId?.let { projectId ->
-            viewModelScope.launch {
-                // todo delete
-                projectsUseCases.getProjectByIdUseCase(projectId).also { projectPassed ->
-                    _state.value = _state.value.copy(
-                        project = projectPassed,
-                    )
-                }
-
-                getProject(projectId, state.value.selectedMilestoneStatus)
+            getProjectDetails(projectId = projectId)
+        }
+    }
+    fun getProjectDetails(projectId: Int) {
+        viewModelScope.launch {
+            // todo delete
+            projectsUseCases.getProjectByIdUseCase(projectId).also { projectPassed ->
+                _state.value = _state.value.copy(
+                    project = projectPassed,
+                )
             }
+
+            getProject(projectId, state.value.selectedMilestoneStatus)
         }
     }
 
