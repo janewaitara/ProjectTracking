@@ -21,6 +21,7 @@
     <string name="addEditProjectTitle">%1$s Project</string>
     <string name="addTitle">Add</string>
     <string name="editTitle">Edit</string>
+    <string name="addProject"> Add Project</string>
     <string name="saveProject">Save Project</string>
     <string name="editProject">Edit Project</string>
     <string name="deleteProject">Delete Project</string>

@@ -11,5 +11,5 @@ enum class NavigationType {
  * Content shown depending on size and state of device.
  */
 enum class ContentType {
-    LIST_ONLY, LIST_AND_DETAIL
+    SINGLE_PANE, DUAL_PANE
 }

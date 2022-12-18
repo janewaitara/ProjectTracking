@@ -48,6 +48,7 @@ fun ProjectDetailsScreen(
     onAddOrModifyMilestone: (Int, Int) -> Unit,
     onClickIconBack: () -> Unit,
     navigateToAllProjects: () -> Unit,
+    projectId: Int? = null,
 ) {
     val state = projectDetailsViewModel.state.value
     val modalBottomSheetState =
@@ -56,6 +57,13 @@ fun ProjectDetailsScreen(
     val scaffoldState = rememberScaffoldState()
 
     val lazyListState = rememberLazyListState()
+
+    // TODO research how to pass savedStateHandle without navigating
+    LaunchedEffect(key1 = projectId) {
+        projectId?.let { projectId ->
+            projectDetailsViewModel.getProjectDetails(projectId = projectId)
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         projectDetailsViewModel.uiEvents.collectLatest { uIEvents ->

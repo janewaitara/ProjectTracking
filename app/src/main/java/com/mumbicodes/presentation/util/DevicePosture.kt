@@ -5,6 +5,9 @@ import androidx.window.layout.FoldingFeature
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
+/**
+ * Information about the posture of the device
+ */
 sealed interface DevicePosture {
     object NormalPosture : DevicePosture
 

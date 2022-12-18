@@ -98,3 +98,9 @@ val bottomNavigationDestinations = listOf(
     Screens.Notifications,
     Screens.AddAndEditScreens,
 )
+
+val navigationRailDestinations = listOf(
+    Screens.AllProjectsScreens,
+    Screens.MilestonesScreens,
+    Screens.Notifications,
+)
