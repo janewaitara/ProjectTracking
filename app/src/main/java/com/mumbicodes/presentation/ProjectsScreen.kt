@@ -1,8 +1,8 @@
 package com.mumbicodes.presentation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.mumbicodes.presentation.allProjects.AllProjectsScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
+import com.mumbicodes.presentation.theme.Space20dp
 import com.mumbicodes.presentation.util.ContentType
 import com.mumbicodes.presentation.util.navigation.Screens
 
@@ -50,6 +51,7 @@ fun ProjectsListDetailComposable(
                 }
             )
         }
+        Spacer(modifier = Modifier.width(Space20dp).background(color = MaterialTheme.colorScheme.surface))
 
         // TODO find a way to pass the project ID without navigating to a new screen
         if (projectId.value != -1) {
