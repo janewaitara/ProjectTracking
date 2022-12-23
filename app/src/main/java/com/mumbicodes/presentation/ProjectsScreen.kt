@@ -3,6 +3,7 @@ package com.mumbicodes.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -21,15 +22,20 @@ fun ProjectsScreen(
     onClickProject: (Int) -> Unit,
     navController: NavHostController,
     projectId: MutableState<Int> = rememberSaveable { mutableStateOf(-1) },
+    windowWidthSizeClass: WindowWidthSizeClass,
 ) {
 
     if (contentType == ContentType.DUAL_PANE) {
         ProjectsListDetailComposable(
             projectId = projectId,
-            navController = navController
+            navController = navController,
+            windowWidthSizeClass = windowWidthSizeClass
         )
     } else {
-        AllProjectsScreen(onClickProject = onClickProject)
+        AllProjectsScreen(
+            onClickProject = onClickProject,
+            windowWidthSizeClass = windowWidthSizeClass
+        )
     }
 }
 
@@ -37,6 +43,7 @@ fun ProjectsScreen(
 fun ProjectsListDetailComposable(
     projectId: MutableState<Int> = rememberSaveable { mutableStateOf(-1) },
     navController: NavHostController,
+    windowWidthSizeClass: WindowWidthSizeClass,
 ) {
 
     Row(modifier = Modifier) {
@@ -48,10 +55,15 @@ fun ProjectsListDetailComposable(
             AllProjectsScreen(
                 onClickProject = { projectIdSelected ->
                     projectId.value = projectIdSelected
-                }
+                },
+                windowWidthSizeClass = windowWidthSizeClass
             )
         }
-        Spacer(modifier = Modifier.width(Space20dp).background(color = MaterialTheme.colorScheme.surface))
+        Spacer(
+            modifier = Modifier
+                .width(Space20dp)
+                .background(color = MaterialTheme.colorScheme.surface)
+        )
 
         // TODO find a way to pass the project ID without navigating to a new screen
         if (projectId.value != -1) {

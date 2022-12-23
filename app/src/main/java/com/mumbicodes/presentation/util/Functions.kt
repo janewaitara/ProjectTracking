@@ -1,5 +1,7 @@
 package com.mumbicodes.presentation.util
 
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -38,12 +40,20 @@ fun Long.toDateAsString(pattern: String): String {
     val localDate = convertLongToLocalDate(this)
     return convertDateToString(localDate, pattern)
 }
+
 fun LocalDate.toLong(): Long = this.toEpochDay()
 fun LocalDate.toDateAsString(pattern: String): String {
     val formatter = provideFormatter(pattern)
     return this.format(formatter)
 }
+
 fun String.toLocalDate(pattern: String): LocalDate {
     val formatter = provideFormatter(pattern)
     return LocalDate.parse(this, formatter)
 }
+
+@Preview(name = "phone", device = Devices.PHONE)
+@Preview(name = "foldable", device = Devices.FOLDABLE)
+@Preview(name = "custom", device = "spec:width = 1280dp, height = 800dp, dpi=480")
+@Preview(name = "desktop", device = "id:desktop_medium")
+annotation class ReferenceDevices
