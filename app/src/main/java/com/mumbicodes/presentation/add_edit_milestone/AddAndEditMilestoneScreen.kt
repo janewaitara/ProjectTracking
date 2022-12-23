@@ -3,6 +3,7 @@ package com.mumbicodes.presentation.add_edit_milestone
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,10 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mumbicodes.R
-import com.mumbicodes.presentation.components.LabelledInputField
-import com.mumbicodes.presentation.components.LabelledInputFieldWithIcon
-import com.mumbicodes.presentation.components.PrimaryButton
-import com.mumbicodes.presentation.components.TaskItemField
+import com.mumbicodes.presentation.components.*
 import com.mumbicodes.presentation.theme.*
 import com.squaredem.composecalendar.ComposeCalendar
 import kotlinx.coroutines.flow.collectLatest
@@ -345,6 +343,33 @@ fun FieldForms(
                 )
                 Spacer(modifier = Modifier.height(Space8dp))
             }
+        }
+
+        items(tasks) { task ->
+            SwipeToDismissComponent(
+                onSwipeAction = { /*TODO*/ },
+                content = {
+                    TaskItemField(
+                        modifier = Modifier,
+                        task = task,
+                        onCheckedChange = { onCheckedChange(task) },
+                        onTaskTitleChange = { taskTitle ->
+                            onTaskTitleChange(task, taskTitle)
+                        },
+                        onTaskDescChange = { taskDesc ->
+                            onTaskDescChange(task, taskDesc)
+                        },
+                        onTaskTitleFocusChange = { focusState ->
+                            onTaskTitleFocusChange(task, focusState)
+                        },
+                        onTaskDescFocusChange = { focusState ->
+                            onTaskDescFocusChange(task, focusState)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(Space8dp))
+                }
+            )
         }
     }
 }
