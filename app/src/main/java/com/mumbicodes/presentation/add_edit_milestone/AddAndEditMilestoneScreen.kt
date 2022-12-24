@@ -129,12 +129,18 @@ fun AddAndEditMilestoneScreen(
                     AddEditMilestoneEvents.ChangeTaskTitleFocus(task, focusState)
                 )
             },
-        ) { task, focusState ->
-            // TODO update the task desc focus
-            milestonesViewModel.onEvent(
-                AddEditMilestoneEvents.ChangeTaskDescFocus(task, focusState)
-            )
-        }
+            onTaskDescFocusChange = { task, focusState ->
+                // TODO update the task desc focus
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.ChangeTaskDescFocus(task, focusState)
+                )
+            },
+            onTaskSwiped = { task ->
+                milestonesViewModel.onEvent(
+                    AddEditMilestoneEvents.DeleteTask(task)
+                )
+            }
+        )
         Spacer(modifier = Modifier.height(Space48dp))
 
         PrimaryButton(
@@ -203,6 +209,7 @@ fun FieldForms(
     onTaskDescChange: (TaskState, String) -> Unit,
     onTaskTitleFocusChange: (TaskState, FocusState) -> Unit,
     onTaskDescFocusChange: (TaskState, FocusState) -> Unit,
+    onTaskSwiped: (TaskState) -> Unit,
 ) {
 
     // helps determine which date to update
@@ -322,7 +329,7 @@ fun FieldForms(
             Spacer(modifier = Modifier.height(Space8dp))
         }
 
-        item {
+        /*item {
             tasks.forEach { task ->
                 TaskItemField(
                     modifier = Modifier,
@@ -343,11 +350,13 @@ fun FieldForms(
                 )
                 Spacer(modifier = Modifier.height(Space8dp))
             }
-        }
+        }*/
 
-        items(tasks) { task ->
+        items(tasks, { task: TaskState -> task.taskId }) { task ->
             SwipeToDismissComponent(
-                onSwipeAction = { /*TODO*/ },
+                onSwipeAction = {
+                    onTaskSwiped(task)
+                },
                 content = {
                     TaskItemField(
                         modifier = Modifier,
@@ -366,10 +375,9 @@ fun FieldForms(
                             onTaskDescFocusChange(task, focusState)
                         }
                     )
-
-                    Spacer(modifier = Modifier.height(Space8dp))
                 }
             )
+            Spacer(modifier = Modifier.height(Space8dp))
         }
     }
 }
@@ -422,7 +430,9 @@ fun ScreenContentPreview() {
             onCheckedChange = {},
             onTaskTitleChange = { _, _ -> },
             onTaskDescChange = { _, _ -> },
-            onTaskTitleFocusChange = { _, _ -> }
-        ) { _, _ -> }
+            onTaskTitleFocusChange = { _, _ -> },
+            onTaskDescFocusChange = { _, _ -> },
+            onTaskSwiped = { _ -> }
+        )
     }
 }

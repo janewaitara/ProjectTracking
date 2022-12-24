@@ -9,6 +9,7 @@ sealed class AddEditMilestoneEvents {
     data class MilestoneStartDateChanged(val value: LocalDate) : AddEditMilestoneEvents()
     data class MilestoneEndDateChanged(val value: LocalDate) : AddEditMilestoneEvents()
     object NewTaskAdded : AddEditMilestoneEvents()
+    data class DeleteTask(val task: TaskState) : AddEditMilestoneEvents()
     data class TaskTitleChanged(val task: TaskState, val value: String) : AddEditMilestoneEvents()
     data class ChangeTaskTitleFocus(val task: TaskState, val focusState: FocusState) : AddEditMilestoneEvents()
     data class TaskDescChanged(val task: TaskState, val value: String) : AddEditMilestoneEvents()

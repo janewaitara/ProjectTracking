@@ -104,6 +104,9 @@ class AddEditMilestonesViewModel @Inject constructor(
             is AddEditMilestoneEvents.NewTaskAdded -> {
                 addNewTaskState()
             }
+            is AddEditMilestoneEvents.DeleteTask -> {
+                deleteTaskFromState(addEditMilestoneEvents.task)
+            }
             is AddEditMilestoneEvents.ChangeTaskDescFocus -> {
                 _stateTasks.find {
                     it.taskId == addEditMilestoneEvents.task.taskId
@@ -212,6 +215,12 @@ class AddEditMilestonesViewModel @Inject constructor(
                 milestoneId = currentMilestoneId!!
             )
         )
+    }
+
+    private fun deleteTaskFromState(taskState: TaskState) {
+        _stateTasks.remove(taskState)
+
+        // TODO remove the task from the database
     }
 
     fun Task.toTaskState() = TaskState(
