@@ -16,7 +16,7 @@ There is a slight mismatch between the designs and the app implementation: The a
 <p align="left">
  <img src="https://user-images.githubusercontent.com/32500878/209720692-c9d80c45-aef1-4ad1-95be-9cf36207f358.png" width=30% height=30%> &nbsp;&nbsp;&nbsp;&nbsp;
  <img src="https://user-images.githubusercontent.com/32500878/209723542-c855577b-3d08-41a0-88d1-025a415ee69b.png" width=30% height=30%> &nbsp;&nbsp;&nbsp;&nbsp;
- <img src="https://user-images.githubusercontent.com/32500878/209723860-0fe9f49f-db2a-4632-8187-9a3dfb6b3b6d.png" width=30% height=30%>
+
 </p>
 
 <p align="left">
