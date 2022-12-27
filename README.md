@@ -1,16 +1,27 @@
 # ProjectTracking
 
-A Jetpack Compose App
+A Jetpack Compose App which allows users(humans) to track their projects progress. The app allows the user to break down their projects into easier manageable tasks where they can easily update their tasks progres
 
-# Architecture
-![Home page - splash screen](https://user-images.githubusercontent.com/32500878/209720513-cda40a4e-854f-40e7-9d09-5be59531af3d.png)
-![Add new project](https://user-images.githubusercontent.com/32500878/209720692-c9d80c45-aef1-4ad1-95be-9cf36207f358.png)
-![Home page - All projects in home page](https://user-images.githubusercontent.com/32500878/209720755-3c1759c6-02c8-44ad-ab1a-09a2826e9530.png)
+# Designs
+There is a slight mismatch between the designs and the app implementation: The app does not have project's collaboration - no team members.
 
-![Project Details - without milestones](https://user-images.githubusercontent.com/32500878/209720861-2bc8dbf8-96f1-4baa-81cd-bd5ef6ad0c2c.png)
-![Home page - splash screen](https://user-images.githubusercontent.com/32500878/209720904-5ed14586-eff8-4631-9cd8-5bab7162f708.png)
-![Assigned Tasks](https://user-images.githubusercontent.com/32500878/209720929-2b6b441e-dd73-4b20-be20-a57c192f2374.png)
 
+<p align="left">
+ <img src="https://user-images.githubusercontent.com/32500878/209720513-cda40a4e-854f-40e7-9d09-5be59531af3d.png" width=30% height=30%> &nbsp;&nbsp;&nbsp;&nbsp;
+ <img src="https://user-images.githubusercontent.com/32500878/209720755-3c1759c6-02c8-44ad-ab1a-09a2826e9530.png" width=30% height=30%>
+&nbsp;&nbsp;&nbsp;&nbsp;
+ <img src="https://user-images.githubusercontent.com/32500878/209724024-274e86af-5fe0-4760-a8ea-0f5432858159.png" width=30% height=30%>
+</p>
+
+<p align="left">
+ <img src="https://user-images.githubusercontent.com/32500878/209720692-c9d80c45-aef1-4ad1-95be-9cf36207f358.png" width=30% height=30%> &nbsp;&nbsp;&nbsp;&nbsp;
+ <img src="https://user-images.githubusercontent.com/32500878/209723542-c855577b-3d08-41a0-88d1-025a415ee69b.png" width=30% height=30%> &nbsp;&nbsp;&nbsp;&nbsp;
+ <img src="https://user-images.githubusercontent.com/32500878/209723860-0fe9f49f-db2a-4632-8187-9a3dfb6b3b6d.png" width=30% height=30%>
+</p>
+
+<p align="left">
+ 
+</p>
 
 # Architecture
 The app uses MVVM (Model View View Model) architecture to have a unidirectional flow of data, separation of concern, testability, and a lot more.
