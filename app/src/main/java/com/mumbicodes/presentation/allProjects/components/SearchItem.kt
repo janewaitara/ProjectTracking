@@ -1,6 +1,7 @@
 package com.mumbicodes.presentation.allProjects.components
 
-import androidx.compose.foundation.layout.height
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -15,31 +16,39 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.R
-import com.mumbicodes.presentation.theme.*
+import com.mumbicodes.presentation.theme.GreyNormal
+import com.mumbicodes.presentation.theme.GreySubtle
+import com.mumbicodes.presentation.theme.ProjectTrackingTheme
+import com.mumbicodes.presentation.theme.Space48dp
 
 /**
  * TODO research on how to reduce the icon and text spacing and the whole margin
  * Todo - With the custom size < 56, the text is cut off - how to solve that
-*/
+ */
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    searchParamType: String
+    searchParamType: String,
+    searchedText: String = "",
+    onSearchParamChanged: (String) -> Unit = {},
 ) {
     Surface(
         modifier = modifier
-            .height(Space48dp)
+            // .height(Space48dp)
             .shadow(
                 elevation = 60.dp,
                 ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
                 spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
-            ),
+            )
+            .background(color = MaterialTheme.colorScheme.surface),
         shape = MaterialTheme.shapes.small,
-        color = White,
+        // color = MaterialTheme.colorScheme.surface,
     ) {
         TextField(
-            value = "",
-            onValueChange = {},
+            value = searchedText,
+            onValueChange = {
+                onSearchParamChanged(it)
+            },
             leadingIcon = {
                 Icon(
                     modifier = Modifier.alpha(0.5f),
@@ -49,7 +58,7 @@ fun SearchBar(
                 )
             },
             colors = TextFieldDefaults.textFieldColors(
-                containerColor = White,
+                containerColor = MaterialTheme.colorScheme.surface,
                 disabledTextColor = Color.Transparent,
                 // Added below code to remove the underline
                 focusedIndicatorColor = Color.Transparent,
@@ -80,6 +89,14 @@ fun SearchBar(
 @Composable
 fun SearchItemPreview() {
     ProjectTrackingTheme {
+        SearchBar(searchParamType = "projects")
+    }
+}
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun SearchItemPreviewDark() {
+    ProjectTrackingTheme() {
         SearchBar(searchParamType = "projects")
     }
 }

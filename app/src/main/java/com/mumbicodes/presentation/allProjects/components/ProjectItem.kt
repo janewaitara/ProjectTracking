@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.allProjects.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,16 +20,12 @@ fun ProjectItem(
     project: Project,
     onClickProject: (Int) -> Unit = {},
 ) {
-    Card(
-        // the Material color is not working - MaterialTheme.colorScheme.surface
-        colors = CardDefaults.cardColors(
-            containerColor = White
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 40.dp),
+    Surface(
         shape = MaterialTheme.shapes.small,
         onClick = { onClickProject(project.projectId) },
         modifier = modifier
             .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface)
             .shadow(
                 elevation = 40.dp,
                 shape = MaterialTheme.shapes.small,

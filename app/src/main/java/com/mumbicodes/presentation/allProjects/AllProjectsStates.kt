@@ -6,6 +6,7 @@ import com.mumbicodes.domain.util.ProjectsOrder
 
 data class AllProjectsStates(
     val projects: List<Project> = emptyList(),
+    val filteredProjects: List<Project> = emptyList(),
     val projectsOrder: ProjectsOrder = ProjectsOrder.DateAdded(OrderType.Descending),
     val filtersStatus: List<String> = filters,
     val selectedProjectStatus: String = filters.first(),

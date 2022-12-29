@@ -2,6 +2,7 @@ package com.mumbicodes.data.repository
 
 import com.mumbicodes.data.db.MilestonesDao
 import com.mumbicodes.domain.model.Milestone
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.repository.MilestonesRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -13,14 +14,14 @@ class MilestonesRepositoryImpl(
         milestonesDao.insertMilestone(milestone)
     }
 
-    override suspend fun getMilestoneById(milestoneId: Int): Milestone =
-        milestonesDao.getMilestoneById(milestoneId)
+    override fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?> =
+        milestonesDao.getMilestoneByIdWithTasks(milestoneId)
 
-    override fun getAllMilestonesBasedOnProjIdAndStatus(
+    override suspend fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,
         status: String?,
-    ): Flow<List<Milestone>> =
-        milestonesDao.getAllMilestonesBasedOnProjIdAndStatus(projectId, status)
+    ): List<Milestone> =
+        milestonesDao.getAllMilestonesBasedOnProjIdAndStatus(projectId,)
 
     override suspend fun deleteMilestone(milestone: Milestone) {
         milestonesDao.deleteMilestone(milestone)

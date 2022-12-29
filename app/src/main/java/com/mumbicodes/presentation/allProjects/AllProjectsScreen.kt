@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.allProjects
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,9 +48,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun AllProjectsScreen(
     projectsViewModel: AllProjectsViewModel = hiltViewModel(),
-    onClickProject: (Int) -> Unit
+    onClickProject: (Int) -> Unit,
 ) {
     val state = projectsViewModel.state.value
+    val searchedTextState = projectsViewModel.searchParam.value
     val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
@@ -114,6 +117,14 @@ fun AllProjectsScreen(
                                 selectedStatus
                             )
                         )
+                    },
+                    searchedText = searchedTextState,
+                    onSearchParamChanged = { searchParam ->
+                        projectsViewModel.onEvent(
+                            AllProjectsEvent.SearchProject(
+                                searchParam
+                            )
+                        )
                     }
                 )
             }
@@ -128,6 +139,8 @@ fun AllProjectsScreenContent(
     onClickProject: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
+    searchedText: String,
+    onSearchParamChanged: (String) -> Unit,
 ) {
 
     Column(modifier = modifier) {
@@ -153,7 +166,9 @@ fun AllProjectsScreenContent(
         ) {
             SearchBar(
                 modifier = Modifier.weight(1f),
-                searchParamType = stringResource(id = R.string.projects)
+                searchParamType = stringResource(id = R.string.projects),
+                searchedText = searchedText,
+                onSearchParamChanged = onSearchParamChanged
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -193,16 +208,24 @@ fun AllProjectsScreenContent(
 
         StaggeredVerticalGrid(
             maxColumnWidth = 220.dp,
-            modifier = Modifier.padding(horizontal = Space12dp)
+            modifier = Modifier
+                .padding(horizontal = Space12dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            projectsState.projects.forEach { project ->
+            projectsState.filteredProjects.forEach { project ->
                 ProjectItem(
                     modifier = Modifier.padding(Space8dp),
                     project = project,
                     onClickProject = onClickProject
                 )
             }
+        }
+
+        if (projectsState.filteredProjects.isEmpty()) {
+            EmptyStateSection(
+                filter = projectsState.selectedProjectStatus,
+                projects = projectsState.projects
+            )
         }
     }
 }
@@ -213,7 +236,7 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
 
         Text(
             text = stringResource(id = R.string.greetings),
-            style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onBackground),
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -240,6 +263,57 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
                 }
             },
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun EmptyStateSection(
+    modifier: Modifier = Modifier,
+    filter: String,
+    projects: List<Project>,
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Spacer(modifier = Modifier.height(Space8dp))
+        val illustration =
+            if (projects.isEmpty()) {
+                R.drawable.new_project_illustration
+            } else {
+                when (filter) {
+                    "Not Started" -> R.drawable.ic_incomplete_projects
+                    "In Progress" -> R.drawable.inprogress
+                    "Completed" -> R.drawable.ic_incomplete_projects
+                    else -> R.drawable.new_project_illustration
+                }
+            }
+        Image(
+            painter = painterResource(id = illustration),
+            contentDescription = "Empty state illustration"
+        )
+
+        Spacer(modifier = Modifier.height(Space24dp))
+
+        val emptyText: String =
+            if (projects.isEmpty()) {
+                stringResource(id = R.string.allEmptyText)
+            } else {
+                when (filter) {
+                    "Not Started" -> stringResource(id = R.string.notStartedEmptyText)
+                    "In Progress" -> stringResource(id = R.string.inProgressEmptyText)
+                    "Completed" -> stringResource(id = R.string.completeEmptyText)
+                    else -> stringResource(id = R.string.allEmptyText)
+                }
+            }
+        Text(
+            modifier = Modifier.padding(start = Space36dp, end = Space36dp),
+            text = emptyText,
+            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
+            textAlign = TextAlign.Center
         )
     }
 }

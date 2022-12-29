@@ -2,6 +2,7 @@ package com.mumbicodes.data.db
 
 import androidx.room.*
 import com.mumbicodes.domain.model.Milestone
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -12,13 +13,12 @@ interface MilestonesDao {
 
     /** Fetch */
     @Query("SELECT * from milestones_table WHERE milestoneId = :milestoneId")
-    suspend fun getMilestoneById(milestoneId: Int): Milestone
+    fun getMilestoneByIdWithTasks(milestoneId: Int): Flow<MilestoneWithTasks?>
 
-    @Query("SELECT * from milestones_table Where projectId = :projectId AND status = :status")
-    fun getAllMilestonesBasedOnProjIdAndStatus(
+    @Query("SELECT * from milestones_table Where projectId = :projectId")
+    suspend fun getAllMilestonesBasedOnProjIdAndStatus(
         projectId: Int,
-        status: String?,
-    ): Flow<List<Milestone>>
+    ): List<Milestone>
 
     /** Deletion */
     @Delete

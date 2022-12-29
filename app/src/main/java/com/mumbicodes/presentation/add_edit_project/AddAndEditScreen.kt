@@ -164,6 +164,7 @@ fun FieldForms(
             placeholder = "How would you describe it?",
             textValue = descTextValue,
             singleLine = false,
+            maxLine = 6
         )
         Spacer(modifier = Modifier.height(Space20dp))
 
@@ -188,16 +189,17 @@ fun FieldForms(
         }
         if (isCalendarVisible) {
             ComposeCalendar(
+                minDate = LocalDate.now(),
                 onDone = { userDateSelection ->
                     onDeadlineChanged(userDateSelection)
                 },
-                onDismiss =
-                onDeadlineClicked
+                onDismiss = onDeadlineClicked
             )
         }
 
         Spacer(modifier = Modifier.height(Space48dp))
         PrimaryButton(
+            modifier = modifier.fillMaxWidth(),
             text = stringResource(id = R.string.saveProject),
             onClick = onSaveProject,
             isEnabled = nameTextValue.isNotBlank() &&

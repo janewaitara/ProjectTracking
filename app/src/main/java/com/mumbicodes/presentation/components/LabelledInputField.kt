@@ -2,18 +2,26 @@ package com.mumbicodes.presentation.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import com.mumbicodes.R
+import com.mumbicodes.presentation.add_edit_milestone.TaskState
+import com.mumbicodes.presentation.add_edit_milestone.TaskTextFieldState
 import com.mumbicodes.presentation.theme.*
 
 @Composable
@@ -24,6 +32,7 @@ fun LabelledInputField(
     textValue: String = "",
     onValueChange: (String) -> Unit,
     singleLine: Boolean = true,
+    maxLine: Int = 1,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -41,6 +50,8 @@ fun LabelledInputField(
                 .heightIn(min = Space48dp)
                 .fillMaxWidth(),
             value = textValue,
+            textStyle = MaterialTheme.typography.bodySmall
+                .copy(color = MaterialTheme.colorScheme.onSurface),
             onValueChange = onValueChange,
             placeholder = {
                 Text(
@@ -57,7 +68,7 @@ fun LabelledInputField(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(0.1f),
             ),
-            maxLines = 1,
+            maxLines = maxLine,
             singleLine = singleLine,
         )
     }
@@ -89,6 +100,9 @@ fun LabelledInputFieldWithIcon(
                 .heightIn(min = Space48dp)
                 .fillMaxWidth(),
             value = textValue,
+            enabled = false,
+            textStyle = MaterialTheme.typography.bodySmall
+                .copy(color = MaterialTheme.colorScheme.onSurface),
             onValueChange = onValueChange,
             leadingIcon = {
                 Icon(
@@ -120,6 +134,130 @@ fun LabelledInputFieldWithIcon(
     }
 }
 
+@Composable
+fun TransparentHintTextField(
+    text: String,
+    hint: String,
+    modifier: Modifier = Modifier,
+    isHintVisible: Boolean = true,
+    onValueChange: (String) -> Unit,
+    textStyle: TextStyle = TextStyle(),
+    singleLine: Boolean = false,
+    onFocusChange: (FocusState) -> Unit,
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        BasicTextField(
+            value = text,
+            onValueChange = onValueChange,
+            singleLine = singleLine,
+            textStyle = textStyle,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    onFocusChange(it)
+                }
+                .padding(vertical = Space4dp),
+        )
+        if (isHintVisible) {
+            Text(
+                text = hint,
+                style = textStyle,
+                color = GreySubtle
+            )
+        }
+    }
+}
+
+@Composable
+fun TaskItemField(
+    modifier: Modifier,
+    task: TaskState,
+    onCheckedChange: () -> Unit,
+    onTaskTitleChange: (String) -> Unit,
+    onTaskDescChange: (String) -> Unit,
+    onTaskTitleFocusChange: (FocusState) -> Unit,
+    onTaskDescFocusChange: (FocusState) -> Unit,
+) {
+    ConstraintLayout(
+        modifier = modifier
+            .shadow(
+                elevation = 20.dp,
+                shape = MaterialTheme.shapes.small,
+                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
+                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+            )
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = MaterialTheme.shapes.small
+            )
+            .padding(Space8dp)
+
+    ) {
+        // Create references for the composables to constrain
+        val (icon, taskTitle, taskDesc) = createRefs()
+
+        Icon(
+            modifier = Modifier
+                .constrainAs(icon) {
+                    top.linkTo(taskTitle.top)
+                    bottom.linkTo(taskTitle.bottom)
+                }
+                .clickable {
+                    onCheckedChange()
+                },
+            painter = painterResource(id = if (task.statusState) R.drawable.ic_checkbox_true else R.drawable.ic_checkbox_false),
+            contentDescription = "Checkbox"
+        )
+        TransparentHintTextField(
+            modifier = Modifier
+                .constrainAs(taskTitle) {
+                    start.linkTo(icon.end, margin = Space8dp)
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+
+                    width = Dimension.fillToConstraints
+                },
+            text = task.taskTitleState.text,
+            hint = task.taskTitleState.hint,
+            onValueChange = {
+                onTaskTitleChange(it)
+            },
+            textStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurface),
+            onFocusChange = {
+                onTaskTitleFocusChange(it)
+            },
+            isHintVisible = task.taskTitleState.isHintVisible
+        )
+
+        Spacer(modifier = Modifier.height(Space4dp))
+
+        TransparentHintTextField(
+            modifier = Modifier
+                .constrainAs(taskDesc) {
+                    start.linkTo(taskTitle.start)
+                    top.linkTo(taskTitle.bottom, margin = Space4dp)
+                    end.linkTo(parent.end)
+
+                    width = Dimension.fillToConstraints
+                },
+            text = task.taskDescState.text,
+            hint = task.taskDescState.hint,
+            onValueChange = {
+                onTaskDescChange(it)
+            },
+            textStyle = MaterialTheme.typography.labelMedium.copy(color = GreyNormal),
+            onFocusChange = {
+                onTaskDescFocusChange(it)
+            },
+            isHintVisible = task.taskDescState.isHintVisible
+        )
+    }
+}
+
 @Preview
 @Composable
 fun LabelledTextFieldPreview() {
@@ -129,6 +267,61 @@ fun LabelledTextFieldPreview() {
                 color = White
             ),
             onValueChange = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun LabelledTextFieldWithIconPreview() {
+    ProjectTrackingTheme {
+
+        LabelledInputFieldWithIcon(
+            modifier = Modifier.background(
+                color = White
+            ),
+            onValueChange = {},
+            vectorIconId = R.drawable.ic_calendar,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransparentTextFieldPreview() {
+    ProjectTrackingTheme {
+
+        TransparentHintTextField(
+            text = "",
+            hint = "placeholder ",
+            onFocusChange = {},
+            onValueChange = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TaskItemFieldPreview() {
+    ProjectTrackingTheme {
+
+        TaskItemField(
+            modifier = Modifier.background(
+                color = White
+            ),
+            TaskState(
+                milestoneId = 234,
+                taskId = 432,
+                initialTaskTitleState = TaskTextFieldState(
+                    text = "Task Title 1",
+                    hint = "thius is a placehol"
+                ),
+            ),
+            onCheckedChange = {},
+            onTaskTitleChange = {},
+            onTaskDescChange = {},
+            onTaskTitleFocusChange = {},
+            onTaskDescFocusChange = {}
         )
     }
 }

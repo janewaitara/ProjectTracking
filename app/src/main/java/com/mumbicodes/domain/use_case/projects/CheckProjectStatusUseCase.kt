@@ -4,22 +4,18 @@ import android.app.Application
 import com.mumbicodes.R
 import com.mumbicodes.domain.repository.MilestonesRepository
 import com.mumbicodes.domain.util.ProgressStatus
-import kotlinx.coroutines.flow.collectLatest
 
 class CheckProjectStatusUseCase(
     val repository: MilestonesRepository,
     private val appContext: Application,
 ) {
-
     suspend operator fun invoke(projectId: Int): ProgressStatus {
 
         val milestonesInProject =
             repository.getAllMilestonesBasedOnProjIdAndStatus(projectId = projectId, status = null)
 
-        var milestonesStatusList = listOf<String>()
-
-        milestonesInProject.collectLatest { milestones ->
-            milestonesStatusList = milestones.map { it.status }
+        val milestonesStatusList = milestonesInProject.map {
+            it.status
         }
 
         val completed = milestonesStatusList.contains(appContext.getString(R.string.completed)) &&

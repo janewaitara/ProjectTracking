@@ -13,5 +13,6 @@ sealed class AllProjectsEvent {
     data class DeleteProject(val project: Project) : AllProjectsEvent()
     data class RestoreProject(val project: Project) : AllProjectsEvent()
     data class SelectProjectStatus(val projectStatus: String) : AllProjectsEvent()
+    data class SearchProject(val searchParam: String) : AllProjectsEvent()
     object ToggleBottomSheetVisibility : AllProjectsEvent()
 }

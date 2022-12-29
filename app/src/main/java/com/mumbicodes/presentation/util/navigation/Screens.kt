@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.mumbicodes.R
+import com.mumbicodes.presentation.util.MILESTONE_ID
 import com.mumbicodes.presentation.util.PROJECT_ID
 
 sealed class Screens(
@@ -23,8 +24,8 @@ sealed class Screens(
     object AddAndEditScreens :
         Screens(
             "addAndEdit",
-            R.drawable.ic_add_outlined,
-            R.drawable.ic_add_filled,
+            R.drawable.material_symbols_add_circle_rounded,
+            R.drawable.material_symbols_add_circle_rounded,
             "Add"
         ) {
         const val projectId = PROJECT_ID
@@ -34,6 +35,27 @@ sealed class Screens(
                 type = NavType.IntType
                 defaultValue = -1
             }
+        )
+    }
+
+    object AddAndEditMilestoneScreen : Screens(
+        "addAndEditMilestone",
+        R.drawable.ic_add_outlined,
+        R.drawable.ic_add_filled,
+        "Add Milestones"
+    ) {
+        const val milestoneId = MILESTONE_ID
+        const val projectId = PROJECT_ID
+
+        val routeWithArgs = "$route/{$projectId}/{$milestoneId}"
+        val arguments = listOf(
+            navArgument(projectId) {
+                type = NavType.IntType
+            },
+            navArgument(milestoneId) {
+                type = NavType.IntType
+                defaultValue = -1
+            },
         )
     }
 
@@ -72,7 +94,13 @@ sealed class Screens(
 
 val bottomNavigationDestinations = listOf(
     Screens.AllProjectsScreens,
+    Screens.MilestonesScreens,
+    Screens.Notifications,
     Screens.AddAndEditScreens,
+)
+
+val navigationRailDestinations = listOf(
+    Screens.AllProjectsScreens,
     Screens.MilestonesScreens,
     Screens.Notifications,
 )

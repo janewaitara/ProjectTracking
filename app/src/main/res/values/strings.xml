@@ -21,6 +21,7 @@
     <string name="addEditProjectTitle">%1$s Project</string>
     <string name="addTitle">Add</string>
     <string name="editTitle">Edit</string>
+    <string name="addProject"> Add Project</string>
     <string name="saveProject">Save Project</string>
     <string name="editProject">Edit Project</string>
     <string name="deleteProject">Delete Project</string>
@@ -32,6 +33,8 @@
     <string name="miniTasks">MINI TASKS</string>
     <string name="modifyMilestone">Modify Milestone</string>
     <string name="createMilestone">Create Milestone</string>
+    <string name="addMilestone">Add Milestone</string>
+    <string name="allMilestones">All Milestones</string>
     <string name="delete">Delete</string>
     <string name="description">Description</string>
     <string name="milestones">Milestones</string>
@@ -41,5 +44,20 @@
     <string name="deleteProjectDialogTitle">Delete this Project?</string>
     <string name="deleteProjectDialogText">You will loose all your data associated with this project. This action can not be undone.</string>
     <string name="cancel">Cancel</string>
+    <string name="addEditMilestoneTitle">%1$s Milestone</string>
+    <string name="milestoneTitle">Name of milestone</string>
+    <string name="milestoneStartDate">Start Date</string>
+    <string name="milestoneEndDate">End Date</string>
+    <string name="saveMilestone">Save Milestone</string>
+    <string name="miniTasksSmall">Mini tasks</string>
+    <string name="completeEmptyText">It seems like you haven’t completed any projects yet. But I’m certain you are tirelessly working on them.</string>
+    <string name="inProgressEmptyText">To move your projects to In progress, some of your milestones have to be started. </string>
+    <string name="notStartedEmptyText">Yeeeey!! 🎉. You have started all your projects.</string>
+    <string name="allEmptyText">Click on the  ➕  button below to add projects.</string>
+    <string name="milestonesCompleteEmptyText">It seems like you haven’t completed any milestones yet. Mark all tasks as done.</string>
+    <string name="milestonesInProgressEmptyText">Move your milestones to In progress by marking their tasks as done. </string>
+    <string name="milestonesNotStartedEmptyText">Yeeeey!! 🎉. You have started all your milestones.</string>
+    <string name="coming_soon">This feature is coming soon.</string>
+    <string name="notifications">Notifications.</string>
 
 </resources>

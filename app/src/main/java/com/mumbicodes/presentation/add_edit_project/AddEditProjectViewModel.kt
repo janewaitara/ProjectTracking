@@ -68,6 +68,7 @@ class AddEditProjectViewModel @Inject constructor(
                                 "dd MMM yyyy",
                                 "dd/MM/yyyy"
                             )
+                        projectDeadlineStateDb.value = projectPassed.projectDeadline
                         currentProjectStatus = projectPassed.projectStatus
                     }
                 }
@@ -96,16 +97,29 @@ class AddEditProjectViewModel @Inject constructor(
             }
             is AddEditProjectEvents.AddEditProject -> {
                 viewModelScope.launch {
-                    projectsUseCases.addProjectsUseCase(
-                        Project(
-                            projectId = currentProjectId,
-                            projectName = projectNameState.value,
-                            projectDesc = projectDescState.value,
-                            projectDeadline = projectDeadlineStateDb.value,
-                            projectStatus = currentProjectStatus,
-                            timeStamp = convertLocalDateToLong(LocalDate.now()),
+                    if (currentProjectId == 0) {
+                        projectsUseCases.addProjectsUseCase(
+                            Project(
+                                projectId = currentProjectId,
+                                projectName = projectNameState.value,
+                                projectDesc = projectDescState.value,
+                                projectDeadline = projectDeadlineStateDb.value,
+                                projectStatus = currentProjectStatus,
+                                timeStamp = convertLocalDateToLong(LocalDate.now()),
+                            )
                         )
-                    )
+                    } else {
+                        projectsUseCases.updateProjectsUseCase(
+                            Project(
+                                projectId = currentProjectId,
+                                projectName = projectNameState.value,
+                                projectDesc = projectDescState.value,
+                                projectDeadline = projectDeadlineStateDb.value,
+                                projectStatus = currentProjectStatus,
+                                timeStamp = convertLocalDateToLong(LocalDate.now()),
+                            )
+                        )
+                    }
                     uiEvents.emit(UIEvents.AddEditProject)
                 }
             }

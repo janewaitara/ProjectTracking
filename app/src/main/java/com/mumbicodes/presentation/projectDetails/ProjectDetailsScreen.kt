@@ -1,22 +1,21 @@
 package com.mumbicodes.presentation.projectDetails
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -30,14 +29,15 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mumbicodes.R
-import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.allProjects.filters
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.components.PrimaryButton
 import com.mumbicodes.presentation.components.SecondaryButton
 import com.mumbicodes.presentation.projectDetails.components.MilestoneItem
 import com.mumbicodes.presentation.theme.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -45,8 +45,10 @@ import kotlinx.coroutines.launch
 fun ProjectDetailsScreen(
     projectDetailsViewModel: ProjectDetailsViewModel = hiltViewModel(),
     onEditProject: (Int) -> Unit,
-    onAddOrModifyMilestone: (Int) -> Unit,
+    onAddOrModifyMilestone: (Int, Int) -> Unit,
     onClickIconBack: () -> Unit,
+    navigateToAllProjects: () -> Unit,
+    projectId: Int? = null,
 ) {
     val state = projectDetailsViewModel.state.value
     val modalBottomSheetState =
@@ -54,12 +56,37 @@ fun ProjectDetailsScreen(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
+    val lazyListState = rememberLazyListState()
+
+    // TODO research how to pass savedStateHandle without navigating
+    LaunchedEffect(key1 = projectId) {
+        projectId?.let { projectId ->
+            projectDetailsViewModel.getProjectDetails(projectId = projectId)
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        projectDetailsViewModel.uiEvents.collectLatest { uIEvents ->
+            when (uIEvents) {
+                is ProjectUIEvents.DeleteProject -> {
+                    navigateToAllProjects()
+                }
+                is ProjectUIEvents.ShowCongratsDialog -> TODO()
+                is ProjectUIEvents.DeleteMilestone -> {
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                }
+            }
+        }
+    }
+
     // TODO add logic to restore milestone
 
     ModalBottomSheetLayout(
         sheetContent = {
             MilestoneDetailsBottomSheetContent(
-                milestone = state.mileStone,
+                milestoneWithTasks = state.mileStone,
                 onDeleteClicked = {
                     projectDetailsViewModel.onEvent(ProjectDetailsEvents.DeleteMilestone(it))
                     scope.launch {
@@ -67,7 +94,7 @@ fun ProjectDetailsScreen(
                     }
                 },
                 onModifyClicked = {
-                    onAddOrModifyMilestone(it)
+                    onAddOrModifyMilestone(state.project.projectId, it)
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
@@ -82,14 +109,50 @@ fun ProjectDetailsScreen(
         Scaffold(
             scaffoldState = scaffoldState,
             backgroundColor = MaterialTheme.colorScheme.background,
+            floatingActionButton = {
+                if (state.milestones.isNotEmpty()) {
+                    ExtendedFloatingActionButton(
+                        modifier = Modifier.padding(
+                            bottom = Space24dp, end = Space4dp,
+                        ),
+                        text = {
+                            Text(
+                                modifier = Modifier,
+                                text = stringResource(
+                                    id = R.string.addMilestone
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        expanded = lazyListState.isScrollingUp(),
+                        icon = {
+                            Icon(
+                                Icons.Default.Add,
+                                modifier = Modifier,
+                                // painter = painterResource(id = R.drawable.ic_add_outlined),
+                                tint = MaterialTheme.colorScheme.primary,
+                                contentDescription = "Decoration",
+                            )
+                        },
+                        onClick = {
+                            // Used that int because the function navigates to shared add/edit milestone
+                            onAddOrModifyMilestone(state.project.projectId, -1)
+                        },
+                        shape = RoundedCornerShape(Space12dp)
+                    )
+                }
+            },
         ) { padding ->
             Box(modifier = Modifier.padding(padding)) {
                 ProjectDetailsScreenContent(
-                    modifier = Modifier.padding(
-                        top = 24.dp,
-                        start = Space20dp,
-                        end = Space20dp,
-                    ),
+                    modifier = Modifier
+                        .padding(
+                            top = 24.dp,
+                            start = Space20dp,
+                            end = Space20dp,
+                        )
+                        .safeContentPadding(),
                     projectState = state,
                     onClickMilestone = { milestoneId ->
                         // TODO - it might be best to pass the milestone than the Id
@@ -97,6 +160,9 @@ fun ProjectDetailsScreen(
                         projectDetailsViewModel.onEvent(
                             ProjectDetailsEvents.GetMilestone(milestoneId)
                         )
+                        scope.launch {
+                            modalBottomSheetState.show()
+                        }
                     },
                     onClickFilterMilestoneStatus = { selectedMilestoneStatus ->
                         projectDetailsViewModel.onEvent(
@@ -112,7 +178,7 @@ fun ProjectDetailsScreen(
                     },
                     onAddMilestoneClicked = {
                         // Used that int because the function navigates to shared add/edit milestone
-                        onAddOrModifyMilestone(-1)
+                        onAddOrModifyMilestone(state.project.projectId, -1)
                     },
                     onEditProject = { projectId ->
                         onEditProject(projectId)
@@ -122,7 +188,8 @@ fun ProjectDetailsScreen(
                     },
                     onDeleteProject = { project ->
                         projectDetailsViewModel.onEvent(ProjectDetailsEvents.DeleteProject(project))
-                    }
+                    },
+                    lazyListState = lazyListState
                 )
             }
         }
@@ -141,6 +208,7 @@ fun ProjectDetailsScreenContent(
     onEditProject: (Int) -> Unit,
     onDeleteProjectClicked: () -> Unit,
     onDeleteProject: (Project) -> Unit,
+    lazyListState: LazyListState,
 ) {
     Box(
         modifier = Modifier
@@ -159,6 +227,14 @@ fun ProjectDetailsScreenContent(
                 onDeleteProjectClicked = onDeleteProjectClicked
             )
 
+            Spacer(modifier = Modifier.height(Space16dp))
+
+            Text(
+                text = projectState.project.projectName,
+                style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+            )
             Spacer(modifier = Modifier.height(Space16dp))
 
             Row(
@@ -193,6 +269,7 @@ fun ProjectDetailsScreenContent(
 
             Spacer(modifier = Modifier.height(Space16dp))
 
+            Log.e("Milestones", projectState.milestones.toString())
             when {
                 projectState.milestones.isEmpty() -> {
                     EmptyMilestonesSection(
@@ -203,11 +280,12 @@ fun ProjectDetailsScreenContent(
                 else -> {
                     MilestonesSection(
                         modifier = Modifier,
-                        milestones = projectState.milestones,
-                        onAddMilestoneClicked = onAddMilestoneClicked,
+                        milestones = projectState.filteredMilestones,
                         selectedMilestoneStatus = projectState.selectedMilestoneStatus,
                         onClickFilterMilestoneStatus = onClickFilterMilestoneStatus,
-                        onClickMilestone = onClickMilestone
+                        onClickMilestone = onClickMilestone,
+                        lazyListState = lazyListState,
+                        filter = projectState.selectedMilestoneStatus
                     )
                 }
             }
@@ -365,13 +443,14 @@ fun ProjectScreenHeader(
             tint = MaterialTheme.colorScheme.onBackground,
             contentDescription = "Back button",
         )
-        Text(
+        /*Text(
             text = projectName,
             style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
-        )
+        )*/
+        Spacer(modifier = Modifier.weight(1f))
 
         Box(
             modifier = Modifier,
@@ -472,7 +551,7 @@ fun ProjectDescriptionSection(
             modifier = Modifier
                 .fillMaxWidth(),
             text = stringResource(id = R.string.description),
-            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.outline),
         )
 
         Spacer(modifier = Modifier.height(Space4dp))
@@ -505,11 +584,12 @@ fun ProjectDescriptionSection(
 @Composable
 fun MilestonesSection(
     modifier: Modifier,
-    milestones: List<Milestone>,
-    onAddMilestoneClicked: () -> Unit,
+    milestones: List<MilestoneWithTasks>,
     selectedMilestoneStatus: String,
     onClickMilestone: (Int) -> Unit,
     onClickFilterMilestoneStatus: (String) -> Unit,
+    lazyListState: LazyListState,
+    filter: String,
 ) {
     Column(
         modifier = modifier,
@@ -524,16 +604,7 @@ fun MilestonesSection(
                 modifier = Modifier
                     .weight(1f),
                 text = stringResource(id = R.string.milestones),
-                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
-            )
-            Icon(
-                modifier = Modifier
-                    .size(24.dp, 24.dp)
-                    .clickable {
-                        onAddMilestoneClicked()
-                    },
-                painter = painterResource(id = R.drawable.ic_add_milestone),
-                contentDescription = "add new milestone",
+                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.outline),
             )
         }
 
@@ -556,15 +627,20 @@ fun MilestonesSection(
 
         Spacer(modifier = Modifier.height(Space8dp))
 
-        LazyColumn(
-            modifier = Modifier,
-            verticalArrangement = Arrangement.spacedBy(Space8dp)
-        ) {
-            itemsIndexed(milestones) { _, milestone ->
-                MilestoneItem(
-                    milestone = milestone,
-                    onClickMilestone = onClickMilestone
-                )
+        if (milestones.isEmpty()) {
+            EmptyStateSection(filter = filter)
+        } else {
+            LazyColumn(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.spacedBy(Space8dp),
+                state = lazyListState,
+            ) {
+                itemsIndexed(milestones) { _, milestone ->
+                    MilestoneItem(
+                        milestoneWithTasks = milestone,
+                        onClickMilestone = onClickMilestone
+                    )
+                }
             }
         }
     }
@@ -584,7 +660,7 @@ fun EmptyMilestonesSection(
             modifier = Modifier
                 .fillMaxWidth(),
             text = stringResource(id = R.string.milestones),
-            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.outline),
         )
         Spacer(modifier = Modifier.height(Space8dp))
 
@@ -611,6 +687,73 @@ fun EmptyMilestonesSection(
             isEnabled = true,
         )
     }
+}
+
+@Composable
+fun EmptyStateSection(
+    modifier: Modifier = Modifier,
+    filter: String,
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+
+        Spacer(modifier = Modifier.height(Space24dp))
+        val illustration =
+            when (filter) {
+                "Not Started" -> R.drawable.ic_incomplete_projects
+                "In Progress" -> R.drawable.inprogress
+                "Completed" -> R.drawable.ic_incomplete_projects
+                else -> R.drawable.new_project_illustration
+            }
+
+        Image(
+            modifier = Modifier.height(200.dp),
+            painter = painterResource(id = illustration),
+            contentDescription = "Empty state illustration"
+        )
+
+        Spacer(modifier = Modifier.height(Space24dp))
+
+        val emptyText: String =
+            when (filter) {
+                "Not Started" -> stringResource(id = R.string.milestonesNotStartedEmptyText)
+                "In Progress" -> stringResource(id = R.string.milestonesInProgressEmptyText)
+                "Completed" -> stringResource(id = R.string.milestonesCompleteEmptyText)
+                else -> stringResource(id = R.string.allEmptyText)
+            }
+
+        Text(
+            modifier = Modifier.padding(start = Space32dp, end = Space32dp),
+            text = emptyText,
+            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+/**
+ * Returns whether the lazy list is currently scrolling up. - gotten from one Google's codelabs -
+ * https://github.com/googlecodelabs/android-compose-codelabs/blob/7a6330facd54f4f7c8d07f5fad481fb13587e422/AnimationCodelab/finished/src/main/java/com/example/android/codelab/animation/ui/home/Home.kt#L337
+ */
+@Composable
+private fun LazyListState.isScrollingUp(): Boolean {
+    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
+    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
+    return remember(this) {
+        derivedStateOf {
+            if (previousIndex != firstVisibleItemIndex) {
+                previousIndex > firstVisibleItemIndex
+            } else {
+                previousScrollOffset >= firstVisibleItemScrollOffset
+            }.also {
+                previousIndex = firstVisibleItemIndex
+                previousScrollOffset = firstVisibleItemScrollOffset
+            }
+        }
+    }.value
 }
 
 @Preview
