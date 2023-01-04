@@ -3,8 +3,7 @@
 A Jetpack Compose App which allows users(humans) to track their projects progress. The app allows the user to break down their projects into easier manageable tasks where they can easily update their tasks' progress.
 
 # Designs
-There is a slight mismatch between the designs and the app implementation: The app does not have project's collaboration - no team members.
-
+There is a slight mismatch between the designs and the app implementation: The app does not have project's collaboration - no team members and authentication.
 
 <p align="left">
  <img src="https://user-images.githubusercontent.com/32500878/209720513-cda40a4e-854f-40e7-9d09-5be59531af3d.png" width=30% height=30%> &nbsp;&nbsp;&nbsp;&nbsp;
