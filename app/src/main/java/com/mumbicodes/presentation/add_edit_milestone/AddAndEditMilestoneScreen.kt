@@ -38,7 +38,7 @@ fun AddAndEditMilestoneScreen(
     val milestoneEndDateState = milestonesViewModel.milestoneEndDateState.value
     val passedMilestoneId = milestonesViewModel.passedMilestoneId
     val isCalendarVisible = milestonesViewModel.isCalendarVisible.value
-    val tasksState = milestonesViewModel.stateTasks
+    val tasksState = milestonesViewModel.stateTasks.distinctBy { it.taskId }
 
     LaunchedEffect(key1 = true) {
         milestonesViewModel.uiEvents.collectLatest { uIEvents ->
@@ -328,29 +328,6 @@ fun FieldForms(
 
             Spacer(modifier = Modifier.height(Space8dp))
         }
-
-        /*item {
-            tasks.forEach { task ->
-                TaskItemField(
-                    modifier = Modifier,
-                    task = task,
-                    onCheckedChange = { onCheckedChange(task) },
-                    onTaskTitleChange = { taskTitle ->
-                        onTaskTitleChange(task, taskTitle)
-                    },
-                    onTaskDescChange = { taskDesc ->
-                        onTaskDescChange(task, taskDesc)
-                    },
-                    onTaskTitleFocusChange = { focusState ->
-                        onTaskTitleFocusChange(task, focusState)
-                    },
-                    onTaskDescFocusChange = { focusState ->
-                        onTaskDescFocusChange(task, focusState)
-                    }
-                )
-                Spacer(modifier = Modifier.height(Space8dp))
-            }
-        }*/
 
         items(tasks, { task: TaskState -> task.taskId }) { task ->
             SwipeToDismissComponent(

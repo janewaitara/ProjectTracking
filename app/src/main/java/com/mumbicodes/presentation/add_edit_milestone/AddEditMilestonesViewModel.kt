@@ -218,9 +218,12 @@ class AddEditMilestonesViewModel @Inject constructor(
     }
 
     private fun deleteTaskFromState(taskState: TaskState) {
+        viewModelScope.launch {
+            tasksUseCases.deleteTaskUseCase(
+                taskState.toTask()
+            )
+        }
         _stateTasks.remove(taskState)
-
-        // TODO remove the task from the database
     }
 
     fun Task.toTaskState() = TaskState(
