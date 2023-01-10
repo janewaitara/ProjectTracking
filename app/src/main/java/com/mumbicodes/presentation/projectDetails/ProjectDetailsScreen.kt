@@ -85,6 +85,8 @@ fun ProjectDetailsScreen(
 
     ModalBottomSheetLayout(
         sheetContent = {
+            Spacer(modifier = Modifier.height(1.dp))
+
             MilestoneDetailsBottomSheetContent(
                 milestoneWithTasks = state.mileStone,
                 onDeleteClicked = {
@@ -94,10 +96,10 @@ fun ProjectDetailsScreen(
                     }
                 },
                 onModifyClicked = {
-                    onAddOrModifyMilestone(state.project.projectId, it)
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
+                    onAddOrModifyMilestone(state.project.projectId, it)
                 }
             )
         },
@@ -231,7 +233,7 @@ fun ProjectDetailsScreenContent(
 
             Text(
                 text = projectState.project.projectName,
-                style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
             )
@@ -440,16 +442,10 @@ fun ProjectScreenHeader(
                     onClickBackIcon()
                 },
             painter = painterResource(id = R.drawable.ic_arrow_back),
-            tint = MaterialTheme.colorScheme.onBackground,
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Back button",
         )
-        /*Text(
-            text = projectName,
-            style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f)
-        )*/
+
         Spacer(modifier = Modifier.weight(1f))
 
         Box(
@@ -463,7 +459,7 @@ fun ProjectScreenHeader(
                         onClickMenuIcon()
                     },
                 painter = painterResource(id = R.drawable.ic_menu),
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = "menu icon",
             )
             // TODO research more on the shadows - added ones not working

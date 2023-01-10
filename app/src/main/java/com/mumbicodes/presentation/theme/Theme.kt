@@ -52,7 +52,7 @@ private val LightColorPalette = lightColorScheme(
 
     surface = White,
     onSurface = GreyDark,
-    inverseSurface = GreyDarkest,
+    inverseSurface = GreyNormal,
     inverseOnSurface = GreySubtle,
     surfaceVariant = White,
     onSurfaceVariant = GreyDark,

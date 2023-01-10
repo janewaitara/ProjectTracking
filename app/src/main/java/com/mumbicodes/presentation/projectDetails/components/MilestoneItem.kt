@@ -49,7 +49,7 @@ fun MilestoneItem(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = milestoneWithTasks.milestone.milestoneTitle,
-                style = MaterialTheme.typography.titleMedium.copy(MaterialTheme.colorScheme.onBackground)
+                style = MaterialTheme.typography.titleMedium.copy(MaterialTheme.colorScheme.onSurface)
             )
             Spacer(modifier = Modifier.height(Space8dp))
 
