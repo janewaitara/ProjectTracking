@@ -6,11 +6,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.presentation.components.provideShadowColor
 import com.mumbicodes.presentation.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,8 +29,8 @@ fun ProjectItem(
             .shadow(
                 elevation = 40.dp,
                 shape = MaterialTheme.shapes.small,
-                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                ambientColor = provideShadowColor(),
+                spotColor = provideShadowColor()
             ),
 
     ) {

@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -186,8 +185,8 @@ fun TaskItemField(
             .shadow(
                 elevation = 20.dp,
                 shape = MaterialTheme.shapes.small,
-                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                ambientColor = provideShadowColor(),
+                spotColor = provideShadowColor()
             )
             .fillMaxWidth()
             .background(
