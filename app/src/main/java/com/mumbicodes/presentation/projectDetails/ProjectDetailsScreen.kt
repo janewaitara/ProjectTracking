@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +34,7 @@ import com.mumbicodes.presentation.allProjects.filters
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.components.PrimaryButton
 import com.mumbicodes.presentation.components.SecondaryButton
+import com.mumbicodes.presentation.components.provideShadowColor
 import com.mumbicodes.presentation.projectDetails.components.MilestoneItem
 import com.mumbicodes.presentation.theme.*
 import kotlinx.coroutines.flow.collectLatest
@@ -221,7 +221,6 @@ fun ProjectDetailsScreenContent(
 
             ProjectScreenHeader(
                 modifier = Modifier.fillMaxWidth(),
-                projectName = projectState.project.projectName,
                 onClickBackIcon = onClickIconBack,
                 onClickMenuIcon = onClickIconMenu,
                 isMenuOptionsVisible = projectState.isMenuOptionsVisible,
@@ -424,7 +423,6 @@ fun DeleteDialog(
 @Composable
 fun ProjectScreenHeader(
     modifier: Modifier,
-    projectName: String,
     onClickBackIcon: () -> Unit,
     onClickMenuIcon: () -> Unit,
     isMenuOptionsVisible: Boolean,
@@ -465,12 +463,12 @@ fun ProjectScreenHeader(
             // TODO research more on the shadows - added ones not working
             DropdownMenu(
                 modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.background)
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
                     .shadow(
                         elevation = 40.dp,
                         shape = MaterialTheme.shapes.small,
-                        ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                        spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                        ambientColor = provideShadowColor(),
+                        spotColor = provideShadowColor()
                     ),
                 expanded = isMenuOptionsVisible,
                 onDismissRequest = onClickMenuIcon,
@@ -556,7 +554,7 @@ fun ProjectDescriptionSection(
             modifier = Modifier
                 .fillMaxWidth(),
             text = projectDesc,
-            style = MaterialTheme.typography.bodySmall.copy(color = GreyNormal),
+            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.inverseSurface),
             maxLines = if (!descExpandedState.value) 3 else Int.MAX_VALUE,
             overflow = if (!descExpandedState.value) TextOverflow.Ellipsis else TextOverflow.Clip,
         )
@@ -759,7 +757,6 @@ fun ProjectPreviews() {
 
         ProjectScreenHeader(
             modifier = Modifier.fillMaxWidth(),
-            projectName = "Project Name",
             onClickBackIcon = { },
             onClickMenuIcon = { },
             isMenuOptionsVisible = true,

@@ -28,7 +28,7 @@ private val DarkColorPalette = darkColorScheme(
     onSurface = White,
     inverseSurface = GreySubtle,
     inverseOnSurface = GreyDarkest,
-    surfaceVariant = GreyDark,
+    surfaceVariant = GreyNormal,
     onSurfaceVariant = White,
 
     outline = GreySubtle

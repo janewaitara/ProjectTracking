@@ -37,6 +37,7 @@ fun TaskItem(
                 bottom.linkTo(taskTitle.bottom)
             },
             painter = painterResource(id = if (task.status) R.drawable.ic_checkbox_true else R.drawable.ic_checkbox_false),
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Checkbox"
         )
         Text(
