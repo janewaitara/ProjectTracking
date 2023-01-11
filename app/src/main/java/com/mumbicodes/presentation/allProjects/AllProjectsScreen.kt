@@ -322,7 +322,7 @@ fun EmptyStateSection(
         Text(
             modifier = Modifier.padding(start = Space36dp, end = Space36dp),
             text = emptyText,
-            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
+            style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
             textAlign = TextAlign.Center
         )
     }

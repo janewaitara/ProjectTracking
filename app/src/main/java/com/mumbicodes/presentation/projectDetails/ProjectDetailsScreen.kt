@@ -668,7 +668,7 @@ fun EmptyMilestonesSection(
         Text(
             modifier = Modifier.padding(start = Space36dp, end = Space36dp),
             text = stringResource(id = R.string.milestoneEmptyText),
-            style = MaterialTheme.typography.bodySmall.copy(GreyNormal),
+            style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.inverseSurface),
             textAlign = TextAlign.Center
         )
 
@@ -722,7 +722,7 @@ fun EmptyStateSection(
         Text(
             modifier = Modifier.padding(start = Space32dp, end = Space32dp),
             text = emptyText,
-            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
+            style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
             textAlign = TextAlign.Center
         )
     }
