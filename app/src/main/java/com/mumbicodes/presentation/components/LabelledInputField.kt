@@ -209,6 +209,7 @@ fun TaskItemField(
                     onCheckedChange()
                 },
             painter = painterResource(id = if (task.statusState) R.drawable.ic_checkbox_true else R.drawable.ic_checkbox_false),
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Checkbox"
         )
         TransparentHintTextField(
@@ -248,7 +249,7 @@ fun TaskItemField(
             onValueChange = {
                 onTaskDescChange(it)
             },
-            textStyle = MaterialTheme.typography.labelMedium.copy(color = GreyNormal),
+            textStyle = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.inverseSurface),
             onFocusChange = {
                 onTaskDescFocusChange(it)
             },

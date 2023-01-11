@@ -55,9 +55,9 @@ fun AddAndEditMilestoneScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(Space20dp)
             .background(color = MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(Space20dp)
     ) {
         val actionToPerform = when {
             passedMilestoneId != -1 -> stringResource(id = R.string.editTitle)
@@ -177,12 +177,12 @@ fun ScreenHeader(
                     iconOnClick()
                 },
             painter = painterResource(id = R.drawable.ic_arrow_back),
-            tint = MaterialTheme.colorScheme.onBackground,
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Back button",
         )
         Text(
             text = stringResource(id = R.string.addEditMilestoneTitle, titleTextAction),
-            style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
