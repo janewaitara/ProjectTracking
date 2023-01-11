@@ -37,8 +37,10 @@ fun ProjectItem(
         Column(modifier = Modifier.padding(Space8dp)) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 text = project.projectName,
-                style = MaterialTheme.typography.headlineMedium.copy(color = GreyDark)
+                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onSurface)
             )
 
             Spacer(modifier = Modifier.height(Space8dp))
@@ -48,7 +50,7 @@ fun ProjectItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis, // adds three dots after 2 lines
                 text = project.projectDesc,
-                style = MaterialTheme.typography.labelMedium.copy(color = GreyNormal)
+                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.inverseSurface)
             )
 
             Spacer(modifier = Modifier.height(Space8dp))
@@ -56,7 +58,7 @@ fun ProjectItem(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = project.projectDeadline,
-                style = MaterialTheme.typography.labelSmall.copy(color = BlueMain)
+                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.primary)
             )
         }
     }

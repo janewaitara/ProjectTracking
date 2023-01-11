@@ -183,12 +183,13 @@ fun AllProjectsScreenContent(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(MaterialTheme.shapes.small)
-                    .background(White),
-                onClick = onClickFilterBtn
+                    .background(MaterialTheme.colorScheme.surface),
+                onClick = onClickFilterBtn,
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_filter),
                     contentDescription = "Filter projects",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -245,7 +246,7 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
 
         Text(
             text = stringResource(id = R.string.greetings),
-            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -254,19 +255,19 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
             text = buildAnnotatedString {
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = GreyNormal)
+                        .copy(fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.inverseSurface)
                 ) {
                     append("You have ")
                 }
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(textDecoration = TextDecoration.Underline, color = BlueMain)
+                        .copy(textDecoration = TextDecoration.Underline, color = MaterialTheme.colorScheme.primary)
                 ) {
                     append("${projects.size}")
                 }
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = GreyNormal)
+                        .copy(fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.inverseSurface)
                 ) {
                     append(" projects.")
                 }

@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.mumbicodes.presentation.theme.GreyNormal
 import com.mumbicodes.presentation.theme.Space36dp
 import com.mumbicodes.presentation.theme.Space4dp
 
@@ -37,7 +36,7 @@ fun DefaultRadioButton(
         Spacer(modifier = Modifier.height(Space4dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.bodySmall.copy(color = GreyNormal),
+            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.inverseSurface),
             modifier = Modifier.fillMaxWidth()
         )
     }
