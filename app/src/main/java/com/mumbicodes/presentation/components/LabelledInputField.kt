@@ -39,7 +39,7 @@ fun LabelledInputField(
                 .fillMaxWidth(),
             text = fieldLabel,
             style = MaterialTheme.typography.bodySmall,
-            color = GreyNormal
+            color = MaterialTheme.colorScheme.inverseSurface
         )
         Spacer(modifier = Modifier.height(Space8dp))
 
@@ -89,7 +89,7 @@ fun LabelledInputFieldWithIcon(
                 .fillMaxWidth(),
             text = fieldLabel,
             style = MaterialTheme.typography.bodySmall,
-            color = GreyNormal
+            color = MaterialTheme.colorScheme.inverseSurface
         )
         Spacer(modifier = Modifier.height(Space8dp))
 

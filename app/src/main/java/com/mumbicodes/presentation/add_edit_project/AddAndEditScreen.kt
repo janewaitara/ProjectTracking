@@ -23,7 +23,6 @@ import com.mumbicodes.R
 import com.mumbicodes.presentation.components.LabelledInputField
 import com.mumbicodes.presentation.components.LabelledInputFieldWithIcon
 import com.mumbicodes.presentation.components.PrimaryButton
-import com.mumbicodes.presentation.theme.GreyDark
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.presentation.theme.Space20dp
 import com.mumbicodes.presentation.theme.Space48dp
@@ -58,9 +57,9 @@ fun AddAndEditScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(Space20dp)
             .background(color = MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(Space20dp)
     ) {
 
         val actionToPerform = when {
@@ -117,12 +116,12 @@ fun ScreenHeader(
                     iconOnClick()
                 },
             painter = painterResource(id = R.drawable.ic_arrow_back),
-            tint = MaterialTheme.colorScheme.onBackground,
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Back button",
         )
         Text(
             text = stringResource(id = R.string.addEditProjectTitle, titleTextAction),
-            style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(1f)
