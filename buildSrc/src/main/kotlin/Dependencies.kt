@@ -64,6 +64,7 @@ object Libraries {
 
     //Compose
     const val composeUi = "androidx.compose.ui:ui:${Versions.composeUi}"
+    const val composeFoundation = "androidx.compose.foundation:foundation:${Versions.composeUi}"
     const val composeTooling = "androidx.compose.ui:ui-tooling-preview:${Versions.composeUi}"
     const val composeMaterial3 = "androidx.compose.material3:material3:${Versions.composeMaterial3}"
     const val composeMaterial3Window =

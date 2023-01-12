@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.util.navigation
 
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -19,6 +20,7 @@ fun ProjectNavHost(
     navController: NavHostController,
     contentType: ContentType,
     isBottomBarVisible: (Boolean) -> Unit,
+    windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     NavHost(
         modifier = modifier,
@@ -36,6 +38,7 @@ fun ProjectNavHost(
                     )
                 },
                 navController = navController,
+                windowWidthSizeClass = windowWidthSizeClass
             )
            /* AllProjectsScreen(
                 onClickProject = { projectId ->

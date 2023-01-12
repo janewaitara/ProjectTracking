@@ -54,6 +54,7 @@ dependencies {
 
     implementation(Libraries.ktxCore)
     implementation(Libraries.composeUi)
+    implementation(Libraries.composeFoundation)
     implementation(Libraries.composeMaterial3)
     implementation(Libraries.composeMaterial3Window)
     implementation(Libraries.composeTooling)

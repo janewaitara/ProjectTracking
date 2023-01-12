@@ -44,5 +44,6 @@ fun ProjectAppComposable(
     NavigationWrapperUi(
         navigationType = navigationType,
         contentType = contentType,
+        windowWidthSizeClass = windowWidthSizeClass,
     )
 }

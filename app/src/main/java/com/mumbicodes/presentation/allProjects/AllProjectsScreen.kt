@@ -1,20 +1,20 @@
 package com.mumbicodes.presentation.allProjects
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,12 +36,14 @@ import com.mumbicodes.R
 import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.util.OrderType
 import com.mumbicodes.domain.util.ProjectsOrder
+import com.mumbicodes.presentation.activity.MainActivity
 import com.mumbicodes.presentation.allProjects.components.FilterBottomSheetContent
 import com.mumbicodes.presentation.allProjects.components.ProjectItem
 import com.mumbicodes.presentation.allProjects.components.SearchBar
 import com.mumbicodes.presentation.allProjects.components.StaggeredVerticalGrid
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.theme.*
+import com.mumbicodes.presentation.util.ReferenceDevices
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,6 +51,7 @@ import kotlinx.coroutines.launch
 fun AllProjectsScreen(
     projectsViewModel: AllProjectsViewModel = hiltViewModel(),
     onClickProject: (Int) -> Unit,
+    windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     val state = projectsViewModel.state.value
     val searchedTextState = projectsViewModel.searchParam.value
@@ -125,13 +128,15 @@ fun AllProjectsScreen(
                                 searchParam
                             )
                         )
-                    }
+                    },
+                    windowWidthSizeClass = windowWidthSizeClass
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AllProjectsScreenContent(
     modifier: Modifier = Modifier,
@@ -141,6 +146,7 @@ fun AllProjectsScreenContent(
     onClickFilterStatus: (String) -> Unit,
     searchedText: String,
     onSearchParamChanged: (String) -> Unit,
+    windowWidthSizeClass: WindowWidthSizeClass,
 ) {
 
     Column(modifier = modifier) {
@@ -206,26 +212,29 @@ fun AllProjectsScreenContent(
 
         Spacer(modifier = Modifier.height(Space8dp))
 
-        StaggeredVerticalGrid(
-            maxColumnWidth = 220.dp,
-            modifier = Modifier
-                .padding(horizontal = Space12dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            projectsState.filteredProjects.forEach { project ->
-                ProjectItem(
-                    modifier = Modifier.padding(Space8dp),
-                    project = project,
-                    onClickProject = onClickProject
-                )
-            }
-        }
-
         if (projectsState.filteredProjects.isEmpty()) {
             EmptyStateSection(
                 filter = projectsState.selectedProjectStatus,
                 projects = projectsState.projects
             )
+        } else {
+            LazyVerticalStaggeredGrid(
+                columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
+                contentPadding = PaddingValues(bottom = Space20dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = Space20dp, end = Space20dp),
+                verticalArrangement = Arrangement.spacedBy(Space16dp),
+                horizontalArrangement = Arrangement.spacedBy(Space16dp)
+            ) {
+                items(projectsState.filteredProjects) { project ->
+                    ProjectItem(
+                        // modifier = Modifier.padding(Space8dp),
+                        project = project,
+                        onClickProject = onClickProject
+                    )
+                }
+            }
         }
     }
 }
@@ -318,13 +327,16 @@ fun EmptyStateSection(
     }
 }
 
-@Preview
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AllProjectsScreenPreview() {
-    ProjectTrackingTheme {
-        AllProjectsScreen(onClickProject = {})
+fun rememberProjectsColumns(windowWidthSizeClass: WindowWidthSizeClass) =
+    remember(windowWidthSizeClass) {
+        when (windowWidthSizeClass) {
+            WindowWidthSizeClass.Compact -> StaggeredGridCells.Fixed(2)
+            WindowWidthSizeClass.Medium -> StaggeredGridCells.Fixed(2)
+            else -> StaggeredGridCells.Adaptive(220.dp)
+        }
     }
-}
 
 @Preview
 @Composable
@@ -374,7 +386,9 @@ fun StaggeredVerticalGridPreview() {
     ProjectTrackingTheme {
         StaggeredVerticalGrid(
             maxColumnWidth = 220.dp,
-            modifier = Modifier.padding(horizontal = Space12dp)
+            modifier = Modifier
+                .padding(horizontal = Space12dp)
+                .verticalScroll(rememberScrollState())
         ) {
             sampleDataProjects().forEach { project ->
                 ProjectItem(
@@ -387,21 +401,23 @@ fun StaggeredVerticalGridPreview() {
     }
 }
 
-@Preview
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
+@ReferenceDevices
 @Composable
-fun AllProjectsContentPreview() {
+fun StaggeredVerticalGridPreview2() {
     ProjectTrackingTheme {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp)
+        LazyVerticalStaggeredGrid(
+            columns = rememberProjectsColumns(
+                windowWidthSizeClass = calculateWindowSizeClass(activity = MainActivity()).widthSizeClass
+            ),
+            modifier = Modifier.padding(horizontal = Space20dp),
+            contentPadding = PaddingValues(vertical = Space12dp),
+            verticalArrangement = Arrangement.spacedBy(Space16dp),
+            horizontalArrangement = Arrangement.spacedBy(Space16dp)
         ) {
-            itemsIndexed(sampleDataProjects()) { _, project ->
+            items(sampleDataProjects()) { project ->
                 ProjectItem(
+                    // modifier = Modifier.padding(Space8dp),
                     project = project,
                     onClickProject = { }
                 )

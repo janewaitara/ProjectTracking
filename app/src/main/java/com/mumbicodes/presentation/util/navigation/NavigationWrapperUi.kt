@@ -1,6 +1,7 @@
 package com.mumbicodes.presentation.util.navigation
 
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 fun NavigationWrapperUi(
     navigationType: NavigationType,
     contentType: ContentType,
+    windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -48,6 +50,7 @@ fun NavigationWrapperUi(
                 navController = navController,
                 navigateToDestination = navigationActions::navigateTo,
                 onDrawerClicked = {},
+                windowWidthSizeClass = windowWidthSizeClass,
             )
         }
     } else {
@@ -76,6 +79,7 @@ fun NavigationWrapperUi(
                         drawerState.close()
                     }
                 },
+                windowWidthSizeClass = windowWidthSizeClass,
             )
         }
     }
