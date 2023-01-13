@@ -96,6 +96,13 @@ dependencies {
     // Compose Calendar
     implementation("com.squaredem:composecalendar:1.0.0")
 
+    // Datastore
+    implementation(Libraries.dataStore)
+
+    // Pager and indicators
+    implementation(Libraries.pager)
+    implementation(Libraries.pagerIndicators)
+
     // Unit tests
     testImplementation(TestLibraries.junit4)
 

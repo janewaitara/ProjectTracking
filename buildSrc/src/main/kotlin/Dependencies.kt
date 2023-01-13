@@ -45,6 +45,12 @@ object Versions {
 
     // Retrofit
     const val retrofit = "2.9.0"
+
+    //Datastore
+    const val dataStore = "1.0.0"
+
+    //Accompanist
+    const val accompanist = "0.28.0"
 }
 
 object BuildPlugins {
@@ -104,6 +110,15 @@ object Libraries {
     // Moshi
     const val moshi = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
     const val moshiConverter = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
+
+    //Datastore
+    const val dataStore = "androidx.datastore:datastore-preferences-core:${Versions.dataStore}"
+
+    //Pager and indicators
+    const val pager = "com.google.accompanist:accompanist-pager:${Versions.accompanist}"
+    const val pagerIndicators =
+        "com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}"
+
 
 }
 
