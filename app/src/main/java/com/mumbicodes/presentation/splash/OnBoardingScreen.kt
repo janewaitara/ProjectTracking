@@ -1,19 +1,24 @@
 package com.mumbicodes.presentation.splash
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.*
 import com.mumbicodes.R
@@ -21,8 +26,10 @@ import com.mumbicodes.presentation.components.PrimaryButton
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.OnBoardingPage
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
+import kotlin.math.sign
 
-@OptIn(ExperimentalPagerApi::class)
+@ExperimentalPagerApi
 @Composable
 fun OnBoardingScreen(
     onGetStartedClicked: () -> Unit = {},
@@ -34,35 +41,53 @@ fun OnBoardingScreen(
 
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
-    val currentPage = pagerState.currentPage
 
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(vertical = 72.dp, horizontal = Space32dp)
+    ) {
         HorizontalPager(
-            count = 2,
-            state = PagerState(),
+            modifier = Modifier.weight(1f),
+            count = pages.size,
+            state = pagerState,
             verticalAlignment = Alignment.Top
         ) { position ->
             OnBoardingPage(onBoardingPage = pages[position])
         }
-        Row(modifier = Modifier.fillMaxWidth()) {
-            HorizontalPagerIndicator(
-                pagerState = pagerState
+
+        Spacer(modifier = Modifier.height(Space24dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+
+            PageIndicator(
+                modifier = Modifier.weight(1f),
+                size = pages.size,
+                index = pagerState.currentPage,
+                pagerState = pagerState,
             )
 
             PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = when (currentPage) {
-                    pagerState.pageCount - 1 -> stringResource(id = R.string.getStarted)
-                    else -> stringResource(id = R.string.next)
+                modifier = Modifier
+                    .weight(1f),
+                text = if (pagerState.currentPage == 1) {
+                    stringResource(id = R.string.getStarted)
+                } else {
+                    stringResource(id = R.string.next)
                 },
                 onClick = {
-                    when (currentPage) {
+                    when (pagerState.currentPage) {
                         pagerState.pageCount - 1 -> {
-                            // Navigate
+                            onGetStartedClicked()
                         }
                         else -> {
                             coroutineScope.launch {
-                                pagerState.scrollToPage(page = currentPage + 1)
+                                pagerState.scrollToPage(page = pagerState.currentPage + 1)
                             }
                         }
                     }
@@ -73,13 +98,89 @@ fun OnBoardingScreen(
     }
 }
 
+@ExperimentalPagerApi
+@Composable
+fun PageIndicator(
+    modifier: Modifier,
+    size: Int,
+    index: Int,
+    pagerState: PagerState,
+    pageIndexMapping: (Int) -> Int = { it },
+    pageCount: Int = pagerState.pageCount,
+) {
+    val indicatorWidthPx = LocalDensity.current.run { Space16dp.roundToPx() }
+    val spacingPx = LocalDensity.current.run { Space16dp.roundToPx() }
+
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Space12dp)
+        ) {
+            repeat(size) {
+                Indicator(isSelected = it == index)
+            }
+        }
+
+        //The animating circle - drew inspo from the pagerIndicator
+        Box(
+            Modifier
+                .offset {
+                    val position = pageIndexMapping(pagerState.currentPage)
+                    val offset = pagerState.currentPageOffset
+                    val next = pageIndexMapping(pagerState.currentPage + offset.sign.toInt())
+                    val scrollPosition = ((next - position) * offset.absoluteValue + position)
+                        .coerceIn(
+                            0f,
+                            (pageCount - 1)
+                                .coerceAtLeast(0)
+                                .toFloat()
+                        )
+
+                    IntOffset(
+                        x = ((spacingPx + indicatorWidthPx) * scrollPosition).toInt(),
+                        y = 0
+                    )
+                }
+                .size(width = Space8dp, height = Space8dp)
+                .then(
+                    if (pageCount > 0) Modifier.background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape,
+                    )
+                    else Modifier
+                )
+        )
+    }
+}
+
+@Composable
+fun Indicator(isSelected: Boolean) {
+    val width = animateDpAsState(
+        targetValue = if (isSelected) Space24dp else Space16dp,
+        //  animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+    )
+    val color =
+        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
+    Box(
+        modifier = Modifier
+            .height(Space8dp)
+            .width(width.value)
+            .clip(CircleShape)
+            .background(color)
+    ) {
+    }
+}
+
 @Composable
 fun OnBoardingPage(onBoardingPage: OnBoardingPage) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.background)
-            .padding(all = Space32dp),
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -94,7 +195,10 @@ fun OnBoardingPage(onBoardingPage: OnBoardingPage) {
 
         Spacer(modifier = Modifier.height(Space48dp))
         Spacer(modifier = Modifier.height(Space36dp))
+
         Text(
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
             text = onBoardingPage.title,
             style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
         )
@@ -111,20 +215,12 @@ fun OnBoardingPage(onBoardingPage: OnBoardingPage) {
     }
 }
 
+@ExperimentalPagerApi
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun OnBoardingPreview() {
+fun OnBoarding2Preview() {
     ProjectTrackingTheme {
-        OnBoardingPage(onBoardingPage = OnBoardingPage.Screen1)
-    }
-}
-
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun OnBoarding1Preview() {
-    ProjectTrackingTheme {
-        OnBoardingPage(onBoardingPage = OnBoardingPage.Screen2)
+        OnBoardingScreen(onGetStartedClicked = {})
     }
 }

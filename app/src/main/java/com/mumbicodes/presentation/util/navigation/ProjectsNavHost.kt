@@ -6,14 +6,17 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mumbicodes.presentation.ProjectsScreen
 import com.mumbicodes.presentation.add_edit_milestone.AddAndEditMilestoneScreen
 import com.mumbicodes.presentation.add_edit_project.AddAndEditScreen
 import com.mumbicodes.presentation.all_milestones.AllMilestonesScreen
 import com.mumbicodes.presentation.notifications.NotificationScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
+import com.mumbicodes.presentation.splash.OnBoardingScreen
 import com.mumbicodes.presentation.util.ContentType
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ProjectNavHost(
     modifier: Modifier = Modifier,
@@ -25,9 +28,13 @@ fun ProjectNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Screens.AllProjectsScreens.route,
+        startDestination = Screens.OnBoardingScreen.route,
     ) {
 
+        composable(route = Screens.OnBoardingScreen.route) {
+            isBottomBarVisible(false)
+            OnBoardingScreen()
+        }
         composable(route = Screens.AllProjectsScreens.route) {
             isBottomBarVisible(true)
             ProjectsScreen(

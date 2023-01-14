@@ -13,6 +13,13 @@ sealed class Screens(
     @DrawableRes val filledIcon: Int,
     val title: String,
 ) {
+    object OnBoardingScreen :
+        Screens(
+            "onBoarding",
+            R.drawable.ic_home_outlined,
+            R.drawable.ic_home_filled,
+            "onBoarding"
+        )
     object AllProjectsScreens :
         Screens(
             "allProjects",
