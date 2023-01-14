@@ -26,7 +26,7 @@ fun ProjectAppContent(
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
 
-    val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
+    val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
 
     Row(modifier = Modifier.fillMaxSize()) {
         AnimatedVisibility(visible = navigationType == NavigationType.NAVIGATION_RAIL) {
