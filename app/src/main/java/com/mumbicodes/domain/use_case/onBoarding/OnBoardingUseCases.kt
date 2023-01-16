@@ -1,6 +1,6 @@
 package com.mumbicodes.domain.use_case.onBoarding
 
-data class onBoardingUseCases(
+data class OnBoardingUseCases(
     val readOnBoardingStateUseCase: ReadOnBoardingStateUseCase,
     val saveOnBoardingStateUseCase: SaveOnBoardingStateUseCase,
 )
