@@ -125,7 +125,7 @@ fun PageIndicator(
             }
         }
 
-        //The animating circle - drew inspo from the pagerIndicator
+        // The animating circle - drew inspo from the pagerIndicator
         Box(
             Modifier
                 .offset {

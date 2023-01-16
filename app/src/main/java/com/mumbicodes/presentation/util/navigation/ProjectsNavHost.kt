@@ -33,7 +33,12 @@ fun ProjectNavHost(
 
         composable(route = Screens.OnBoardingScreen.route) {
             isBottomBarVisible(false)
-            OnBoardingScreen()
+            OnBoardingScreen(
+                onGetStartedClicked = {
+                    navController.popBackStack()
+                    navController.navigate(route = Screens.AllProjectsScreens.route)
+                }
+            )
         }
         composable(route = Screens.AllProjectsScreens.route) {
             isBottomBarVisible(true)
