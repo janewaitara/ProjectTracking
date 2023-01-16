@@ -1,7 +1,9 @@
 package com.mumbicodes.di
 
+import android.content.Context
 import com.mumbicodes.data.db.ProjectsDatabase
 import com.mumbicodes.data.repository.MilestonesRepositoryImpl
+import com.mumbicodes.data.repository.OnBoardingDataStoreRepository
 import com.mumbicodes.data.repository.ProjectsRepositoryImpl
 import com.mumbicodes.data.repository.TaskRepositoryImpl
 import com.mumbicodes.domain.repository.MilestonesRepository
@@ -10,6 +12,7 @@ import com.mumbicodes.domain.repository.TasksRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -34,4 +37,9 @@ object RepositoryModule {
     fun provideTasksRepository(db: ProjectsDatabase): TasksRepository {
         return TaskRepositoryImpl(db.tasksDao())
     }
+
+    @Provides
+    @Singleton
+    fun provideOnBoardingDataStoreRepository(@ApplicationContext context: Context) =
+        OnBoardingDataStoreRepository(context = context)
 }
