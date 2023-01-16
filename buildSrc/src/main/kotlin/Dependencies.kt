@@ -112,7 +112,7 @@ object Libraries {
     const val moshiConverter = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
 
     //Datastore
-    const val dataStore = "androidx.datastore:datastore-preferences-core:${Versions.dataStore}"
+    const val dataStore = "androidx.datastore:datastore-preferences:${Versions.dataStore}"
 
     //Pager and indicators
     const val pager = "com.google.accompanist:accompanist-pager:${Versions.accompanist}"
