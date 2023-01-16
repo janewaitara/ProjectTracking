@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.*
 import com.mumbicodes.R
 import com.mumbicodes.presentation.components.PrimaryButton
@@ -32,6 +33,7 @@ import kotlin.math.sign
 @ExperimentalPagerApi
 @Composable
 fun OnBoardingScreen(
+    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
     onGetStartedClicked: () -> Unit = {},
 ) {
     val pages = listOf(
@@ -83,6 +85,7 @@ fun OnBoardingScreen(
                 onClick = {
                     when (pagerState.currentPage) {
                         pagerState.pageCount - 1 -> {
+                            onBoardingViewModel.saveOnBoardingState(true)
                             onGetStartedClicked()
                         }
                         else -> {

@@ -3,6 +3,7 @@ package com.mumbicodes.presentation.util.navigation
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,11 +15,13 @@ import com.mumbicodes.presentation.all_milestones.AllMilestonesScreen
 import com.mumbicodes.presentation.notifications.NotificationScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
 import com.mumbicodes.presentation.splash.OnBoardingScreen
+import com.mumbicodes.presentation.splash.OnBoardingViewModel
 import com.mumbicodes.presentation.util.ContentType
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ProjectNavHost(
+    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     navController: NavHostController,
     contentType: ContentType,
@@ -28,7 +31,7 @@ fun ProjectNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Screens.OnBoardingScreen.route,
+        startDestination = onBoardingViewModel.startDestination.value,
     ) {
 
         composable(route = Screens.OnBoardingScreen.route) {
