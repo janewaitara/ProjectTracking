@@ -18,11 +18,17 @@ import com.mumbicodes.presentation.splash.OnBoardingScreen
 import com.mumbicodes.presentation.splash.OnBoardingViewModel
 import com.mumbicodes.presentation.util.ContentType
 
+/**
+ * Both onBoardingViewModel and splashScreenViewModel have a startDestination state
+ * Ideally, I would pass the state down from the MainActivity but that caused an error
+ * as documented in this google issue: https://issuetracker.google.com/issues/234054916
+ * I can not pass SplashViewModel here cause it is not a hiltViewModel
+ * */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ProjectNavHost(
-    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
+    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
     navController: NavHostController,
     contentType: ContentType,
     isBottomBarVisible: (Boolean) -> Unit,

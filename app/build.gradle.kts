@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id(BuildPlugins.androidApplication)
     id(BuildPlugins.kotlinAndroid)
@@ -102,6 +104,9 @@ dependencies {
     // Pager and indicators
     implementation(Libraries.pager)
     implementation(Libraries.pagerIndicators)
+
+    // SplashScreen
+    implementation(Libraries.splashScreen)
 
     // Unit tests
     testImplementation(TestLibraries.junit4)

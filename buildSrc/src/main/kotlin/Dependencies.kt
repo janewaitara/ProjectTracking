@@ -51,6 +51,9 @@ object Versions {
 
     //Accompanist
     const val accompanist = "0.28.0"
+
+    //Splash screen
+    const val splashScreen = "1.0.0"
 }
 
 object BuildPlugins {
@@ -119,6 +122,8 @@ object Libraries {
     const val pagerIndicators =
         "com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}"
 
+    //Splash API
+    const val splashScreen = "androidx.core:core-splashscreen:${Versions.splashScreen}"
 
 }
 
