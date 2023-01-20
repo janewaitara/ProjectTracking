@@ -39,7 +39,7 @@ fun MilestoneDetailsBottomSheetContent(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = milestoneWithTasks.milestone.milestoneTitle,
-            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onSurface),
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(Space24dp))
@@ -48,7 +48,7 @@ fun MilestoneDetailsBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.schedule),
             style = MaterialTheme.typography.labelLarge.copy(
-                color = MaterialTheme.colorScheme.onBackground.copy(
+                color = MaterialTheme.colorScheme.onSurface.copy(
                     0.3f
                 )
             ),
@@ -60,19 +60,19 @@ fun MilestoneDetailsBottomSheetContent(
             text = buildAnnotatedString {
                 withStyle(
                     style = MaterialTheme.typography.bodySmall.toSpanStyle()
-                        .copy(GreyNormal)
+                        .copy(MaterialTheme.colorScheme.inverseSurface)
                 ) {
                     append(milestoneWithTasks.milestone.milestoneSrtDate.toDateAsString("dd MMM yyyy"))
                 }
                 withStyle(
                     style = MaterialTheme.typography.bodySmall.toSpanStyle()
-                        .copy(GreyNormal)
+                        .copy(MaterialTheme.colorScheme.inverseSurface)
                 ) {
                     append(" to ")
                 }
                 withStyle(
                     style = MaterialTheme.typography.bodySmall.toSpanStyle()
-                        .copy(GreyNormal)
+                        .copy(MaterialTheme.colorScheme.inverseSurface)
                 ) {
                     append(milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy"))
                 }
@@ -85,7 +85,7 @@ fun MilestoneDetailsBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.miniTasks),
             style = MaterialTheme.typography.labelLarge.copy(
-                color = MaterialTheme.colorScheme.onBackground.copy(
+                color = MaterialTheme.colorScheme.onSurface.copy(
                     0.3f
                 )
             ),

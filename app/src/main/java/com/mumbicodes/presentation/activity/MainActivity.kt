@@ -8,10 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.collectAsState
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
+import com.mumbicodes.presentation.splash.SplashScreenViewModel
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.DevicePosture
 import com.mumbicodes.presentation.util.isBookPosture
@@ -21,12 +23,21 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var splashScreenViewModel: SplashScreenViewModel
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        installSplashScreen().setKeepOnScreenCondition {
+            !splashScreenViewModel.isLoading.value
+        }
 
         // Get device fold posture
         val devicePostureFlow = WindowInfoTracker.getOrCreate(this).windowLayoutInfo(this)

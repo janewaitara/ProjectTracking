@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.allProjects.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -35,14 +36,14 @@ fun FilterBottomSheetContent(
 
         Text(
             text = stringResource(id = R.string.filter),
-            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onSurface),
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(Space24dp))
 
         Text(
             text = stringResource(id = R.string.filterBy),
-            style = MaterialTheme.typography.titleMedium.copy(color = GreyNormal),
+            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.inverseSurface),
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(Space12dp))
@@ -72,7 +73,7 @@ fun FilterBottomSheetContent(
 
         Text(
             text = stringResource(id = R.string.orderBy),
-            style = MaterialTheme.typography.titleMedium.copy(color = GreyNormal),
+            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.inverseSurface),
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(Space12dp))
@@ -116,6 +117,7 @@ fun FilterBottomSheetContent(
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun FilterBottomSheetContent() {
     ProjectTrackingTheme {

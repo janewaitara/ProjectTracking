@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +34,7 @@ import com.mumbicodes.presentation.allProjects.filters
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.components.PrimaryButton
 import com.mumbicodes.presentation.components.SecondaryButton
+import com.mumbicodes.presentation.components.provideShadowColor
 import com.mumbicodes.presentation.projectDetails.components.MilestoneItem
 import com.mumbicodes.presentation.theme.*
 import kotlinx.coroutines.flow.collectLatest
@@ -85,6 +85,8 @@ fun ProjectDetailsScreen(
 
     ModalBottomSheetLayout(
         sheetContent = {
+            Spacer(modifier = Modifier.height(1.dp))
+
             MilestoneDetailsBottomSheetContent(
                 milestoneWithTasks = state.mileStone,
                 onDeleteClicked = {
@@ -94,10 +96,10 @@ fun ProjectDetailsScreen(
                     }
                 },
                 onModifyClicked = {
-                    onAddOrModifyMilestone(state.project.projectId, it)
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
+                    onAddOrModifyMilestone(state.project.projectId, it)
                 }
             )
         },
@@ -219,7 +221,6 @@ fun ProjectDetailsScreenContent(
 
             ProjectScreenHeader(
                 modifier = Modifier.fillMaxWidth(),
-                projectName = projectState.project.projectName,
                 onClickBackIcon = onClickIconBack,
                 onClickMenuIcon = onClickIconMenu,
                 isMenuOptionsVisible = projectState.isMenuOptionsVisible,
@@ -231,7 +232,7 @@ fun ProjectDetailsScreenContent(
 
             Text(
                 text = projectState.project.projectName,
-                style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
             )
@@ -422,7 +423,6 @@ fun DeleteDialog(
 @Composable
 fun ProjectScreenHeader(
     modifier: Modifier,
-    projectName: String,
     onClickBackIcon: () -> Unit,
     onClickMenuIcon: () -> Unit,
     isMenuOptionsVisible: Boolean,
@@ -440,16 +440,10 @@ fun ProjectScreenHeader(
                     onClickBackIcon()
                 },
             painter = painterResource(id = R.drawable.ic_arrow_back),
-            tint = MaterialTheme.colorScheme.onBackground,
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Back button",
         )
-        /*Text(
-            text = projectName,
-            style = MaterialTheme.typography.headlineLarge.copy(color = GreyDark),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f)
-        )*/
+
         Spacer(modifier = Modifier.weight(1f))
 
         Box(
@@ -463,18 +457,18 @@ fun ProjectScreenHeader(
                         onClickMenuIcon()
                     },
                 painter = painterResource(id = R.drawable.ic_menu),
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = "menu icon",
             )
             // TODO research more on the shadows - added ones not working
             DropdownMenu(
                 modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.background)
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
                     .shadow(
                         elevation = 40.dp,
                         shape = MaterialTheme.shapes.small,
-                        ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                        spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                        ambientColor = provideShadowColor(),
+                        spotColor = provideShadowColor()
                     ),
                 expanded = isMenuOptionsVisible,
                 onDismissRequest = onClickMenuIcon,
@@ -560,7 +554,7 @@ fun ProjectDescriptionSection(
             modifier = Modifier
                 .fillMaxWidth(),
             text = projectDesc,
-            style = MaterialTheme.typography.bodySmall.copy(color = GreyNormal),
+            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.inverseSurface),
             maxLines = if (!descExpandedState.value) 3 else Int.MAX_VALUE,
             overflow = if (!descExpandedState.value) TextOverflow.Ellipsis else TextOverflow.Clip,
         )
@@ -674,7 +668,7 @@ fun EmptyMilestonesSection(
         Text(
             modifier = Modifier.padding(start = Space36dp, end = Space36dp),
             text = stringResource(id = R.string.milestoneEmptyText),
-            style = MaterialTheme.typography.bodySmall.copy(GreyNormal),
+            style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.inverseSurface),
             textAlign = TextAlign.Center
         )
 
@@ -728,7 +722,7 @@ fun EmptyStateSection(
         Text(
             modifier = Modifier.padding(start = Space32dp, end = Space32dp),
             text = emptyText,
-            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
+            style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
             textAlign = TextAlign.Center
         )
     }
@@ -763,7 +757,6 @@ fun ProjectPreviews() {
 
         ProjectScreenHeader(
             modifier = Modifier.fillMaxWidth(),
-            projectName = "Project Name",
             onClickBackIcon = { },
             onClickMenuIcon = { },
             isMenuOptionsVisible = true,

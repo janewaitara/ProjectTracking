@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,6 +15,7 @@ import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.components.TagItem
+import com.mumbicodes.presentation.components.provideShadowColor
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.presentation.theme.Space16dp
 import com.mumbicodes.presentation.theme.Space8dp
@@ -39,8 +39,8 @@ fun MilestoneItem(
             .shadow(
                 elevation = 60.dp,
                 shape = MaterialTheme.shapes.small,
-                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                ambientColor = provideShadowColor(),
+                spotColor = provideShadowColor()
             )
             .background(color = MaterialTheme.colorScheme.surface),
     ) {
@@ -49,7 +49,7 @@ fun MilestoneItem(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = milestoneWithTasks.milestone.milestoneTitle,
-                style = MaterialTheme.typography.titleMedium.copy(MaterialTheme.colorScheme.onBackground)
+                style = MaterialTheme.typography.titleMedium.copy(MaterialTheme.colorScheme.onSurface)
             )
             Spacer(modifier = Modifier.height(Space8dp))
 

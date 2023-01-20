@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id(BuildPlugins.androidApplication)
     id(BuildPlugins.kotlinAndroid)
@@ -94,7 +96,17 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     // Compose Calendar
-    implementation("com.squaredem:composecalendar:1.0.0")
+    implementation("com.squaredem:composecalendar:1.0.4")
+
+    // Datastore
+    implementation(Libraries.dataStore)
+
+    // Pager and indicators
+    implementation(Libraries.pager)
+    implementation(Libraries.pagerIndicators)
+
+    // SplashScreen
+    implementation(Libraries.splashScreen)
 
     // Unit tests
     testImplementation(TestLibraries.junit4)

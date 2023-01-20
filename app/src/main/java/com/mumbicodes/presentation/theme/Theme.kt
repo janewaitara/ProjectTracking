@@ -28,7 +28,7 @@ private val DarkColorPalette = darkColorScheme(
     onSurface = White,
     inverseSurface = GreySubtle,
     inverseOnSurface = GreyDarkest,
-    surfaceVariant = GreyDark,
+    surfaceVariant = GreyNormal,
     onSurfaceVariant = White,
 
     outline = GreySubtle
@@ -52,7 +52,7 @@ private val LightColorPalette = lightColorScheme(
 
     surface = White,
     onSurface = GreyDark,
-    inverseSurface = GreyDarkest,
+    inverseSurface = GreyNormal,
     inverseOnSurface = GreySubtle,
     surfaceVariant = White,
     onSurfaceVariant = GreyDark,
@@ -81,7 +81,7 @@ fun ProjectTrackingTheme(
         SideEffect {
             val window = (view.context as Activity).window
             val insets = WindowCompat.getInsetsController(window, view)
-            window.statusBarColor = LightColorPalette.surface.toArgb() // choose a status bar color
+            window.statusBarColor = if (darkTheme) DarkColorPalette.background.toArgb() else LightColorPalette.background.toArgb() // choose a status bar color
             // window.navigationBarColor = LightColorPalette.surface.toArgb() // choose a navigation bar color
             insets.isAppearanceLightStatusBars = !darkTheme
             // insets.isAppearanceLightNavigationBars = !darkTheme

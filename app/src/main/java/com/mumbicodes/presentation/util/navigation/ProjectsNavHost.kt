@@ -3,20 +3,32 @@ package com.mumbicodes.presentation.util.navigation
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mumbicodes.presentation.ProjectsScreen
 import com.mumbicodes.presentation.add_edit_milestone.AddAndEditMilestoneScreen
 import com.mumbicodes.presentation.add_edit_project.AddAndEditScreen
 import com.mumbicodes.presentation.all_milestones.AllMilestonesScreen
 import com.mumbicodes.presentation.notifications.NotificationScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
+import com.mumbicodes.presentation.splash.OnBoardingScreen
+import com.mumbicodes.presentation.splash.OnBoardingViewModel
 import com.mumbicodes.presentation.util.ContentType
 
+/**
+ * Both onBoardingViewModel and splashScreenViewModel have a startDestination state
+ * Ideally, I would pass the state down from the MainActivity but that caused an error
+ * as documented in this google issue: https://issuetracker.google.com/issues/234054916
+ * I can not pass SplashViewModel here cause it is not a hiltViewModel
+ * */
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ProjectNavHost(
     modifier: Modifier = Modifier,
+    onBoardingViewModel: OnBoardingViewModel = hiltViewModel(),
     navController: NavHostController,
     contentType: ContentType,
     isBottomBarVisible: (Boolean) -> Unit,
@@ -25,9 +37,18 @@ fun ProjectNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Screens.AllProjectsScreens.route,
+        startDestination = onBoardingViewModel.startDestination.value,
     ) {
 
+        composable(route = Screens.OnBoardingScreen.route) {
+            isBottomBarVisible(false)
+            OnBoardingScreen(
+                onGetStartedClicked = {
+                    navController.popBackStack()
+                    navController.navigate(route = Screens.AllProjectsScreens.route)
+                }
+            )
+        }
         composable(route = Screens.AllProjectsScreens.route) {
             isBottomBarVisible(true)
             ProjectsScreen(

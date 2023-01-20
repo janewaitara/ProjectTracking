@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +39,7 @@ fun LabelledInputField(
                 .fillMaxWidth(),
             text = fieldLabel,
             style = MaterialTheme.typography.bodySmall,
-            color = GreyNormal
+            color = MaterialTheme.colorScheme.inverseSurface
         )
         Spacer(modifier = Modifier.height(Space8dp))
 
@@ -90,7 +89,7 @@ fun LabelledInputFieldWithIcon(
                 .fillMaxWidth(),
             text = fieldLabel,
             style = MaterialTheme.typography.bodySmall,
-            color = GreyNormal
+            color = MaterialTheme.colorScheme.inverseSurface
         )
         Spacer(modifier = Modifier.height(Space8dp))
 
@@ -186,8 +185,8 @@ fun TaskItemField(
             .shadow(
                 elevation = 20.dp,
                 shape = MaterialTheme.shapes.small,
-                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                ambientColor = provideShadowColor(),
+                spotColor = provideShadowColor()
             )
             .fillMaxWidth()
             .background(
@@ -210,6 +209,7 @@ fun TaskItemField(
                     onCheckedChange()
                 },
             painter = painterResource(id = if (task.statusState) R.drawable.ic_checkbox_true else R.drawable.ic_checkbox_false),
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Checkbox"
         )
         TransparentHintTextField(
@@ -249,7 +249,7 @@ fun TaskItemField(
             onValueChange = {
                 onTaskDescChange(it)
             },
-            textStyle = MaterialTheme.typography.labelMedium.copy(color = GreyNormal),
+            textStyle = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.inverseSurface),
             onFocusChange = {
                 onTaskDescFocusChange(it)
             },

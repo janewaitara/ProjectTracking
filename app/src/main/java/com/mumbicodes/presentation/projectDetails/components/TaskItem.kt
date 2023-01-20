@@ -13,7 +13,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.mumbicodes.R
 import com.mumbicodes.domain.model.Task
-import com.mumbicodes.presentation.theme.GreyNormal
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.presentation.theme.Space4dp
 import com.mumbicodes.presentation.theme.Space8dp
@@ -38,6 +37,7 @@ fun TaskItem(
                 bottom.linkTo(taskTitle.bottom)
             },
             painter = painterResource(id = if (task.status) R.drawable.ic_checkbox_true else R.drawable.ic_checkbox_false),
+            tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "Checkbox"
         )
         Text(
@@ -51,7 +51,7 @@ fun TaskItem(
                 },
             text = task.taskTitle,
             style = taskTitleStyle,
-            color = GreyNormal,
+            color = MaterialTheme.colorScheme.inverseSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -68,7 +68,7 @@ fun TaskItem(
                     },
                 text = task.taskDesc,
                 style = MaterialTheme.typography.bodySmall,
-                color = GreyNormal,
+                color = MaterialTheme.colorScheme.inverseSurface,
             )
         }
     }

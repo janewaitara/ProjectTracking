@@ -1,10 +1,14 @@
 package com.mumbicodes.di
 
 import android.app.Application
+import com.mumbicodes.data.repository.OnBoardingDataStoreRepository
 import com.mumbicodes.domain.repository.MilestonesRepository
 import com.mumbicodes.domain.repository.ProjectsRepository
 import com.mumbicodes.domain.repository.TasksRepository
 import com.mumbicodes.domain.use_case.milestones.*
+import com.mumbicodes.domain.use_case.onBoarding.OnBoardingUseCases
+import com.mumbicodes.domain.use_case.onBoarding.ReadOnBoardingStateUseCase
+import com.mumbicodes.domain.use_case.onBoarding.SaveOnBoardingStateUseCase
 import com.mumbicodes.domain.use_case.projects.*
 import com.mumbicodes.domain.use_case.tasks.AddTasksUseCase
 import com.mumbicodes.domain.use_case.tasks.DeleteTaskUseCase
@@ -65,6 +69,15 @@ object UseCaseModule {
         return TasksUseCases(
             addTasksUseCase = AddTasksUseCase(repository),
             deleteTaskUseCase = DeleteTaskUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideOnBoardingUseCases(repository: OnBoardingDataStoreRepository): OnBoardingUseCases {
+        return OnBoardingUseCases(
+            readOnBoardingStateUseCase = ReadOnBoardingStateUseCase(repository),
+            saveOnBoardingStateUseCase = SaveOnBoardingStateUseCase(repository)
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.mumbicodes.presentation.notifications
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,7 +18,8 @@ import com.mumbicodes.presentation.theme.*
 @Composable
 fun NotificationScreen() {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -35,7 +37,7 @@ fun NotificationScreen() {
 
         Text(
             text = stringResource(id = R.string.notifications),
-            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onBackground),
+            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
         )
         Spacer(modifier = Modifier.height(Space16dp))
 
@@ -44,7 +46,7 @@ fun NotificationScreen() {
         Text(
             modifier = Modifier.padding(start = Space32dp, end = Space32dp),
             text = emptyText,
-            style = MaterialTheme.typography.bodyMedium.copy(GreyNormal),
+            style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
             textAlign = TextAlign.Center
         )
     }

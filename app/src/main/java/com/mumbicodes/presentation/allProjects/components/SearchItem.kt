@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.R
-import com.mumbicodes.presentation.theme.GreyNormal
+import com.mumbicodes.presentation.components.provideShadowColor
 import com.mumbicodes.presentation.theme.GreySubtle
 import com.mumbicodes.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.presentation.theme.Space48dp
@@ -37,8 +37,8 @@ fun SearchBar(
             // .height(Space48dp)
             .shadow(
                 elevation = 60.dp,
-                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                ambientColor = provideShadowColor(),
+                spotColor = provideShadowColor()
             )
             .background(color = MaterialTheme.colorScheme.surface),
         shape = MaterialTheme.shapes.small,
@@ -73,7 +73,7 @@ fun SearchBar(
                     style = MaterialTheme.typography.bodySmall
                 )
             },
-            textStyle = MaterialTheme.typography.bodySmall.copy(color = GreyNormal),
+            textStyle = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.inverseSurface),
 
             singleLine = true,
 

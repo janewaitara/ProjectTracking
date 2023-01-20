@@ -59,5 +59,7 @@
     <string name="milestonesNotStartedEmptyText">Yeeeey!! 🎉. You have started all your milestones.</string>
     <string name="coming_soon">This feature is coming soon.</string>
     <string name="notifications">Notifications.</string>
+    <string name="next">Next</string>
+    <string name="getStarted">Get Started</string>
 
 </resources>

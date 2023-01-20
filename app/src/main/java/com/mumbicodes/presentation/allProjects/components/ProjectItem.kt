@@ -6,11 +6,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.presentation.components.provideShadowColor
 import com.mumbicodes.presentation.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,16 +29,18 @@ fun ProjectItem(
             .shadow(
                 elevation = 40.dp,
                 shape = MaterialTheme.shapes.small,
-                ambientColor = Color(0xFFCCCCCC).copy(alpha = 0.9f),
-                spotColor = Color(0xFFCCCCCC).copy(alpha = 0.9f)
+                ambientColor = provideShadowColor(),
+                spotColor = provideShadowColor()
             ),
 
     ) {
         Column(modifier = Modifier.padding(Space8dp)) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
                 text = project.projectName,
-                style = MaterialTheme.typography.headlineMedium.copy(color = GreyDark)
+                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onSurface)
             )
 
             Spacer(modifier = Modifier.height(Space8dp))
@@ -48,7 +50,7 @@ fun ProjectItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis, // adds three dots after 2 lines
                 text = project.projectDesc,
-                style = MaterialTheme.typography.labelMedium.copy(color = GreyNormal)
+                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.inverseSurface)
             )
 
             Spacer(modifier = Modifier.height(Space8dp))
@@ -56,7 +58,7 @@ fun ProjectItem(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = project.projectDeadline,
-                style = MaterialTheme.typography.labelSmall.copy(color = BlueMain)
+                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.primary)
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.components
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +21,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mumbicodes.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.presentation.theme.Space20dp
 import com.mumbicodes.presentation.util.navigation.Screens
 import com.mumbicodes.presentation.util.navigation.bottomNavigationDestinations
@@ -35,9 +37,9 @@ fun BottomBar(
 
     Row(
         modifier = Modifier
-            .height(72.dp)
+            .background(MaterialTheme.colorScheme.background)
             .padding(top = 8.dp, bottom = 8.dp)
-            .background(Color.White)
+            .height(72.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
@@ -79,9 +81,6 @@ fun AddItem(
 
     Box(
         modifier = Modifier
-            // .height(40.dp)
-            // .clip(CircleShape)
-            // .background(background)
             .clickable(
                 onClick = {
                     onItemClick(screen)
@@ -108,8 +107,11 @@ fun AddItem(
     }
 }
 
-@Composable
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
 fun BottomNav2Preview() {
-    BottomBar(navController = rememberNavController(), onItemClick = {})
+    ProjectTrackingTheme() {
+        BottomBar(navController = rememberNavController(), onItemClick = {})
+    }
 }
