@@ -15,7 +15,7 @@ sealed class OnBoardingPage(
     )
 
     object Screen2 : OnBoardingPage(
-        image = R.drawable.onboarding_illustration,
+        image = R.drawable.get_notified_illustration,
         title = "Receive Notifications",
         description = "Get notified when your project deadline is approaching",
     )

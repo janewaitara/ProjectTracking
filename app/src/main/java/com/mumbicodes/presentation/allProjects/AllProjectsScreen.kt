@@ -292,7 +292,7 @@ fun EmptyStateSection(
         Spacer(modifier = Modifier.height(Space8dp))
         val illustration =
             if (projects.isEmpty()) {
-                R.drawable.new_project_illustration
+                R.drawable.add_project
             } else {
                 when (filter) {
                     "Not Started" -> R.drawable.ic_incomplete_projects

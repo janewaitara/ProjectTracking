@@ -663,7 +663,7 @@ fun EmptyMilestonesSection(
             contentDescription = "Empty state illustration"
         )
 
-        Spacer(modifier = Modifier.height(Space12dp))
+        Spacer(modifier = Modifier.height(Space36dp))
 
         Text(
             modifier = Modifier.padding(start = Space36dp, end = Space36dp),
@@ -672,7 +672,7 @@ fun EmptyMilestonesSection(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(Space20dp))
+        Spacer(modifier = Modifier.height(Space48dp))
 
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
