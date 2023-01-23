@@ -118,4 +118,5 @@ dependencies {
 
     debugImplementation(TestLibraries.composeTooling)
     debugImplementation(TestLibraries.composeManifest)
+    debugImplementation(Libraries.leakCanary)
 }

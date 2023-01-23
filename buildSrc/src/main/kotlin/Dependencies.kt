@@ -54,6 +54,9 @@ object Versions {
 
     //Splash screen
     const val splashScreen = "1.0.0"
+
+    //LeakCanary
+    const val leakCanary = "2.10"
 }
 
 object BuildPlugins {
@@ -124,6 +127,9 @@ object Libraries {
 
     //Splash API
     const val splashScreen = "androidx.core:core-splashscreen:${Versions.splashScreen}"
+
+    //LeakCanary
+    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:${Versions.leakCanary}"
 
 }
 
