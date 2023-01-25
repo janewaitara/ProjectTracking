@@ -20,6 +20,9 @@ interface MilestonesDao {
         projectId: Int,
     ): List<Milestone>
 
+    @Query("SELECT * from milestones_table")
+    fun getAllMilestones(): Flow<List<MilestoneWithTasks>>
+
     /** Deletion */
     @Delete
     suspend fun deleteMilestone(milestone: Milestone)
