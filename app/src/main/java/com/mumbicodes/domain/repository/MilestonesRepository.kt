@@ -15,6 +15,8 @@ interface MilestonesRepository {
         status: String?,
     ): List<Milestone>
 
+    fun getAllMilestones(): Flow<List<MilestoneWithTasks>>
+
     suspend fun deleteMilestone(milestone: Milestone)
 
     suspend fun deleteMilestonesForProject(projectId: Int)
