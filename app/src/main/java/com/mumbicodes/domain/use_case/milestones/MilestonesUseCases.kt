@@ -8,4 +8,5 @@ data class MilestonesUseCases(
     val deleteMilestonesForProjectUseCase: DeleteMilestonesForProjectUseCase,
     val deleteAllMilestonesUseCase: DeleteAllMilestonesUseCase,
     val checkMilestoneStatusUseCase: CheckMilestoneStatusUseCase,
+    val getAllMilestonesUseCase: GetAllMilestonesUseCase,
 )
