@@ -10,13 +10,15 @@ import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.domain.util.AllMilestonesOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AllMilestonesViewModel @Inject constructor(
-    private val milestonesUseCase: MilestonesUseCases,
+    private val milestonesUseCases: MilestonesUseCases,
     private val appContext: Application,
 ) : ViewModel() {
     private val _state = mutableStateOf(AllMilestonesStates())
@@ -27,21 +29,74 @@ class AllMilestonesViewModel @Inject constructor(
 
     private var getMilestonesJob: Job? = null
 
+    private val _uiEvents = MutableSharedFlow<AllMilestonesUIEvents>()
+    val uiEvents = _uiEvents
+
     init {
-        milestonesUseCase.getAllMilestonesUseCase(state.value.milestonesOrder)
+        milestonesUseCases.getAllMilestonesUseCase(state.value.milestonesOrder)
+        getAllMilestones(
+            milestonesOrder = state.value.milestonesOrder,
+            milestoneStatus = state.value.selectedMilestoneStatus,
+        )
     }
 
     private fun getAllMilestones(milestonesOrder: AllMilestonesOrder, milestoneStatus: String) {
         getMilestonesJob?.cancel()
 
-        getMilestonesJob = milestonesUseCase.getAllMilestonesUseCase(milestonesOrder)
+        getMilestonesJob = milestonesUseCases.getAllMilestonesUseCase(milestonesOrder)
             .onEach { milestonesWithTasks ->
                 _state.value = _state.value.copy(
                     milestones = milestonesWithTasks,
+                    milestonesOrder = milestonesOrder,
                 )
                 milestonesWithTasks.filterMilestones(milestoneStatus, searchParam.value)
             }
             .launchIn(viewModelScope)
+    }
+
+    fun onEvent(milestonesEvents: AllMilestonesEvents) {
+        when (milestonesEvents) {
+            is AllMilestonesEvents.DeleteMilestone -> {
+                viewModelScope.launch {
+                    milestonesUseCases.deleteMilestoneUseCase(milestonesEvents.milestone)
+
+                    uiEvents.emit(AllMilestonesUIEvents.DeleteMilestone)
+                }
+            }
+            is AllMilestonesEvents.OrderMilestones -> {
+                if (state.value.milestonesOrder::class == milestonesEvents.milestonesOrder::class) {
+                    return
+                }
+
+                getAllMilestones(
+                    milestonesOrder = milestonesEvents.milestonesOrder,
+                    milestoneStatus = state.value.selectedMilestoneStatus
+                )
+            }
+            is AllMilestonesEvents.ResetMilestonesOrder -> {
+                getAllMilestones(
+                    milestonesOrder = milestonesEvents.milestonesOrder,
+                    milestoneStatus = state.value.selectedMilestoneStatus
+                )
+            }
+            is AllMilestonesEvents.SearchMilestone -> {
+                _searchParam.value = milestonesEvents.searchParam
+
+                state.value.milestones.filterMilestones(
+                    milestoneStatus = state.value.selectedMilestoneStatus,
+                    searchParam = searchParam.value
+                )
+            }
+            is AllMilestonesEvents.SelectMilestoneStatus -> {
+                if (state.value.selectedMilestoneStatus == milestonesEvents.milestoneStatus) {
+                    return
+                }
+                state.value.milestones.filterMilestones(
+                    milestoneStatus = milestonesEvents.milestoneStatus,
+                    searchParam = searchParam.value
+                )
+            }
+        }
     }
 
     private fun List<MilestoneWithTasks>.filterMilestones(
