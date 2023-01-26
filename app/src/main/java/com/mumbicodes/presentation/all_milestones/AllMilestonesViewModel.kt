@@ -33,7 +33,6 @@ class AllMilestonesViewModel @Inject constructor(
     val uiEvents = _uiEvents
 
     init {
-        milestonesUseCases.getAllMilestonesUseCase(state.value.milestonesOrder)
         getAllMilestones(
             milestonesOrder = state.value.milestonesOrder,
             milestoneStatus = state.value.selectedMilestoneStatus,
@@ -94,6 +93,12 @@ class AllMilestonesViewModel @Inject constructor(
                 state.value.milestones.filterMilestones(
                     milestoneStatus = milestonesEvents.milestoneStatus,
                     searchParam = searchParam.value
+                )
+            }
+
+            is AllMilestonesEvents.PassMilestone -> {
+                _state.value = _state.value.copy(
+                    mileStone = milestonesEvents.milestone
                 )
             }
         }

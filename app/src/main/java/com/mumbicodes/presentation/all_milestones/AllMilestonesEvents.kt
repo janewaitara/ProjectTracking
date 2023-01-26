@@ -1,6 +1,7 @@
 package com.mumbicodes.presentation.all_milestones
 
 import com.mumbicodes.domain.model.Milestone
+import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.util.AllMilestonesOrder
 
 sealed class AllMilestonesEvents {
@@ -13,6 +14,8 @@ sealed class AllMilestonesEvents {
     data class SearchMilestone(val searchParam: String) : AllMilestonesEvents()
 
     data class DeleteMilestone(val milestone: Milestone) : AllMilestonesEvents()
+
+    data class PassMilestone(val milestone: MilestoneWithTasks) : AllMilestonesEvents()
 }
 
 sealed class AllMilestonesUIEvents {

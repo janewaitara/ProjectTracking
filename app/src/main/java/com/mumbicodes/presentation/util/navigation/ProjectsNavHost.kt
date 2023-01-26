@@ -11,7 +11,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mumbicodes.presentation.ProjectsScreen
 import com.mumbicodes.presentation.add_edit_milestone.AddAndEditMilestoneScreen
 import com.mumbicodes.presentation.add_edit_project.AddAndEditScreen
-import com.mumbicodes.presentation.all_milestones.AllMilestonesScreen
+import com.mumbicodes.presentation.all_milestones.AllMilestonesScreens
 import com.mumbicodes.presentation.notifications.NotificationScreen
 import com.mumbicodes.presentation.projectDetails.ProjectDetailsScreen
 import com.mumbicodes.presentation.splash.OnBoardingScreen
@@ -116,8 +116,11 @@ fun ProjectNavHost(
         }
         composable(route = Screens.MilestonesScreens.route) {
             isBottomBarVisible(true)
-            AllMilestonesScreen()
+            // AllMilestonesScreen()
             // TODO - add a milestones screen
+            AllMilestonesScreens(
+                windowWidthSizeClass = windowWidthSizeClass
+            )
         }
         composable(route = Screens.Notifications.route) {
             isBottomBarVisible(true)
