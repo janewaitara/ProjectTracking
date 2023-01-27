@@ -48,8 +48,10 @@ import com.mumbicodes.presentation.allProjects.rememberProjectsColumns
 import com.mumbicodes.presentation.all_milestones.components.AllMilestonesItem
 import com.mumbicodes.presentation.components.EmptyStateSlot
 import com.mumbicodes.presentation.components.FilterChip
+import com.mumbicodes.presentation.projectDetails.MilestoneDetailsBottomSheetContent
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.ReferenceDevices
+import com.mumbicodes.presentation.util.navigation.Screens.AddAndEditMilestoneScreen.milestoneId
 import com.mumbicodes.presentation.util.toDateAsString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -97,6 +99,7 @@ fun AllMilestonesScreen() {
 @Composable
 fun AllMilestonesScreens(
     allMilestonesViewModel: AllMilestonesViewModel = hiltViewModel(),
+    onModifyMilestone: (Int, Int) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     val state = allMilestonesViewModel.state.value
@@ -127,7 +130,23 @@ fun AllMilestonesScreens(
 
             Spacer(modifier = Modifier.height(1.dp))
 
-            Box(modifier = Modifier)
+            MilestoneDetailsBottomSheetContent(
+                milestoneWithTasks = state.mileStone,
+                onDeleteClicked = { milestone ->
+                    allMilestonesViewModel.onEvent(AllMilestonesEvents.DeleteMilestone(milestone))
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                },
+                onModifyClicked = { milestoneId ->
+                    // TODO research why the sheet still persists and I have hidden it
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                    onModifyMilestone(state.mileStone.milestone.projectId, milestoneId)
+                }
+            )
+
             // TODO add 2 bottom sheets
         },
         sheetState = modalBottomSheetState,

@@ -119,7 +119,10 @@ fun ProjectNavHost(
             // AllMilestonesScreen()
             // TODO - add a milestones screen
             AllMilestonesScreens(
-                windowWidthSizeClass = windowWidthSizeClass
+                onModifyMilestone = { projectId, milestoneId ->
+                    navController.navigate("${Screens.AddAndEditMilestoneScreen.route}/$projectId/$milestoneId")
+                },
+                windowWidthSizeClass = windowWidthSizeClass,
             )
         }
         composable(route = Screens.Notifications.route) {
