@@ -41,6 +41,7 @@ import com.mumbicodes.presentation.allProjects.components.FilterBottomSheetConte
 import com.mumbicodes.presentation.allProjects.components.ProjectItem
 import com.mumbicodes.presentation.allProjects.components.SearchBar
 import com.mumbicodes.presentation.allProjects.components.StaggeredVerticalGrid
+import com.mumbicodes.presentation.components.EmptyStateSlot
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.ReferenceDevices
@@ -149,91 +150,99 @@ fun AllProjectsScreenContent(
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
 
-    Column(modifier = modifier) {
-        WelcomeMessageSection(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = Space20dp,
-                    end = Space20dp,
-                ),
-            projects = projectsState.projects
+    if (projectsState.projects.isEmpty()) {
+        EmptyStateSlot(
+            illustration = R.drawable.add_project,
+            title = R.string.allProjects,
+            description = R.string.allProjectsEmptyText,
         )
-        Spacer(modifier = Modifier.height(Space24dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = Space20dp,
-                    end = Space20dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SearchBar(
-                modifier = Modifier.weight(1f),
-                searchParamType = stringResource(id = R.string.projects),
-                searchedText = searchedText,
-                onSearchParamChanged = onSearchParamChanged
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(
+    } else {
+        Column(modifier = modifier) {
+            WelcomeMessageSection(
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.surface),
-                onClick = onClickFilterBtn,
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_filter),
-                    contentDescription = "Filter projects",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(Space16dp))
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            contentPadding = PaddingValues(horizontal = Space20dp),
-            horizontalArrangement = Arrangement.spacedBy(Space8dp)
-        ) {
-            itemsIndexed(projectsState.filtersStatus) { _, filter ->
-                FilterChip(
-                    text = filter,
-                    selected = filter == projectsState.selectedProjectStatus,
-                    onClick = onClickFilterStatus,
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(Space8dp))
-
-        if (projectsState.filteredProjects.isEmpty()) {
-            EmptyStateSection(
-                filter = projectsState.selectedProjectStatus,
+                    .fillMaxWidth()
+                    .padding(
+                        start = Space20dp,
+                        end = Space20dp,
+                    ),
                 projects = projectsState.projects
             )
-        } else {
-            LazyVerticalStaggeredGrid(
-                columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
-                contentPadding = PaddingValues(bottom = Space20dp),
+            Spacer(modifier = Modifier.height(Space24dp))
+
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = Space20dp, end = Space20dp),
-                verticalArrangement = Arrangement.spacedBy(Space16dp),
-                horizontalArrangement = Arrangement.spacedBy(Space16dp)
+                    .fillMaxWidth()
+                    .padding(
+                        start = Space20dp,
+                        end = Space20dp,
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                items(projectsState.filteredProjects) { project ->
-                    ProjectItem(
-                        // modifier = Modifier.padding(Space8dp),
-                        project = project,
-                        onClickProject = onClickProject
+                SearchBar(
+                    modifier = Modifier.weight(1f),
+                    searchParamType = stringResource(id = R.string.projects),
+                    searchedText = searchedText,
+                    onSearchParamChanged = onSearchParamChanged
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .background(MaterialTheme.colorScheme.surface),
+                    onClick = onClickFilterBtn,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_filter),
+                        contentDescription = "Filter projects",
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(Space16dp))
+
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                contentPadding = PaddingValues(horizontal = Space20dp),
+                horizontalArrangement = Arrangement.spacedBy(Space8dp)
+            ) {
+                itemsIndexed(projectsState.filtersStatus) { _, filter ->
+                    FilterChip(
+                        text = filter,
+                        selected = filter == projectsState.selectedProjectStatus,
+                        onClick = onClickFilterStatus,
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(Space8dp))
+
+            if (projectsState.filteredProjects.isEmpty()) {
+                EmptyStateSection(
+                    filter = projectsState.selectedProjectStatus,
+                    projects = projectsState.projects
+                )
+            } else {
+                LazyVerticalStaggeredGrid(
+                    columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
+                    contentPadding = PaddingValues(bottom = Space20dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = Space20dp, end = Space20dp),
+                    verticalArrangement = Arrangement.spacedBy(Space16dp),
+                    horizontalArrangement = Arrangement.spacedBy(Space16dp)
+                ) {
+                    items(projectsState.filteredProjects) { project ->
+                        ProjectItem(
+                            // modifier = Modifier.padding(Space8dp),
+                            project = project,
+                            onClickProject = onClickProject
+                        )
+                    }
                 }
             }
         }
@@ -310,13 +319,13 @@ fun EmptyStateSection(
 
         val emptyText: String =
             if (projects.isEmpty()) {
-                stringResource(id = R.string.allEmptyText)
+                stringResource(id = R.string.allProjectsEmptyText)
             } else {
                 when (filter) {
                     "Not Started" -> stringResource(id = R.string.notStartedEmptyText)
                     "In Progress" -> stringResource(id = R.string.inProgressEmptyText)
                     "Completed" -> stringResource(id = R.string.completeEmptyText)
-                    else -> stringResource(id = R.string.allEmptyText)
+                    else -> stringResource(id = R.string.allProjectsEmptyText)
                 }
             }
         Text(

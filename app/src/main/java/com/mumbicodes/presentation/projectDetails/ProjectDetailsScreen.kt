@@ -716,7 +716,7 @@ fun EmptyStateSection(
                 "Not Started" -> stringResource(id = R.string.milestonesNotStartedEmptyText)
                 "In Progress" -> stringResource(id = R.string.milestonesInProgressEmptyText)
                 "Completed" -> stringResource(id = R.string.milestonesCompleteEmptyText)
-                else -> stringResource(id = R.string.allEmptyText)
+                else -> stringResource(id = R.string.allProjectsEmptyText)
             }
 
         Text(
