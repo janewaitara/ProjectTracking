@@ -63,5 +63,7 @@
     <string name="notifications">Notifications.</string>
     <string name="next">Next</string>
     <string name="getStarted">Get Started</string>
-
+    <string name="filterMilestones">Filter Milestones</string>
+    <string name="mostUrgent">Most Urgent</string>
+    <string name="leastUrgent">Least Urgent</string>
 </resources>

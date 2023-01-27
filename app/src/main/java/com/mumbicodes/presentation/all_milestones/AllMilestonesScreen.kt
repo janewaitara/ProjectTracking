@@ -19,10 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,12 +37,14 @@ import com.mumbicodes.domain.model.Milestone
 import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.relations.MilestoneWithTasks
+import com.mumbicodes.domain.util.AllMilestonesOrder
 import com.mumbicodes.presentation.activity.MainActivity
 import com.mumbicodes.presentation.add_edit_project.UIEvents
 import com.mumbicodes.presentation.allProjects.WelcomeMessageSection
 import com.mumbicodes.presentation.allProjects.components.SearchBar
 import com.mumbicodes.presentation.allProjects.rememberProjectsColumns
 import com.mumbicodes.presentation.all_milestones.components.AllMilestonesItem
+import com.mumbicodes.presentation.all_milestones.components.FilterMilestonesBottomSheetContent
 import com.mumbicodes.presentation.components.EmptyStateSlot
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.projectDetails.MilestoneDetailsBottomSheetContent
@@ -109,6 +108,15 @@ fun AllMilestonesScreens(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
+    val bottomSheetType = remember {
+        mutableStateOf(BottomSheetType.MILESTONE_DETAILS)
+    }
+
+    // Holds the user selection until they press filter - important to show user selection on radios
+    val selectedMilestonesOrder = remember {
+        mutableStateOf(state.milestonesOrder)
+    }
+
     LaunchedEffect(key1 = true) {
         allMilestonesViewModel.uiEvents.collectLatest { UIEvents ->
             when (UIEvents) {
@@ -129,23 +137,57 @@ fun AllMilestonesScreens(
              * */
 
             Spacer(modifier = Modifier.height(1.dp))
-
-            MilestoneDetailsBottomSheetContent(
-                milestoneWithTasks = state.mileStone,
-                onDeleteClicked = { milestone ->
-                    allMilestonesViewModel.onEvent(AllMilestonesEvents.DeleteMilestone(milestone))
-                    scope.launch {
-                        modalBottomSheetState.hide()
-                    }
-                },
-                onModifyClicked = { milestoneId ->
-                    // TODO research why the sheet still persists and I have hidden it
-                    scope.launch {
-                        modalBottomSheetState.hide()
-                    }
-                    onModifyMilestone(state.mileStone.milestone.projectId, milestoneId)
+            when (bottomSheetType.value) {
+                BottomSheetType.FILTER -> {
+                    FilterMilestonesBottomSheetContent(
+                        milestonesOrder = state.milestonesOrder,
+                        selectedMilestonesOrder = selectedMilestonesOrder.value,
+                        onOrderChange = { milestoneOrder ->
+                            selectedMilestonesOrder.value = milestoneOrder
+                        },
+                        onFiltersApplied = {
+                            allMilestonesViewModel.onEvent(
+                                AllMilestonesEvents.OrderMilestones(
+                                    selectedMilestonesOrder.value
+                                )
+                            )
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                        },
+                        onFiltersReset = {
+                            allMilestonesViewModel.onEvent(
+                                AllMilestonesEvents.ResetMilestonesOrder(AllMilestonesOrder.MostUrgent)
+                            )
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                        }
+                    )
                 }
-            )
+                BottomSheetType.MILESTONE_DETAILS -> {
+                    MilestoneDetailsBottomSheetContent(
+                        milestoneWithTasks = state.mileStone,
+                        onDeleteClicked = { milestone ->
+                            allMilestonesViewModel.onEvent(
+                                AllMilestonesEvents.DeleteMilestone(
+                                    milestone
+                                )
+                            )
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                        },
+                        onModifyClicked = { milestoneId ->
+                            // TODO research why the sheet still persists and I have hidden it
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                            onModifyMilestone(state.mileStone.milestone.projectId, milestoneId)
+                        }
+                    )
+                }
+            }
 
             // TODO add 2 bottom sheets
         },
@@ -194,6 +236,9 @@ fun AllMilestonesScreens(
                         )
                     },
                     windowWidthSizeClass = windowWidthSizeClass,
+                    passBottomSheetType = { passedBottomSheetType ->
+                        bottomSheetType.value = passedBottomSheetType
+                    }
                 )
             }
         }
@@ -211,6 +256,7 @@ fun AllMilestonesScreenContent(
     searchedText: String,
     onSearchParamChanged: (String) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
+    passBottomSheetType: (BottomSheetType) -> Unit,
 ) {
     if (milestonesStates.milestones.isEmpty()) {
         EmptyStateSlot(
@@ -256,7 +302,13 @@ fun AllMilestonesScreenContent(
                         .size(48.dp)
                         .clip(MaterialTheme.shapes.small)
                         .background(MaterialTheme.colorScheme.surface),
-                    onClick = onClickFilterBtn,
+                    onClick = {
+                        onClickFilterBtn()
+
+                        passBottomSheetType(
+                            BottomSheetType.FILTER
+                        )
+                    },
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_filter),
@@ -311,7 +363,13 @@ fun AllMilestonesScreenContent(
                                 projectStatus = "Complete",
                                 timeStamp = 12
                             ),
-                            onClickMilestone = onClickMilestone
+                            onClickMilestone = {
+                                onClickMilestone(it)
+
+                                passBottomSheetType(
+                                    BottomSheetType.MILESTONE_DETAILS
+                                )
+                            }
                         )
                     }
                 }
@@ -365,6 +423,10 @@ fun WelcomeMessageSection(
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+enum class BottomSheetType {
+    FILTER, MILESTONE_DETAILS
 }
 
 @Preview
