@@ -1,6 +1,7 @@
 package com.mumbicodes.presentation.all_milestones
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -19,13 +21,17 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +48,7 @@ import com.mumbicodes.presentation.all_milestones.components.AllMilestonesItem
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.ReferenceDevices
+import com.mumbicodes.presentation.util.toDateAsString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
@@ -97,7 +104,7 @@ fun AllMilestonesScreens(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
-    LaunchedEffect(key1 = true,) {
+    LaunchedEffect(key1 = true) {
         allMilestonesViewModel.uiEvents.collectLatest { UIEvents ->
             when (UIEvents) {
                 AllMilestonesUIEvents.DeleteMilestone -> {
@@ -185,16 +192,17 @@ fun AllMilestonesScreenContent(
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     Column(modifier = modifier) {
-        Text(
-            modifier = Modifier.fillMaxWidth()
+
+        WelcomeMessageSection(
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(
                     start = Space20dp,
                     end = Space20dp,
                 ),
-            text = stringResource(id = R.string.allMilestones),
-            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            milestones = milestonesStates.milestones
         )
-        Spacer(modifier = Modifier.height(Space16dp))
+        Spacer(modifier = Modifier.height(Space24dp))
 
         Row(
             modifier = Modifier
@@ -252,7 +260,7 @@ fun AllMilestonesScreenContent(
             // TODO Add an empty state
         } else {
             LazyVerticalStaggeredGrid(
-                columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
+                columns = rememberAllMilestonesColumns(windowWidthSizeClass = windowWidthSizeClass),
                 contentPadding = PaddingValues(bottom = Space20dp),
                 modifier = Modifier
                     .fillMaxSize()
@@ -261,6 +269,10 @@ fun AllMilestonesScreenContent(
                 horizontalArrangement = Arrangement.spacedBy(Space16dp)
             ) {
                 items(milestonesStates.filteredMilestones) { milestoneWithTasks ->
+                    Log.e(
+                        "MILESTONES ",
+                        milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy")
+                    )
                     AllMilestonesItem(
                         milestoneWithTasks = milestoneWithTasks,
                         project = Project(
@@ -275,6 +287,53 @@ fun AllMilestonesScreenContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun WelcomeMessageSection(
+    modifier: Modifier = Modifier,
+    milestones: List<MilestoneWithTasks>,
+) {
+    Column(modifier = modifier) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth(),
+            text = stringResource(id = R.string.allMilestones),
+            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+        )
+        Spacer(modifier = Modifier.height(Space8dp))
+        Text(
+            text = buildAnnotatedString {
+                withStyle(
+                    style = MaterialTheme.typography.titleMedium.toSpanStyle()
+                        .copy(
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
+                ) {
+                    append("You have ")
+                }
+                withStyle(
+                    style = MaterialTheme.typography.titleMedium.toSpanStyle()
+                        .copy(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                ) {
+                    append("${milestones.size}")
+                }
+                withStyle(
+                    style = MaterialTheme.typography.titleMedium.toSpanStyle()
+                        .copy(
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
+                ) {
+                    append(" milestones.")
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -312,6 +371,17 @@ fun AllMilestonesPreviewDark() {
         }
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun rememberAllMilestonesColumns(windowWidthSizeClass: WindowWidthSizeClass) =
+    remember(windowWidthSizeClass) {
+        when (windowWidthSizeClass) {
+            WindowWidthSizeClass.Compact -> StaggeredGridCells.Fixed(1)
+            WindowWidthSizeClass.Medium -> StaggeredGridCells.Fixed(2)
+            else -> StaggeredGridCells.Adaptive(220.dp)
+        }
+    }
 
 fun sampleDataMilestones() = listOf(
     MilestoneWithTasks(

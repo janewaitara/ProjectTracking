@@ -1,5 +1,6 @@
 package com.mumbicodes.presentation.all_milestones.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,7 +62,7 @@ fun AllMilestonesItem(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = project.projectName,
-                style = MaterialTheme.typography.labelSmall.copy(MaterialTheme.colorScheme.inverseOnSurface)
+                style = MaterialTheme.typography.labelSmall.copy(MaterialTheme.colorScheme.inverseOnSurface),
             )
 
             Spacer(modifier = Modifier.height(Space8dp))
@@ -111,6 +112,7 @@ fun AllMilestonesItem(
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun AllMilestonesItemPreview() {
     ProjectTrackingTheme {

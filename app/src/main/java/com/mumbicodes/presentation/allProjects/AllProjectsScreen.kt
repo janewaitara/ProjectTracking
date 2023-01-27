@@ -159,7 +159,7 @@ fun AllProjectsScreenContent(
                 ),
             projects = projectsState.projects
         )
-        Spacer(modifier = Modifier.height(Space16dp))
+        Spacer(modifier = Modifier.height(Space24dp))
 
         Row(
             modifier = Modifier
