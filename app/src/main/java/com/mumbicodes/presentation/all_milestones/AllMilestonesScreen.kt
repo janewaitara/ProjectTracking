@@ -42,9 +42,11 @@ import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.activity.MainActivity
 import com.mumbicodes.presentation.add_edit_project.UIEvents
+import com.mumbicodes.presentation.allProjects.WelcomeMessageSection
 import com.mumbicodes.presentation.allProjects.components.SearchBar
 import com.mumbicodes.presentation.allProjects.rememberProjectsColumns
 import com.mumbicodes.presentation.all_milestones.components.AllMilestonesItem
+import com.mumbicodes.presentation.components.EmptyStateSlot
 import com.mumbicodes.presentation.components.FilterChip
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.ReferenceDevices
@@ -191,99 +193,108 @@ fun AllMilestonesScreenContent(
     onSearchParamChanged: (String) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
-    Column(modifier = modifier) {
-
-        WelcomeMessageSection(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = Space20dp,
-                    end = Space20dp,
-                ),
-            milestones = milestonesStates.milestones
+    if (milestonesStates.milestones.isEmpty()) {
+        EmptyStateSlot(
+            illustration = R.drawable.add_project,
+            title = R.string.allMilestones,
+            description = R.string.allMilestonesEmptyText,
         )
-        Spacer(modifier = Modifier.height(Space24dp))
+    } else {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = Space20dp,
-                    end = Space20dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SearchBar(
-                modifier = Modifier.weight(1f),
-                searchParamType = stringResource(id = R.string.milestones).lowercase(Locale.getDefault()),
-                searchedText = searchedText,
-                onSearchParamChanged = onSearchParamChanged
+        Column(modifier = modifier) {
+
+            WelcomeMessageSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = Space20dp,
+                        end = Space20dp,
+                    ),
+                milestones = milestonesStates.milestones
             )
+            Spacer(modifier = Modifier.height(Space24dp))
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(
+            Row(
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.surface),
-                onClick = onClickFilterBtn,
+                    .fillMaxWidth()
+                    .padding(
+                        start = Space20dp,
+                        end = Space20dp,
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_filter),
-                    contentDescription = "Filter projects",
-                    tint = MaterialTheme.colorScheme.onSurface
+                SearchBar(
+                    modifier = Modifier.weight(1f),
+                    searchParamType = stringResource(id = R.string.milestones).lowercase(Locale.getDefault()),
+                    searchedText = searchedText,
+                    onSearchParamChanged = onSearchParamChanged
                 )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .background(MaterialTheme.colorScheme.surface),
+                    onClick = onClickFilterBtn,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_filter),
+                        contentDescription = "Filter projects",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(Space16dp))
+            Spacer(modifier = Modifier.height(Space16dp))
 
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            contentPadding = PaddingValues(horizontal = Space20dp),
-            horizontalArrangement = Arrangement.spacedBy(Space8dp)
-        ) {
-            itemsIndexed(milestonesStates.filtersStatus) { _, filter ->
-                FilterChip(
-                    text = filter,
-                    selected = filter == milestonesStates.selectedMilestoneStatus,
-                    onClick = onClickFilterStatus,
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(Space8dp))
-
-        if (milestonesStates.filteredMilestones.isEmpty()) {
-            // TODO Add an empty state
-        } else {
-            LazyVerticalStaggeredGrid(
-                columns = rememberAllMilestonesColumns(windowWidthSizeClass = windowWidthSizeClass),
-                contentPadding = PaddingValues(bottom = Space20dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = Space20dp, end = Space20dp),
-                verticalArrangement = Arrangement.spacedBy(Space16dp),
-                horizontalArrangement = Arrangement.spacedBy(Space16dp)
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                contentPadding = PaddingValues(horizontal = Space20dp),
+                horizontalArrangement = Arrangement.spacedBy(Space8dp)
             ) {
-                items(milestonesStates.filteredMilestones) { milestoneWithTasks ->
-                    Log.e(
-                        "MILESTONES ",
-                        milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy")
+                itemsIndexed(milestonesStates.filtersStatus) { _, filter ->
+                    FilterChip(
+                        text = filter,
+                        selected = filter == milestonesStates.selectedMilestoneStatus,
+                        onClick = onClickFilterStatus,
                     )
-                    AllMilestonesItem(
-                        milestoneWithTasks = milestoneWithTasks,
-                        project = Project(
-                            projectName = "Project name",
-                            projectDesc = "The design of my personal portfolio",
-                            projectDeadline = "12th Dec 2022",
-                            projectStatus = "Complete",
-                            timeStamp = 12
-                        ),
-                        onClickMilestone = onClickMilestone
-                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(Space8dp))
+
+            if (milestonesStates.filteredMilestones.isEmpty()) {
+                // TODO Add an empty state
+            } else {
+                LazyVerticalStaggeredGrid(
+                    columns = rememberAllMilestonesColumns(windowWidthSizeClass = windowWidthSizeClass),
+                    contentPadding = PaddingValues(bottom = Space20dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = Space20dp, end = Space20dp),
+                    verticalArrangement = Arrangement.spacedBy(Space16dp),
+                    horizontalArrangement = Arrangement.spacedBy(Space16dp)
+                ) {
+                    items(milestonesStates.filteredMilestones) { milestoneWithTasks ->
+                        Log.e(
+                            "MILESTONES ",
+                            milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy")
+                        )
+                        AllMilestonesItem(
+                            milestoneWithTasks = milestoneWithTasks,
+                            project = Project(
+                                projectName = "Project name",
+                                projectDesc = "The design of my personal portfolio",
+                                projectDeadline = "12th Dec 2022",
+                                projectStatus = "Complete",
+                                timeStamp = 12
+                            ),
+                            onClickMilestone = onClickMilestone
+                        )
+                    }
                 }
             }
         }
