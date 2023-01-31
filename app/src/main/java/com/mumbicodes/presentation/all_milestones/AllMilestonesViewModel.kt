@@ -1,12 +1,16 @@
 package com.mumbicodes.presentation.all_milestones
 
 import android.app.Application
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.R
+import com.mumbicodes.domain.model.ProjectName
 import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.use_case.milestones.MilestonesUseCases
+import com.mumbicodes.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.domain.util.AllMilestonesOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -19,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AllMilestonesViewModel @Inject constructor(
     private val milestonesUseCases: MilestonesUseCases,
+    private val projectsUseCases: ProjectsUseCases,
     private val appContext: Application,
 ) : ViewModel() {
     private val _state = mutableStateOf(AllMilestonesStates())
@@ -28,9 +33,12 @@ class AllMilestonesViewModel @Inject constructor(
     val searchParam = _searchParam
 
     private var getMilestonesJob: Job? = null
+    private var getProjectsJob: Job? = null
 
     private val _uiEvents = MutableSharedFlow<AllMilestonesUIEvents>()
     val uiEvents = _uiEvents
+
+    private val _projectNames: MutableState< List<ProjectName>> = mutableStateOf(emptyList())
 
     init {
         getAllMilestones(
@@ -49,8 +57,40 @@ class AllMilestonesViewModel @Inject constructor(
                     milestonesOrder = milestonesOrder,
                 )
                 milestonesWithTasks.filterMilestones(milestoneStatus, searchParam.value)
+                getProjectNameAndId()
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun getProjectNameAndId() {
+        getProjectsJob?.cancel()
+        getProjectsJob = projectsUseCases.getProjectNameAndIdUseCase()
+            .onEach { projectNames ->
+                _projectNames.value = projectNames
+
+                mapProjectNameWithMilestoneId()
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun mapProjectNameWithMilestoneId() {
+
+        val mappedMilestonesWithProjectName = mutableMapOf<Int, String>()
+
+        _projectNames.value.forEach { projectName ->
+            state.value.filteredMilestones.forEach { milestoneWithTasks ->
+                if (milestoneWithTasks.milestone.projectId == projectName.projectId) {
+                    mappedMilestonesWithProjectName[milestoneWithTasks.milestone.milestoneId] =
+                        projectName.projectName
+                }
+            }
+        }
+
+        _state.value = _state.value.copy(
+            milestonesProjectName = mappedMilestonesWithProjectName
+        )
+
+        Log.e("MilestonesWithNames", state.value.milestonesProjectName.values.toString())
     }
 
     fun onEvent(milestonesEvents: AllMilestonesEvents) {

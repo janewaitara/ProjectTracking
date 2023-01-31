@@ -23,4 +23,5 @@ data class AllMilestonesStates(
     val filtersStatus: List<String> = filters,
     val selectedMilestoneStatus: String = filters.first(),
     val isFilterBottomSheetVisible: Boolean = false,
+    val milestonesProjectName: Map<Int, String> = emptyMap(),
 )
