@@ -16,7 +16,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mumbicodes.domain.model.Milestone
-import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.presentation.components.TagItem
@@ -33,7 +32,7 @@ import com.mumbicodes.presentation.util.toDateAsString
 fun AllMilestonesItem(
     modifier: Modifier = Modifier,
     milestoneWithTasks: MilestoneWithTasks,
-    project: Project,
+    projectName: String,
     onClickMilestone: (MilestoneWithTasks) -> Unit = {},
 ) {
     Surface(
@@ -61,7 +60,7 @@ fun AllMilestonesItem(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = project.projectName,
+                text = projectName,
                 style = MaterialTheme.typography.labelSmall.copy(MaterialTheme.colorScheme.inverseOnSurface),
             )
 
@@ -118,13 +117,7 @@ fun AllMilestonesItemPreview() {
     ProjectTrackingTheme {
         AllMilestonesItem(
             modifier = Modifier,
-            project = Project(
-                projectName = "Project name",
-                projectDesc = "The design of my personal portfolio",
-                projectDeadline = "12th Dec 2022",
-                projectStatus = "Complete",
-                timeStamp = 12
-            ),
+            projectName = "Project name",
             milestoneWithTasks = MilestoneWithTasks(
                 Milestone(
                     projectId = 1,

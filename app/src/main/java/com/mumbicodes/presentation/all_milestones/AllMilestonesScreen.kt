@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mumbicodes.R
 import com.mumbicodes.domain.model.Milestone
-import com.mumbicodes.domain.model.Project
 import com.mumbicodes.domain.model.Task
 import com.mumbicodes.domain.relations.MilestoneWithTasks
 import com.mumbicodes.domain.util.AllMilestonesOrder
@@ -356,13 +355,7 @@ fun AllMilestonesScreenContent(
                         )
                         AllMilestonesItem(
                             milestoneWithTasks = milestoneWithTasks,
-                            project = Project(
-                                projectName = "Project name",
-                                projectDesc = "The design of my personal portfolio",
-                                projectDeadline = "12th Dec 2022",
-                                projectStatus = "Complete",
-                                timeStamp = 12
-                            ),
+                            projectName = milestonesStates.milestonesProjectName[milestoneWithTasks.milestone.milestoneId]!!,
                             onClickMilestone = {
                                 onClickMilestone(it)
 
@@ -450,13 +443,7 @@ fun AllMilestonesPreviewDark() {
             items(sampleDataMilestones()) { milestoneWithTasks ->
                 AllMilestonesItem(
                     milestoneWithTasks = milestoneWithTasks,
-                    project = Project(
-                        projectName = "Project name",
-                        projectDesc = "The design of my personal portfolio",
-                        projectDeadline = "12th Dec 2022",
-                        projectStatus = "Complete",
-                        timeStamp = 12
-                    ),
+                    projectName = "Project name",
                     onClickMilestone = { }
                 )
             }
