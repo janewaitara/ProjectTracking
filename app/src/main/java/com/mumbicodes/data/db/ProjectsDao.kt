@@ -2,6 +2,7 @@ package com.mumbicodes.data.db
 
 import androidx.room.*
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.domain.model.ProjectName
 import com.mumbicodes.domain.relations.ProjectWithMilestones
 import kotlinx.coroutines.flow.Flow
 
@@ -27,6 +28,10 @@ interface ProjectsDao {
     // Used when with status and timestamp filter(recently added)
     @Query("SELECT * FROM projects_table")
     fun getAllProjects(): Flow<List<Project>>
+
+    // Used when fetching project name for milestones
+    @Query("SELECT projectId, projectName FROM projects_table")
+    fun getProjectNameAndId(): Flow<List<ProjectName>>
 
     /** Deletion */
     @Delete

@@ -1,5 +1,6 @@
 package com.mumbicodes.domain.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -12,4 +13,9 @@ data class Project(
     val projectDeadline: String,
     val projectStatus: String,
     val timeStamp: Long
+)
+
+data class ProjectName(
+    @ColumnInfo(name = "projectId") val projectId: Int,
+    @ColumnInfo(name = "projectName") val projectName: String,
 )
