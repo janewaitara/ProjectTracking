@@ -41,6 +41,7 @@ object UseCaseModule {
             deleteProjectUseCase = DeleteProjectUseCase(projectRepository),
             deleteAllProjectsUseCase = DeleteAllProjectsUseCase(projectRepository),
             checkProjectStatusUseCase = CheckProjectStatusUseCase(milestonesRepository, app),
+            getProjectNameAndIdUseCase = GetProjectNameAndIdUseCase(projectRepository),
         )
     }
 
