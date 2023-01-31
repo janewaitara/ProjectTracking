@@ -1,7 +1,6 @@
 package com.mumbicodes.presentation.all_milestones
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -89,8 +88,6 @@ class AllMilestonesViewModel @Inject constructor(
         _state.value = _state.value.copy(
             milestonesProjectName = mappedMilestonesWithProjectName
         )
-
-        Log.e("MilestonesWithNames", state.value.milestonesProjectName.values.toString())
     }
 
     fun onEvent(milestonesEvents: AllMilestonesEvents) {

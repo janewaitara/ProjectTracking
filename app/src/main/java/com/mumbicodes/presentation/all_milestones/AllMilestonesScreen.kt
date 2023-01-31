@@ -1,7 +1,6 @@
 package com.mumbicodes.presentation.all_milestones
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,7 +49,6 @@ import com.mumbicodes.presentation.projectDetails.MilestoneDetailsBottomSheetCon
 import com.mumbicodes.presentation.theme.*
 import com.mumbicodes.presentation.util.ReferenceDevices
 import com.mumbicodes.presentation.util.navigation.Screens.AddAndEditMilestoneScreen.milestoneId
-import com.mumbicodes.presentation.util.toDateAsString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
@@ -349,10 +347,7 @@ fun AllMilestonesScreenContent(
                     horizontalArrangement = Arrangement.spacedBy(Space16dp)
                 ) {
                     items(milestonesStates.filteredMilestones) { milestoneWithTasks ->
-                        Log.e(
-                            "MILESTONES ",
-                            milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy")
-                        )
+
                         AllMilestonesItem(
                             milestoneWithTasks = milestoneWithTasks,
                             projectName = milestonesStates.milestonesProjectName[milestoneWithTasks.milestone.milestoneId]!!,
