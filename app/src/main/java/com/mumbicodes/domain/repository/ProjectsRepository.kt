@@ -1,6 +1,7 @@
 package com.mumbicodes.domain.repository
 
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.domain.model.ProjectName
 import com.mumbicodes.domain.relations.ProjectWithMilestones
 import kotlinx.coroutines.flow.Flow
 
@@ -15,6 +16,8 @@ interface ProjectsRepository {
     fun getProjectByIdWithMilestones(projectId: Int): Flow<ProjectWithMilestones?>
 
     fun getAllProjects(): Flow<List<Project>>
+
+    fun getProjectNameAndId(): Flow<List<ProjectName>>
 
     suspend fun deleteProject(project: Project)
 

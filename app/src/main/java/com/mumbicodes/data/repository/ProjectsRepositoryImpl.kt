@@ -2,12 +2,13 @@ package com.mumbicodes.data.repository
 
 import com.mumbicodes.data.db.ProjectsDao
 import com.mumbicodes.domain.model.Project
+import com.mumbicodes.domain.model.ProjectName
 import com.mumbicodes.domain.relations.ProjectWithMilestones
 import com.mumbicodes.domain.repository.ProjectsRepository
 import kotlinx.coroutines.flow.Flow
 
 class ProjectsRepositoryImpl(
-    private val projectsDao: ProjectsDao
+    private val projectsDao: ProjectsDao,
 ) : ProjectsRepository {
     override suspend fun insertProject(project: Project) {
         projectsDao.insertProject(project = project)
@@ -25,6 +26,9 @@ class ProjectsRepositoryImpl(
 
     override fun getAllProjects(): Flow<List<Project>> =
         projectsDao.getAllProjects()
+
+    override fun getProjectNameAndId(): Flow<List<ProjectName>> =
+        projectsDao.getProjectNameAndId()
 
     override suspend fun deleteProject(project: Project) {
         projectsDao.deleteProject(project)
