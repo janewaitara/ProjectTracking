@@ -57,6 +57,12 @@ object Versions {
 
     //LeakCanary
     const val leakCanary = "2.10"
+
+    //gsm
+    const val gsm = "4.3.15"
+
+    //Firebase
+    const val firebase = "31.2.0"
 }
 
 object BuildPlugins {
@@ -66,6 +72,7 @@ object BuildPlugins {
     const val kotlinAndroid = "org.jetbrains.kotlin.android"
     const val ktlintPlugin = "org.jlleitschuh.gradle.ktlint"
     const val hiltPlugin = "dagger.hilt.android.plugin"
+    const val googleServices = "com.google.gms.google-services"
 }
 
 object Libraries {
@@ -131,6 +138,15 @@ object Libraries {
     //LeakCanary
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:${Versions.leakCanary}"
 
+    //Gsm
+    const val googleServices = "com.google.gms:google-services:${Versions.gsm}"
+
+    //Firebase
+    const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebase}"
+    const val firebaseMessaging = "com.google.firebase:firebase-messaging-ktx"
+    const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+    const val firebaseAnalytics =  "com.google.firebase:firebase-analytics-ktx"
+    const val firebasePerformance = "com.google.firebase:firebase-perf-ktx"
 }
 
 object TestLibraries {

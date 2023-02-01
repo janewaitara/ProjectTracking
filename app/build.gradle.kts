@@ -5,6 +5,8 @@ plugins {
     id(BuildPlugins.kotlinAndroid)
     id(BuildPlugins.ktlintPlugin)
     id(BuildPlugins.hiltPlugin)
+    id(BuildPlugins.googleServices)
+    id("com.google.firebase.crashlytics")
     id("kotlin-kapt")
     kotlin("kapt")
 }
@@ -108,6 +110,13 @@ dependencies {
 
     // SplashScreen
     implementation(Libraries.splashScreen)
+
+    // Firebase
+    implementation(platform(Libraries.firebaseBom))
+    implementation(Libraries.firebaseAnalytics)
+    implementation(Libraries.firebaseCrashlytics)
+    implementation(Libraries.firebasePerformance)
+    implementation(Libraries.firebaseMessaging)
 
     // Unit tests
     testImplementation(TestLibraries.junit4)
