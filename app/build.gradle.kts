@@ -13,7 +13,7 @@ android {
     compileSdk = AndroidSdk.compileSdkVersion
 
     defaultConfig {
-        applicationId = "com.mumbicodes"
+        applicationId = "com.mumbicodes.projectie"
         minSdk = AndroidSdk.minSdkVersion
         targetSdk = AndroidSdk.targetSdkVersion
         versionCode = AndroidSdk.versionCode
