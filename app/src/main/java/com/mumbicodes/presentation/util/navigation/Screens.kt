@@ -47,8 +47,8 @@ sealed class Screens(
 
     object AddAndEditMilestoneScreen : Screens(
         "addAndEditMilestone",
-        R.drawable.ic_add_outlined,
-        R.drawable.ic_add_filled,
+        R.drawable.material_symbols_add_circle_rounded,
+        R.drawable.material_symbols_add_circle_rounded,
         "Add Milestones"
     ) {
         const val milestoneId = MILESTONE_ID
@@ -76,8 +76,8 @@ sealed class Screens(
     object ProjectDetails :
         Screens(
             "projectDetails",
-            R.drawable.ic_add_outlined,
-            R.drawable.ic_add_filled,
+            R.drawable.material_symbols_add_circle_rounded,
+            R.drawable.material_symbols_add_circle_rounded,
             "Details"
         ) {
         const val projectId = PROJECT_ID

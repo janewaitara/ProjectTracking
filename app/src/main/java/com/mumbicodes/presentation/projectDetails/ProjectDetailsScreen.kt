@@ -700,7 +700,7 @@ fun EmptyStateSection(
                 "Not Started" -> R.drawable.ic_incomplete_projects
                 "In Progress" -> R.drawable.inprogress
                 "Completed" -> R.drawable.ic_incomplete_projects
-                else -> R.drawable.new_project_illustration
+                else -> R.drawable.add_project
             }
 
         Image(
