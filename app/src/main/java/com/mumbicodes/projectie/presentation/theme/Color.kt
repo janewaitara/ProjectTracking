@@ -16,6 +16,7 @@ val GreyDarkest = Color(0xFF020918)
 val GreyDark = Color(0xFF03102C)
 val GreyNormal = Color(0xFF253046)
 val GreySubtle = Color(0xFF737A88)
+val GreyLight = Color(0xFFBFC9DD)
 val White = Color(0xFFFFFFFF)
 
 // State colors: Error
