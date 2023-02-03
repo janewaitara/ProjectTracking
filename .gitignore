@@ -10,3 +10,4 @@
 local.properties
 buildSrc/build
 buildSrc/.gradle/*
+app/release/*

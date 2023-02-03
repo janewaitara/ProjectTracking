@@ -13,6 +13,8 @@ tasks.register("clean", Delete::class) {
 buildscript {
     dependencies {
         classpath(Libraries.hiltGradle)
+        classpath(Libraries.googleServices)
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
     }
 }
 

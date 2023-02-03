@@ -5,6 +5,8 @@ plugins {
     id(BuildPlugins.kotlinAndroid)
     id(BuildPlugins.ktlintPlugin)
     id(BuildPlugins.hiltPlugin)
+    id(BuildPlugins.googleServices)
+    id("com.google.firebase.crashlytics")
     id("kotlin-kapt")
     kotlin("kapt")
 }
@@ -13,7 +15,7 @@ android {
     compileSdk = AndroidSdk.compileSdkVersion
 
     defaultConfig {
-        applicationId = "com.mumbicodes"
+        applicationId = "com.mumbicodes.projectie"
         minSdk = AndroidSdk.minSdkVersion
         targetSdk = AndroidSdk.targetSdkVersion
         versionCode = AndroidSdk.versionCode
@@ -27,7 +29,8 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -108,6 +111,13 @@ dependencies {
     // SplashScreen
     implementation(Libraries.splashScreen)
 
+    // Firebase
+    implementation(platform(Libraries.firebaseBom))
+    implementation(Libraries.firebaseAnalytics)
+    implementation(Libraries.firebaseCrashlytics)
+    implementation(Libraries.firebasePerformance)
+    implementation(Libraries.firebaseMessaging)
+
     // Unit tests
     testImplementation(TestLibraries.junit4)
 
@@ -118,4 +128,5 @@ dependencies {
 
     debugImplementation(TestLibraries.composeTooling)
     debugImplementation(TestLibraries.composeManifest)
+    debugImplementation(Libraries.leakCanary)
 }
