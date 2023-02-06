@@ -1,6 +1,7 @@
 package com.mumbicodes.projectie.presentation.projectDetails
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +10,11 @@ import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
+import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
+import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
 import com.mumbicodes.projectie.presentation.util.PROJECT_ID
+import com.mumbicodes.projectie.presentation.util.transformTaskStatesToTasks
+import com.mumbicodes.projectie.presentation.util.transformTasksToTaskStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,6 +27,7 @@ import javax.inject.Inject
 class ProjectDetailsViewModel @Inject constructor(
     private val projectsUseCases: ProjectsUseCases,
     private val milestonesUseCases: MilestonesUseCases,
+    private val tasksUseCase: TasksUseCases,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -36,11 +42,15 @@ class ProjectDetailsViewModel @Inject constructor(
     private val _uiEvents = MutableSharedFlow<ProjectUIEvents>()
     val uiEvents = _uiEvents
 
+    private var _stateTasks = mutableListOf<TaskState>().toMutableStateList()
+    val stateTasks: List<TaskState> = _stateTasks
+
     init {
         projectId?.let { projectId ->
             getProjectDetails(projectId = projectId)
         }
     }
+
     fun getProjectDetails(projectId: Int) {
         viewModelScope.launch {
             // todo delete
@@ -95,6 +105,17 @@ class ProjectDetailsViewModel @Inject constructor(
                     isCongratsDialogVisible = !state.value.isCongratsDialogVisible
                 )
             }
+            is ProjectDetailsEvents.ToggleTaskState -> {
+                _stateTasks.find {
+                    it.taskId == projectDetailsEvents.taskId
+                }?.let { foundTaskState ->
+                    foundTaskState.statusState = !foundTaskState.statusState
+                }
+                // Update db
+                viewModelScope.launch {
+                    tasksUseCase.addTasksUseCase(transformTaskStatesToTasks(stateTasks))
+                }
+            }
         }
     }
 
@@ -129,6 +150,11 @@ class ProjectDetailsViewModel @Inject constructor(
                         tasks = listOf()
                     )
                 )
+                // adding tasks to state
+                _stateTasks.apply {
+                    clear()
+                    addAll(transformTasksToTaskStates(milestoneWithTask!!.tasks))
+                }
             }
             .launchIn(viewModelScope)
     }

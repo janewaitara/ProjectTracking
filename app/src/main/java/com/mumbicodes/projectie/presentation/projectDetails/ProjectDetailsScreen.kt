@@ -100,6 +100,11 @@ fun ProjectDetailsScreen(
                         modalBottomSheetState.hide()
                     }
                     onAddOrModifyMilestone(state.project.projectId, it)
+                },
+                onTaskClicked = { taskId ->
+                    projectDetailsViewModel.onEvent(
+                        ProjectDetailsEvents.ToggleTaskState(taskId)
+                    )
                 }
             )
         },

@@ -9,6 +9,7 @@ sealed class ProjectDetailsEvents {
     data class DeleteProject(val project: Project) : ProjectDetailsEvents()
     data class DeleteMilestone(val milestone: Milestone) : ProjectDetailsEvents()
     object ToggleMenuOptionsVisibility : ProjectDetailsEvents()
+    data class ToggleTaskState(val taskId: Int) : ProjectDetailsEvents()
     object ToggleDeleteDialogVisibility : ProjectDetailsEvents()
     object ToggleCongratulationsDialogVisibility : ProjectDetailsEvents()
 }

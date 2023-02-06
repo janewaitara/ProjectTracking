@@ -2,6 +2,9 @@ package com.mumbicodes.projectie.presentation.util
 
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import com.mumbicodes.projectie.domain.model.Task
+import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
+import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskTextFieldState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -51,6 +54,36 @@ fun String.toLocalDate(pattern: String): LocalDate {
     val formatter = provideFormatter(pattern)
     return LocalDate.parse(this, formatter)
 }
+
+fun transformTasksToTaskStates(tasks: List<Task>): List<TaskState> {
+    return tasks.map { task ->
+        task.toTaskState()
+    }
+}
+fun transformTaskStatesToTasks(taskStates: List<TaskState>): List<Task> =
+    taskStates.map { taskState ->
+        taskState.toTask()
+    }
+
+fun Task.toTaskState() = TaskState(
+    milestoneId = milestoneId,
+    taskId = taskId,
+    initialTaskTitleState = TaskTextFieldState(
+        text = taskTitle
+    ),
+    initialTaskDescState = TaskTextFieldState(
+        text = taskDesc
+    ),
+    initialStatusState = status,
+)
+
+fun TaskState.toTask() = Task(
+    milestoneId = milestoneId,
+    taskId = taskId,
+    taskTitle = taskTitleState.text,
+    taskDesc = taskDescState.text,
+    status = statusState
+)
 
 @Preview(name = "phone", device = Devices.PHONE)
 @Preview(name = "foldable", device = Devices.FOLDABLE)

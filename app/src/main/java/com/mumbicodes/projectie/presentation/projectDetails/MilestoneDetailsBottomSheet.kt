@@ -1,6 +1,7 @@
 package com.mumbicodes.projectie.presentation.projectDetails
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +31,7 @@ fun MilestoneDetailsBottomSheetContent(
     milestoneWithTasks: MilestoneWithTasks,
     onDeleteClicked: (Milestone) -> Unit,
     onModifyClicked: (Int) -> Unit,
+    onTaskClicked: (Int) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -112,6 +114,9 @@ fun MilestoneDetailsBottomSheetContent(
                             color = MaterialTheme.colorScheme.surface,
                             shape = MaterialTheme.shapes.small
                         )
+                        .clickable {
+                            onTaskClicked(task.taskId)
+                        }
                         .padding(Space12dp),
                     task = task,
                     descIsVisible = true
@@ -182,7 +187,8 @@ fun MilestoneBottomSheetContent() {
                 )
             ),
             onDeleteClicked = {},
-            onModifyClicked = {}
+            onModifyClicked = {},
+            onTaskClicked = {}
         )
     }
 }
