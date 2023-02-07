@@ -13,8 +13,6 @@ import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
 import com.mumbicodes.projectie.presentation.util.PROJECT_ID
-import com.mumbicodes.projectie.presentation.util.transformTaskStatesToTasks
-import com.mumbicodes.projectie.presentation.util.transformTasksToTaskStates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
