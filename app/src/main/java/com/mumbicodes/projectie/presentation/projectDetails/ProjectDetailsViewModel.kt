@@ -113,7 +113,11 @@ class ProjectDetailsViewModel @Inject constructor(
                 }
                 // Update db
                 viewModelScope.launch {
-                    tasksUseCase.addTasksUseCase(transformTaskStatesToTasks(stateTasks))
+                    tasksUseCase.addTasksUseCase(
+                        tasksUseCase.transformTasksUseCase.transformTaskStatesToTasks(
+                            stateTasks
+                        )
+                    )
                 }
             }
         }
@@ -153,7 +157,11 @@ class ProjectDetailsViewModel @Inject constructor(
                 // adding tasks to state
                 _stateTasks.apply {
                     clear()
-                    addAll(transformTasksToTaskStates(milestoneWithTask!!.tasks))
+                    addAll(
+                        tasksUseCase.transformTasksUseCase.transformTasksToTaskStates(
+                            milestoneWithTask!!.tasks
+                        )
+                    )
                 }
             }
             .launchIn(viewModelScope)
