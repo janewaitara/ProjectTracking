@@ -3,6 +3,7 @@ package com.mumbicodes.projectie.presentation.all_milestones
 import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
@@ -10,7 +11,9 @@ import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
+import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
+import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +26,7 @@ import javax.inject.Inject
 class AllMilestonesViewModel @Inject constructor(
     private val milestonesUseCases: MilestonesUseCases,
     private val projectsUseCases: ProjectsUseCases,
+    private val tasksUseCase: TasksUseCases,
     private val appContext: Application,
 ) : ViewModel() {
     private val _state = mutableStateOf(AllMilestonesStates())
@@ -38,6 +42,9 @@ class AllMilestonesViewModel @Inject constructor(
     val uiEvents = _uiEvents
 
     private val _projectNames: MutableState< List<ProjectName>> = mutableStateOf(emptyList())
+
+    private var _stateTasks = mutableListOf<TaskState>().toMutableStateList()
+    val stateTasks: List<TaskState> = _stateTasks
 
     init {
         getAllMilestones(
@@ -137,6 +144,30 @@ class AllMilestonesViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     mileStone = milestonesEvents.milestone
                 )
+                // Adding the tasks to state when the milestones is clicked
+                _stateTasks.apply {
+                    clear()
+                    addAll(
+                        tasksUseCase.transformTasksUseCase.transformTasksToTaskStates(
+                            milestonesEvents.milestone.tasks
+                        )
+                    )
+                }
+            }
+            is AllMilestonesEvents.ToggleTaskState -> {
+                _stateTasks.find {
+                    it.taskId == milestonesEvents.taskId
+                }?.let { foundTaskState ->
+                    foundTaskState.statusState = !foundTaskState.statusState
+                }
+                // Update db
+                viewModelScope.launch {
+                    tasksUseCase.addTasksUseCase(
+                        tasksUseCase.transformTasksUseCase.transformTaskStatesToTasks(
+                            stateTasks
+                        )
+                    )
+                }
             }
         }
     }

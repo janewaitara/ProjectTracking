@@ -16,6 +16,8 @@ sealed class AllMilestonesEvents {
     data class DeleteMilestone(val milestone: Milestone) : AllMilestonesEvents()
 
     data class PassMilestone(val milestone: MilestoneWithTasks) : AllMilestonesEvents()
+
+    data class ToggleTaskState(val taskId: Int) : AllMilestonesEvents()
 }
 
 sealed class AllMilestonesUIEvents {
