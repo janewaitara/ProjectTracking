@@ -178,7 +178,14 @@ fun AllMilestonesScreens(
                                 modalBottomSheetState.hide()
                             }
                             onModifyMilestone(state.mileStone.milestone.projectId, milestoneId)
-                        }
+                        },
+                        onTaskClicked = { taskId ->
+                            allMilestonesViewModel.onEvent(
+                                AllMilestonesEvents.ToggleTaskState(
+                                    taskId
+                                )
+                            )
+                        },
                     )
                 }
             }
@@ -200,10 +207,10 @@ fun AllMilestonesScreens(
                         top = 24.dp
                     ),
                     milestonesStates = state,
-                    onClickMilestone = { milestoneWithTasks ->
+                    onClickMilestone = { milestoneId ->
                         allMilestonesViewModel.onEvent(
                             AllMilestonesEvents.PassMilestone(
-                                milestone = milestoneWithTasks
+                                milestoneId = milestoneId
                             )
                         )
 
@@ -244,7 +251,7 @@ fun AllMilestonesScreens(
 fun AllMilestonesScreenContent(
     modifier: Modifier = Modifier,
     milestonesStates: AllMilestonesStates,
-    onClickMilestone: (MilestoneWithTasks) -> Unit,
+    onClickMilestone: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
     searchedText: String,

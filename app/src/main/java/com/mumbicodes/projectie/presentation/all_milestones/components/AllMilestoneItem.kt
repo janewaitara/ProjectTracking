@@ -33,12 +33,12 @@ fun AllMilestonesItem(
     modifier: Modifier = Modifier,
     milestoneWithTasks: MilestoneWithTasks,
     projectName: String,
-    onClickMilestone: (MilestoneWithTasks) -> Unit = {},
+    onClickMilestone: (Int) -> Unit = {},
 ) {
     Surface(
         shape = MaterialTheme.shapes.small,
         onClick = {
-            onClickMilestone(milestoneWithTasks)
+            onClickMilestone(milestoneWithTasks.milestone.milestoneId)
         },
         modifier = modifier
             .fillMaxWidth()
