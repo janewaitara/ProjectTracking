@@ -9,11 +9,11 @@ class CheckMilestoneStatusUseCase(
     private val appContext: Application,
 ) {
 
-    operator fun invoke(tasks: List<Task>): ProgressStatus {
+    operator fun invoke(tasks: List<Task>): String {
 
         val tasksStatusList: List<Boolean> = tasks.map { it.status }
 
-        return when {
+        val progress = when {
             tasksStatusList.contains(true) && !tasksStatusList.contains(false) -> ProgressStatus.Completed(
                 appContext.getString(
                     R.string.completed
@@ -23,6 +23,13 @@ class CheckMilestoneStatusUseCase(
                 appContext.getString(R.string.notStarted)
             )
             else -> ProgressStatus.InProgress(appContext.getString(R.string.inProgress))
+        }
+
+        // return milestoneStatus
+        return when (progress) {
+            is ProgressStatus.Completed -> progress.status
+            is ProgressStatus.InProgress -> progress.status
+            is ProgressStatus.NotStarted -> progress.status
         }
     }
 }

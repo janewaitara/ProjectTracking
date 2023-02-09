@@ -236,14 +236,7 @@ class AddEditMilestonesViewModel @Inject constructor(
 
     fun checkMilestoneStatus(tasks: List<Task>) {
         viewModelScope.launch {
-            val progress = milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
-
-            currentMilestoneStatus = when (progress) {
-
-                is ProgressStatus.Completed -> progress.status
-                is ProgressStatus.InProgress -> progress.status
-                is ProgressStatus.NotStarted -> progress.status
-            }
+            currentMilestoneStatus = milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
         }
     }
 
