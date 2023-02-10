@@ -15,7 +15,6 @@ import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
-import com.mumbicodes.projectie.domain.util.ProgressStatus
 import com.mumbicodes.projectie.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -243,18 +242,12 @@ class AddEditMilestonesViewModel @Inject constructor(
     fun checkAndUpdateProjectStatus() {
         viewModelScope.launch {
 
-            val progress = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
+            val projectStatus = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
 
-            val pro = when (progress) {
-
-                is ProgressStatus.Completed -> progress.status
-                is ProgressStatus.InProgress -> progress.status
-                is ProgressStatus.NotStarted -> progress.status
-            }
             val project: Project = projectsUseCases.getProjectByIdUseCase(passedProjectId)
 
             projectsUseCases.updateProjectsUseCase.invoke(
-                project.copy(projectStatus = pro)
+                project.copy(projectStatus = projectStatus)
             )
         }
     }

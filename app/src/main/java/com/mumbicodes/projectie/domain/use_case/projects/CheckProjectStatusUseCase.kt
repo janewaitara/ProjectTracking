@@ -9,7 +9,7 @@ class CheckProjectStatusUseCase(
     val repository: MilestonesRepository,
     private val appContext: Application,
 ) {
-    suspend operator fun invoke(projectId: Int): ProgressStatus {
+    suspend operator fun invoke(projectId: Int): String {
 
         val milestonesInProject =
             repository.getAllMilestonesBasedOnProjIdAndStatus(projectId = projectId, status = null)
@@ -26,10 +26,16 @@ class CheckProjectStatusUseCase(
             !milestonesStatusList.contains(appContext.getString(R.string.completed)) &&
             !milestonesStatusList.contains(appContext.getString(R.string.inProgress))
 
-        return when {
+        val progress = when {
             completed -> ProgressStatus.Completed(appContext.getString(R.string.completed))
             notStarted -> ProgressStatus.NotStarted(appContext.getString(R.string.notStarted))
             else -> ProgressStatus.InProgress(appContext.getString(R.string.inProgress))
+        }
+
+        return when (progress) {
+            is ProgressStatus.Completed -> progress.status
+            is ProgressStatus.InProgress -> progress.status
+            is ProgressStatus.NotStarted -> progress.status
         }
     }
 }
