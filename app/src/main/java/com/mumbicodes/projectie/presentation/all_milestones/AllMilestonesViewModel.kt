@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.ProjectName
+import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
@@ -46,7 +47,7 @@ class AllMilestonesViewModel @Inject constructor(
     private val _uiEvents = MutableSharedFlow<AllMilestonesUIEvents>()
     val uiEvents = _uiEvents
 
-    private val _projectNames: MutableState< List<ProjectName>> = mutableStateOf(emptyList())
+    private val _projectNames: MutableState<List<ProjectName>> = mutableStateOf(emptyList())
 
     private var _stateTasks = mutableListOf<TaskState>().toMutableStateList()
     val stateTasks: List<TaskState> = _stateTasks
@@ -154,6 +155,11 @@ class AllMilestonesViewModel @Inject constructor(
                 }?.let { foundTaskState ->
                     foundTaskState.statusState = !foundTaskState.statusState
                 }
+
+                val tasks = tasksUseCase.transformTasksUseCase.transformTaskStatesToTasks(
+                    stateTasks
+                )
+                checkAndUpdateMilestoneStatus(tasks)
                 // Update db
                 viewModelScope.launch {
                     tasksUseCase.addTasksUseCase(
@@ -185,6 +191,7 @@ class AllMilestonesViewModel @Inject constructor(
             selectedMilestoneStatus = milestoneStatus,
         )
     }
+
     private fun getMilestoneById(milestoneId: Int) {
         getAllMilestonesJob?.cancel()
         getAllMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
@@ -213,5 +220,18 @@ class AllMilestonesViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun checkAndUpdateMilestoneStatus(tasks: List<Task>) {
+
+        viewModelScope.launch {
+            val currentMilestoneStatus =
+                milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
+            milestonesUseCases.addMilestoneUseCase(
+                state.value.mileStone.milestone.copy(
+                    status = currentMilestoneStatus
+                )
+            )
+        }
     }
 }

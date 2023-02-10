@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.Project
+import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
@@ -109,12 +110,14 @@ class ProjectDetailsViewModel @Inject constructor(
                 }?.let { foundTaskState ->
                     foundTaskState.statusState = !foundTaskState.statusState
                 }
+                val tasks = tasksUseCase.transformTasksUseCase.transformTaskStatesToTasks(
+                    stateTasks
+                )
+                checkAndUpdateMilestoneStatus(tasks)
                 // Update db
                 viewModelScope.launch {
                     tasksUseCase.addTasksUseCase(
-                        tasksUseCase.transformTasksUseCase.transformTaskStatesToTasks(
-                            stateTasks
-                        )
+                        tasks
                     )
                 }
             }
@@ -203,5 +206,17 @@ class ProjectDetailsViewModel @Inject constructor(
             },
             selectedMilestoneStatus = milestoneStatus,
         )
+    }
+
+    private fun checkAndUpdateMilestoneStatus(tasks: List<Task>) {
+        viewModelScope.launch {
+            val currentMilestoneStatus =
+                milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
+            milestonesUseCases.addMilestoneUseCase(
+                state.value.mileStone.milestone.copy(
+                    status = currentMilestoneStatus
+                )
+            )
+        }
     }
 }
