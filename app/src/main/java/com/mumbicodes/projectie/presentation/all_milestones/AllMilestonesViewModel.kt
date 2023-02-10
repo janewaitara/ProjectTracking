@@ -2,6 +2,7 @@ package com.mumbicodes.projectie.presentation.all_milestones
 
 import android.app.Application
 import android.text.method.TextKeyListener.clear
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
@@ -9,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Milestone
+import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
@@ -163,10 +165,9 @@ class AllMilestonesViewModel @Inject constructor(
                 // Update db
                 viewModelScope.launch {
                     tasksUseCase.addTasksUseCase(
-                        tasksUseCase.transformTasksUseCase.transformTaskStatesToTasks(
-                            stateTasks
-                        )
+                        tasks
                     )
+                    checkAndUpdateProjectStatus()
                 }
             }
         }
@@ -231,6 +232,23 @@ class AllMilestonesViewModel @Inject constructor(
                 state.value.mileStone.milestone.copy(
                     status = currentMilestoneStatus
                 )
+            )
+        }
+    }
+
+    private fun checkAndUpdateProjectStatus() {
+        viewModelScope.launch {
+
+            Log.e("Sttaus", "projectStatus")
+            val projectId = state.value.mileStone.milestone.projectId
+            val projectStatus =
+                projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
+
+            Log.e("Sttaus", projectStatus)
+            val project: Project = projectsUseCases.getProjectByIdUseCase(projectId)
+
+            projectsUseCases.updateProjectsUseCase.invoke(
+                project.copy(projectStatus = projectStatus)
             )
         }
     }

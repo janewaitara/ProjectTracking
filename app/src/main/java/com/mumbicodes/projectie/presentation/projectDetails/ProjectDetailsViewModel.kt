@@ -119,6 +119,8 @@ class ProjectDetailsViewModel @Inject constructor(
                     tasksUseCase.addTasksUseCase(
                         tasks
                     )
+
+                    checkAndUpdateProjectStatus()
                 }
             }
         }
@@ -216,6 +218,21 @@ class ProjectDetailsViewModel @Inject constructor(
                 state.value.mileStone.milestone.copy(
                     status = currentMilestoneStatus
                 )
+            )
+        }
+    }
+
+    private fun checkAndUpdateProjectStatus() {
+        viewModelScope.launch {
+
+            val projectId = state.value.mileStone.milestone.projectId
+            val projectStatus =
+                projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
+
+            val project: Project = projectsUseCases.getProjectByIdUseCase(projectId)
+
+            projectsUseCases.updateProjectsUseCase.invoke(
+                project.copy(projectStatus = projectStatus)
             )
         }
     }
