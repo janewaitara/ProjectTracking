@@ -66,4 +66,6 @@
     <string name="filterMilestones">Filter Milestones</string>
     <string name="mostUrgent">Most Urgent</string>
     <string name="leastUrgent">Least Urgent</string>
+    <string name="passedDay">%1$s day passed </string>
+    <string name="passedDays">%1$s days passed </string>
 </resources>

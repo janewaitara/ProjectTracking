@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.presentation.theme.*
+import kotlin.math.abs
 
 @Composable
 fun TagItem(
@@ -20,26 +21,42 @@ fun TagItem(
     val bgColor: Color
     val textColor: Color
 
-    // TODO think of negative cases - these are days that have passed
-    when (numberOfDaysRemaining) {
-        in 0..3 -> {
+    when {
+        numberOfDaysRemaining > 0 -> {
+            when (numberOfDaysRemaining) {
+                in 0..3 -> {
+                    bgColor = Red90
+                    textColor = RedMain
+                }
+                in 4..9 -> {
+                    bgColor = LightWarning
+                    textColor = Warning
+                }
+                else -> {
+                    bgColor = LightSuccess
+                    textColor = Success
+                }
+            }
+        }
+        else -> {
             bgColor = Red90
             textColor = RedMain
         }
-        in 4..9 -> {
-            bgColor = LightWarning
-            textColor = Warning
-        }
-        else -> {
-            bgColor = LightSuccess
-            textColor = Success
-        }
     }
 
-    val daysRemaining = if (numberOfDaysRemaining == 1) {
-        stringResource(id = R.string.dayRemaining, numberOfDaysRemaining)
-    } else {
-        stringResource(id = R.string.daysRemaining, numberOfDaysRemaining)
+    val daysRemaining = when {
+        numberOfDaysRemaining > 0 -> {
+            when (numberOfDaysRemaining) {
+                1 -> stringResource(id = R.string.dayRemaining, numberOfDaysRemaining)
+                else -> stringResource(id = R.string.daysRemaining, numberOfDaysRemaining)
+            }
+        }
+        else -> {
+            when (val daysPassed = abs(numberOfDaysRemaining)) {
+                1 -> stringResource(id = R.string.passedDay, daysPassed)
+                else -> stringResource(id = R.string.passedDays, daysPassed)
+            }
+        }
     }
 
     Text(
