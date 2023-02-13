@@ -26,7 +26,7 @@ fun EmptyStateSlot(
     @DrawableRes illustration: Int = R.drawable.under_construction_illustration,
     @StringRes title: Int = R.string.allMilestones,
     @StringRes description: Int = R.string.coming_soon,
-
+    titleIsVisible: Boolean = true,
 ) {
     Column(
         modifier = modifier
@@ -46,12 +46,14 @@ fun EmptyStateSlot(
 
         Spacer(modifier = Modifier.height(Space36dp))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(title),
-            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-            textAlign = TextAlign.Center,
-        )
+        if (titleIsVisible) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(title),
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                textAlign = TextAlign.Center,
+            )
+        }
         Spacer(modifier = Modifier.height(Space16dp))
         Text(
             modifier = Modifier.padding(start = Space32dp, end = Space32dp),
