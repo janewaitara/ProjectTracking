@@ -15,7 +15,6 @@ import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
-import com.mumbicodes.projectie.domain.util.ProgressStatus
 import com.mumbicodes.projectie.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -157,7 +156,9 @@ class AddEditMilestonesViewModel @Inject constructor(
                 }
             }
             is AddEditMilestoneEvents.AddEditMilestone -> {
-                val tasks = transformTaskStatesToTasks(stateTasks)
+                val tasks = tasksUseCases.transformTasksUseCase.transformTaskStatesToTasks(
+                    stateTasks
+                )
                 checkMilestoneStatus(tasks)
 
                 viewModelScope.launch {
@@ -176,7 +177,9 @@ class AddEditMilestonesViewModel @Inject constructor(
                     )
 
                     tasksUseCases.addTasksUseCase(
-                        transformTaskStatesToTasks(stateTasks).filter {
+                        tasksUseCases.transformTasksUseCase.transformTaskStatesToTasks(
+                            stateTasks
+                        ).filter {
                             it.taskTitle.isNotBlank() && it.taskTitle.isNotEmpty()
                         }
                     )
@@ -200,7 +203,11 @@ class AddEditMilestonesViewModel @Inject constructor(
                     milestoneWithTask.milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
                 currentMilestoneStatus = milestoneWithTask.milestone.status
                 _stateTasks.apply {
-                    addAll(transformTasksToTaskStates(milestoneWithTask.tasks))
+                    addAll(
+                        tasksUseCases.transformTasksUseCase.transformTasksToTaskStates(
+                            milestoneWithTask.tasks
+                        )
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -226,65 +233,21 @@ class AddEditMilestonesViewModel @Inject constructor(
         _stateTasks.remove(taskState)
     }
 
-    fun Task.toTaskState() = TaskState(
-        milestoneId = milestoneId,
-        taskId = taskId,
-        initialTaskTitleState = TaskTextFieldState(
-            text = taskTitle
-        ),
-        initialTaskDescState = TaskTextFieldState(
-            text = taskDesc
-        ),
-        initialStatusState = status,
-    )
-
-    fun TaskState.toTask() = Task(
-        milestoneId = milestoneId,
-        taskId = taskId,
-        taskTitle = taskTitleState.text,
-        taskDesc = taskDescState.text,
-        status = statusState
-    )
-
-    fun transformTasksToTaskStates(tasks: List<Task>): List<TaskState> {
-        return tasks.map { task ->
-            task.toTaskState()
-        }
-    }
-
-    fun transformTaskStatesToTasks(taskStates: List<TaskState>): List<Task> =
-        taskStates.map { taskState ->
-            taskState.toTask()
-        }
-
     fun checkMilestoneStatus(tasks: List<Task>) {
         viewModelScope.launch {
-            val progress = milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
-
-            currentMilestoneStatus = when (progress) {
-
-                is ProgressStatus.Completed -> progress.status
-                is ProgressStatus.InProgress -> progress.status
-                is ProgressStatus.NotStarted -> progress.status
-            }
+            currentMilestoneStatus = milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
         }
     }
 
     fun checkAndUpdateProjectStatus() {
         viewModelScope.launch {
 
-            val progress = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
+            val projectStatus = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
 
-            val pro = when (progress) {
-
-                is ProgressStatus.Completed -> progress.status
-                is ProgressStatus.InProgress -> progress.status
-                is ProgressStatus.NotStarted -> progress.status
-            }
             val project: Project = projectsUseCases.getProjectByIdUseCase(passedProjectId)
 
             projectsUseCases.updateProjectsUseCase.invoke(
-                project.copy(projectStatus = pro)
+                project.copy(projectStatus = projectStatus)
             )
         }
     }

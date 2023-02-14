@@ -1,12 +1,14 @@
 package com.mumbicodes.projectie.presentation.projectDetails
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -18,6 +20,7 @@ import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.presentation.components.PrimaryButton
 import com.mumbicodes.projectie.presentation.components.SecondaryButton
+import com.mumbicodes.projectie.presentation.components.provideShadowColor
 import com.mumbicodes.projectie.presentation.projectDetails.components.TaskItem
 import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.toDateAsString
@@ -28,6 +31,7 @@ fun MilestoneDetailsBottomSheetContent(
     milestoneWithTasks: MilestoneWithTasks,
     onDeleteClicked: (Milestone) -> Unit,
     onModifyClicked: (Int) -> Unit,
+    onTaskClicked: (Int) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -94,10 +98,29 @@ fun MilestoneDetailsBottomSheetContent(
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(Space16dp)
+            verticalArrangement = Arrangement.spacedBy(Space8dp)
         ) {
             milestoneWithTasks.tasks.forEach { task ->
-                TaskItem(modifier = Modifier, task = task, descIsVisible = true)
+                TaskItem(
+                    modifier = Modifier
+                        .shadow(
+                            elevation = Space20dp,
+                            shape = MaterialTheme.shapes.small,
+                            ambientColor = provideShadowColor(),
+                            spotColor = provideShadowColor()
+                        )
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = MaterialTheme.shapes.small
+                        )
+                        .clickable {
+                            onTaskClicked(task.taskId)
+                        }
+                        .padding(Space12dp),
+                    task = task,
+                    descIsVisible = true
+                )
             }
         }
 
@@ -164,7 +187,8 @@ fun MilestoneBottomSheetContent() {
                 )
             ),
             onDeleteClicked = {},
-            onModifyClicked = {}
+            onModifyClicked = {},
+            onTaskClicked = {}
         )
     }
 }

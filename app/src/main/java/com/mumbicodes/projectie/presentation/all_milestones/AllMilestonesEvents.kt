@@ -1,7 +1,6 @@
 package com.mumbicodes.projectie.presentation.all_milestones
 
 import com.mumbicodes.projectie.domain.model.Milestone
-import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
 
 sealed class AllMilestonesEvents {
@@ -15,7 +14,9 @@ sealed class AllMilestonesEvents {
 
     data class DeleteMilestone(val milestone: Milestone) : AllMilestonesEvents()
 
-    data class PassMilestone(val milestone: MilestoneWithTasks) : AllMilestonesEvents()
+    data class PassMilestone(val milestoneId: Int) : AllMilestonesEvents()
+
+    data class ToggleTaskState(val taskId: Int) : AllMilestonesEvents()
 }
 
 sealed class AllMilestonesUIEvents {

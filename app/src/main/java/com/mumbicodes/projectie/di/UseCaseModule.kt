@@ -13,6 +13,7 @@ import com.mumbicodes.projectie.domain.use_case.projects.*
 import com.mumbicodes.projectie.domain.use_case.tasks.AddTasksUseCase
 import com.mumbicodes.projectie.domain.use_case.tasks.DeleteTaskUseCase
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
+import com.mumbicodes.projectie.domain.use_case.tasks.TransformTasksUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -70,7 +71,8 @@ object UseCaseModule {
     ): TasksUseCases {
         return TasksUseCases(
             addTasksUseCase = AddTasksUseCase(repository),
-            deleteTaskUseCase = DeleteTaskUseCase(repository)
+            deleteTaskUseCase = DeleteTaskUseCase(repository),
+            transformTasksUseCase = TransformTasksUseCase(),
         )
     }
 

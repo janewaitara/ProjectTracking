@@ -178,7 +178,14 @@ fun AllMilestonesScreens(
                                 modalBottomSheetState.hide()
                             }
                             onModifyMilestone(state.mileStone.milestone.projectId, milestoneId)
-                        }
+                        },
+                        onTaskClicked = { taskId ->
+                            allMilestonesViewModel.onEvent(
+                                AllMilestonesEvents.ToggleTaskState(
+                                    taskId
+                                )
+                            )
+                        },
                     )
                 }
             }
@@ -200,10 +207,10 @@ fun AllMilestonesScreens(
                         top = 24.dp
                     ),
                     milestonesStates = state,
-                    onClickMilestone = { milestoneWithTasks ->
+                    onClickMilestone = { milestoneId ->
                         allMilestonesViewModel.onEvent(
                             AllMilestonesEvents.PassMilestone(
-                                milestone = milestoneWithTasks
+                                milestoneId = milestoneId
                             )
                         )
 
@@ -244,7 +251,7 @@ fun AllMilestonesScreens(
 fun AllMilestonesScreenContent(
     modifier: Modifier = Modifier,
     milestonesStates: AllMilestonesStates,
-    onClickMilestone: (MilestoneWithTasks) -> Unit,
+    onClickMilestone: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
     searchedText: String,
@@ -333,6 +340,12 @@ fun AllMilestonesScreenContent(
 
             if (milestonesStates.filteredMilestones.isEmpty()) {
                 // TODO Add an empty state
+                EmptyState(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = Space20dp, end = Space20dp),
+                    filters = milestonesStates.selectedMilestoneStatus,
+                )
             } else {
                 LazyVerticalStaggeredGrid(
                     columns = rememberAllMilestonesColumns(windowWidthSizeClass = windowWidthSizeClass),
@@ -408,6 +421,41 @@ fun WelcomeMessageSection(
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Composable
+fun EmptyState(
+    modifier: Modifier,
+    filters: String,
+) {
+    val illustration: Int
+    val emptyText: Int
+
+    when (filters) {
+        stringResource(id = R.string.notStarted) -> {
+            illustration = R.drawable.ic_incomplete_projects
+            emptyText = R.string.milestonesNotStartedEmptyText
+        }
+        stringResource(id = R.string.inProgress) -> {
+            illustration = R.drawable.inprogress
+            emptyText = R.string.milestonesInProgressEmptyText
+        }
+        stringResource(id = R.string.completed) -> {
+            illustration = R.drawable.ic_incomplete_projects
+            emptyText = R.string.milestonesCompleteEmptyText
+        }
+        else -> {
+            illustration = R.drawable.add_project
+            emptyText = R.string.allProjectsEmptyText
+        }
+    }
+    EmptyStateSlot(
+        modifier = modifier,
+        illustration = illustration,
+        title = R.string.allMilestones,
+        description = emptyText,
+        titleIsVisible = false
+    )
 }
 
 enum class BottomSheetType {

@@ -2,6 +2,8 @@ package com.mumbicodes.projectie.presentation.util
 
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import com.mumbicodes.projectie.domain.model.Task
+import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -51,6 +53,14 @@ fun String.toLocalDate(pattern: String): LocalDate {
     val formatter = provideFormatter(pattern)
     return LocalDate.parse(this, formatter)
 }
+
+fun TaskState.toTask() = Task(
+    milestoneId = milestoneId,
+    taskId = taskId,
+    taskTitle = taskTitleState.text,
+    taskDesc = taskDescState.text,
+    status = statusState
+)
 
 @Preview(name = "phone", device = Devices.PHONE)
 @Preview(name = "foldable", device = Devices.FOLDABLE)
