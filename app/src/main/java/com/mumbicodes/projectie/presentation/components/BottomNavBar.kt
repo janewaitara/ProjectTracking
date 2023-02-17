@@ -55,7 +55,7 @@ fun BottomBar(
 }
 
 @Composable
-fun AddItem(
+fun RowScope.AddItem(
     screen: Screens,
     currentDestination: NavDestination?,
     onItemClick: (Screens) -> Unit,
@@ -81,11 +81,15 @@ fun AddItem(
 
     Box(
         modifier = Modifier
+            .clip(shape = MaterialTheme.shapes.small)
+            .weight(1f)
+            .fillMaxHeight()
             .clickable(
                 onClick = {
                     onItemClick(screen)
                 }
-            )
+            ),
+        contentAlignment = Alignment.Center,
     ) {
 
         Column(
@@ -95,11 +99,19 @@ fun AddItem(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             AnimatedVisibility(visible = selected) {
-                Divider(modifier = Modifier.width(Space20dp).clip(shape = MaterialTheme.shapes.small), color = contentColor, thickness = 2.dp,)
+                Divider(
+                    modifier = Modifier
+                        .width(Space20dp)
+                        .clip(shape = MaterialTheme.shapes.small),
+                    color = contentColor,
+                    thickness = 2.dp,
+                )
             }
 
             Icon(
-                painter = painterResource(id = if (selected) screen.filledIcon else screen.outlinedIcon),
+                painter = painterResource(
+                    id = if (selected) screen.filledIcon else screen.outlinedIcon
+                ),
                 contentDescription = screen.title,
                 tint = contentColor
             )
