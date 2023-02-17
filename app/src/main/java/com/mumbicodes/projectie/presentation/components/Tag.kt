@@ -45,15 +45,16 @@ fun TagItem(
     }
 
     val daysRemaining = when {
-        numberOfDaysRemaining > 0 -> {
+        numberOfDaysRemaining >= 0 -> {
             when (numberOfDaysRemaining) {
-                1 -> stringResource(id = R.string.dayRemaining, numberOfDaysRemaining)
+                0 -> stringResource(id = R.string.today, numberOfDaysRemaining)
+                1 -> stringResource(id = R.string.tomorrow, numberOfDaysRemaining)
                 else -> stringResource(id = R.string.daysRemaining, numberOfDaysRemaining)
             }
         }
         else -> {
             when (val daysPassed = abs(numberOfDaysRemaining)) {
-                1 -> stringResource(id = R.string.passedDay, daysPassed)
+                1 -> stringResource(id = R.string.yesterday, daysPassed)
                 else -> stringResource(id = R.string.passedDays, daysPassed)
             }
         }

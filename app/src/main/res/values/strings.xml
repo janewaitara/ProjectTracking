@@ -68,4 +68,7 @@
     <string name="leastUrgent">Least Urgent</string>
     <string name="passedDay">%1$s day passed </string>
     <string name="passedDays">%1$s days passed </string>
+    <string name="today">Ends today </string>
+    <string name="tomorrow">Ends tomorrow </string>
+    <string name="yesterday">Ended Yesterday </string>
 </resources>
