@@ -31,10 +31,7 @@ import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.presentation.allProjects.filters
-import com.mumbicodes.projectie.presentation.components.FilterChip
-import com.mumbicodes.projectie.presentation.components.PrimaryButton
-import com.mumbicodes.projectie.presentation.components.SecondaryButton
-import com.mumbicodes.projectie.presentation.components.provideShadowColor
+import com.mumbicodes.projectie.presentation.components.*
 import com.mumbicodes.projectie.presentation.projectDetails.components.MilestoneItem
 import com.mumbicodes.projectie.presentation.theme.*
 import kotlinx.coroutines.flow.collectLatest
@@ -693,7 +690,7 @@ fun EmptyStateSection(
     modifier: Modifier = Modifier,
     filter: String,
 ) {
-    Column(
+   /* Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -702,9 +699,9 @@ fun EmptyStateSection(
         Spacer(modifier = Modifier.height(Space24dp))
         val illustration =
             when (filter) {
-                "Not Started" -> R.drawable.ic_incomplete_projects
-                "In Progress" -> R.drawable.inprogress
-                "Completed" -> R.drawable.ic_incomplete_projects
+                "Not Started" -> R.drawable.ic_incomplete_illustration
+                "In Progress" -> R.drawable.ic_inprogress_illustration
+                "Completed" -> R.drawable.ic_complete_progress_illustration
                 else -> R.drawable.add_project
             }
 
@@ -730,7 +727,36 @@ fun EmptyStateSection(
             style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
             textAlign = TextAlign.Center
         )
+    }*/
+
+    val illustration: Int
+    val emptyText: Int
+
+    when (filter) {
+        stringResource(id = R.string.notStarted) -> {
+            illustration = R.drawable.ic_incomplete_illustration
+            emptyText = R.string.milestonesNotStartedEmptyText
+        }
+        stringResource(id = R.string.inProgress) -> {
+            illustration = R.drawable.ic_inprogress_illustration
+            emptyText = R.string.milestonesInProgressEmptyText
+        }
+        stringResource(id = R.string.completed) -> {
+            illustration = R.drawable.ic_complete_progress_illustration
+            emptyText = R.string.milestonesCompleteEmptyText
+        }
+        else -> {
+            illustration = R.drawable.add_project
+            emptyText = R.string.allProjectsEmptyText
+        }
     }
+    EmptyStateSlot(
+        modifier = modifier.fillMaxSize(),
+        illustration = illustration,
+        title = R.string.allMilestones,
+        description = emptyText,
+        titleIsVisible = false
+    )
 }
 
 /**

@@ -303,9 +303,9 @@ fun EmptyStateSection(
                 R.drawable.add_project
             } else {
                 when (filter) {
-                    "Not Started" -> R.drawable.ic_incomplete_projects
-                    "In Progress" -> R.drawable.inprogress
-                    "Completed" -> R.drawable.ic_incomplete_projects
+                    "Not Started" -> R.drawable.ic_incomplete_illustration
+                    "In Progress" -> R.drawable.ic_inprogress_illustration
+                    "Completed" -> R.drawable.ic_complete_progress_illustration
                     else -> R.drawable.add_project
                 }
             }

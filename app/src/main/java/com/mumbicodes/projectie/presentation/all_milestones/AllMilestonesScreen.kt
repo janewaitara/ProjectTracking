@@ -344,7 +344,7 @@ fun AllMilestonesScreenContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = Space20dp, end = Space20dp),
-                    filters = milestonesStates.selectedMilestoneStatus,
+                    filter = milestonesStates.selectedMilestoneStatus,
                 )
             } else {
                 LazyVerticalStaggeredGrid(
@@ -426,22 +426,22 @@ fun WelcomeMessageSection(
 @Composable
 fun EmptyState(
     modifier: Modifier,
-    filters: String,
+    filter: String,
 ) {
     val illustration: Int
     val emptyText: Int
 
-    when (filters) {
+    when (filter) {
         stringResource(id = R.string.notStarted) -> {
-            illustration = R.drawable.ic_incomplete_projects
+            illustration = R.drawable.ic_incomplete_illustration
             emptyText = R.string.milestonesNotStartedEmptyText
         }
         stringResource(id = R.string.inProgress) -> {
-            illustration = R.drawable.inprogress
+            illustration = R.drawable.ic_inprogress_illustration
             emptyText = R.string.milestonesInProgressEmptyText
         }
         stringResource(id = R.string.completed) -> {
-            illustration = R.drawable.ic_incomplete_projects
+            illustration = R.drawable.ic_complete_progress_illustration
             emptyText = R.string.milestonesCompleteEmptyText
         }
         else -> {
