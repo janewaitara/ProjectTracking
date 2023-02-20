@@ -1,9 +1,13 @@
 package com.mumbicodes.projectie.presentation.util
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +19,7 @@ import com.mumbicodes.projectie.presentation.components.NavigationRailComposable
 import com.mumbicodes.projectie.presentation.util.navigation.ProjectNavHost
 import com.mumbicodes.projectie.presentation.util.navigation.Screens
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectAppContent(
     modifier: Modifier = Modifier,
@@ -40,7 +45,7 @@ fun ProjectAppContent(
                 }
             )
         }
-        Column(modifier = modifier.fillMaxSize()) {
+      /*  Column(modifier = modifier.fillMaxSize()) {
             ProjectNavHost(
                 modifier = Modifier.weight(1f),
                 navController = navController,
@@ -64,6 +69,39 @@ fun ProjectAppContent(
                         }
                     )
             }
+        }*/
+
+        Scaffold(
+            bottomBar = {
+                AnimatedVisibility(visible = navigationType == NavigationType.BOTTOM_NAVIGATION) {
+                    if (bottomBarState.value)
+                        BottomBar(
+                            navController = navController,
+                            onItemClick = {
+                                val route = if (it is Screens.AddAndEditScreens) {
+                                    "${Screens.AddAndEditScreens.route}/${-1}"
+                                } else {
+                                    it.route
+                                }
+                                navigateToDestination(route)
+                            }
+                        )
+                }
+            },
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
+        ) { paddingValues ->
+
+            ProjectNavHost(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .weight(1f),
+                navController = navController,
+                isBottomBarVisible = {
+                    bottomBarState.value = it
+                },
+                contentType = contentType,
+                windowWidthSizeClass = windowWidthSizeClass
+            )
         }
     }
 }
