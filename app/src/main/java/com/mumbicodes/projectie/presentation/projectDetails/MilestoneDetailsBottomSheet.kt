@@ -3,16 +3,16 @@ package com.mumbicodes.projectie.presentation.projectDetails
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Milestone
@@ -20,9 +20,11 @@ import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.presentation.components.PrimaryButton
 import com.mumbicodes.projectie.presentation.components.SecondaryButton
+import com.mumbicodes.projectie.presentation.components.TagItem
 import com.mumbicodes.projectie.presentation.components.provideShadowColor
 import com.mumbicodes.projectie.presentation.projectDetails.components.TaskItem
 import com.mumbicodes.projectie.presentation.theme.*
+import com.mumbicodes.projectie.presentation.util.getNumberOfDays
 import com.mumbicodes.projectie.presentation.util.toDateAsString
 
 @Composable
@@ -50,7 +52,7 @@ fun MilestoneDetailsBottomSheetContent(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(id = R.string.schedule),
+            text = stringResource(id = R.string.milestoneDueDate),
             style = MaterialTheme.typography.labelLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface.copy(
                     0.3f
@@ -58,30 +60,27 @@ fun MilestoneDetailsBottomSheetContent(
             ),
         )
         Spacer(Modifier.height(Space8dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Space8dp),
+        ) {
+            Icon(
+                modifier = Modifier,
+                painter = painterResource(id = R.drawable.ic_time),
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = "Decoration",
+            )
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = buildAnnotatedString {
-                withStyle(
-                    style = MaterialTheme.typography.bodySmall.toSpanStyle()
-                        .copy(MaterialTheme.colorScheme.inverseSurface)
-                ) {
-                    append(milestoneWithTasks.milestone.milestoneSrtDate.toDateAsString("dd MMM yyyy"))
-                }
-                withStyle(
-                    style = MaterialTheme.typography.bodySmall.toSpanStyle()
-                        .copy(MaterialTheme.colorScheme.inverseSurface)
-                ) {
-                    append(" to ")
-                }
-                withStyle(
-                    style = MaterialTheme.typography.bodySmall.toSpanStyle()
-                        .copy(MaterialTheme.colorScheme.inverseSurface)
-                ) {
-                    append(milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy"))
-                }
-            }
-        )
+            Text(
+                modifier = Modifier.weight(1f),
+                text = milestoneWithTasks.milestone.milestoneEndDate.toDateAsString("dd MMM yyyy"),
+                style = MaterialTheme.typography.bodySmall.copy(MaterialTheme.colorScheme.inverseSurface),
+            )
+
+            TagItem(numberOfDaysRemaining = milestoneWithTasks.milestone.milestoneEndDate.getNumberOfDays())
+        }
 
         Spacer(Modifier.height(Space24dp))
 

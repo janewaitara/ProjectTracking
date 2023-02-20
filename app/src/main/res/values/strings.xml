@@ -29,8 +29,8 @@
     <string name="daysRemaining">%1$s days Left</string>
     <string name="dueDate">Due on %1$s</string>
     <string name="passedDeadline">%Deadline passed</string>
-    <string name="schedule">SCHEDULE</string>
-    <string name="miniTasks">MINI TASKS</string>
+    <string name="milestoneDueDate">Due Date</string>
+    <string name="miniTasks">Mini Tasks</string>
     <string name="modifyMilestone">Modify Milestone</string>
     <string name="createMilestone">Create Milestone</string>
     <string name="addMilestone">Add Milestone</string>
