@@ -1,6 +1,7 @@
 package com.mumbicodes.projectie.presentation.all_milestones
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -121,6 +122,10 @@ fun AllMilestonesScreens(
                 }
             }
         }
+    }
+
+    BackHandler(modalBottomSheetState.isVisible) {
+        scope.launch { modalBottomSheetState.hide() }
     }
 
     ModalBottomSheetLayout(

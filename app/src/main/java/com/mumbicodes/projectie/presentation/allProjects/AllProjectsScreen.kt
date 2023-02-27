@@ -1,5 +1,6 @@
 package com.mumbicodes.projectie.presentation.allProjects
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -64,6 +65,10 @@ fun AllProjectsScreen(
     // Holds the user selection until they press filter
     val selectedProjectOrder =
         remember { mutableStateOf(state.projectsOrder) }
+
+    BackHandler(modalBottomSheetState.isVisible) {
+        scope.launch { modalBottomSheetState.hide() }
+    }
 
     ModalBottomSheetLayout(
         sheetContent = {
