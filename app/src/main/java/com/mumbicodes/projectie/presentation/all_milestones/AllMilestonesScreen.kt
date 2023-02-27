@@ -98,8 +98,10 @@ fun AllMilestonesScreens(
 ) {
     val state = allMilestonesViewModel.state.value
     val searchedTextState = allMilestonesViewModel.searchParam.value
-    val modalBottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 

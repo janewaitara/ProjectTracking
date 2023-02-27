@@ -49,8 +49,10 @@ fun ProjectDetailsScreen(
     projectId: Int? = null,
 ) {
     val state = projectDetailsViewModel.state.value
-    val modalBottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
@@ -694,44 +696,44 @@ fun EmptyStateSection(
     modifier: Modifier = Modifier,
     filter: String,
 ) {
-   /* Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
+    /* Column(
+         modifier = modifier.fillMaxSize(),
+         horizontalAlignment = Alignment.CenterHorizontally,
+         verticalArrangement = Arrangement.Top
+     ) {
 
-        Spacer(modifier = Modifier.height(Space24dp))
-        val illustration =
-            when (filter) {
-                "Not Started" -> R.drawable.ic_incomplete_illustration
-                "In Progress" -> R.drawable.ic_inprogress_illustration
-                "Completed" -> R.drawable.ic_complete_progress_illustration
-                else -> R.drawable.add_project
-            }
+         Spacer(modifier = Modifier.height(Space24dp))
+         val illustration =
+             when (filter) {
+                 "Not Started" -> R.drawable.ic_incomplete_illustration
+                 "In Progress" -> R.drawable.ic_inprogress_illustration
+                 "Completed" -> R.drawable.ic_complete_progress_illustration
+                 else -> R.drawable.add_project
+             }
 
-        Image(
-            modifier = Modifier.height(200.dp),
-            painter = painterResource(id = illustration),
-            contentDescription = "Empty state illustration"
-        )
+         Image(
+             modifier = Modifier.height(200.dp),
+             painter = painterResource(id = illustration),
+             contentDescription = "Empty state illustration"
+         )
 
-        Spacer(modifier = Modifier.height(Space24dp))
+         Spacer(modifier = Modifier.height(Space24dp))
 
-        val emptyText: String =
-            when (filter) {
-                "Not Started" -> stringResource(id = R.string.milestonesNotStartedEmptyText)
-                "In Progress" -> stringResource(id = R.string.milestonesInProgressEmptyText)
-                "Completed" -> stringResource(id = R.string.milestonesCompleteEmptyText)
-                else -> stringResource(id = R.string.allProjectsEmptyText)
-            }
+         val emptyText: String =
+             when (filter) {
+                 "Not Started" -> stringResource(id = R.string.milestonesNotStartedEmptyText)
+                 "In Progress" -> stringResource(id = R.string.milestonesInProgressEmptyText)
+                 "Completed" -> stringResource(id = R.string.milestonesCompleteEmptyText)
+                 else -> stringResource(id = R.string.allProjectsEmptyText)
+             }
 
-        Text(
-            modifier = Modifier.padding(start = Space32dp, end = Space32dp),
-            text = emptyText,
-            style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
-            textAlign = TextAlign.Center
-        )
-    }*/
+         Text(
+             modifier = Modifier.padding(start = Space32dp, end = Space32dp),
+             text = emptyText,
+             style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
+             textAlign = TextAlign.Center
+         )
+     }*/
 
     val illustration: Int
     val emptyText: Int

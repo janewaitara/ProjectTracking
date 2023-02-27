@@ -57,8 +57,10 @@ fun AllProjectsScreen(
 ) {
     val state = projectsViewModel.state.value
     val searchedTextState = projectsViewModel.searchParam.value
-    val modalBottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true,
+    )
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
@@ -268,19 +270,28 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
             text = buildAnnotatedString {
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.inverseSurface)
+                        .copy(
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
                 ) {
                     append("You have ")
                 }
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(textDecoration = TextDecoration.Underline, color = MaterialTheme.colorScheme.primary)
+                        .copy(
+                            textDecoration = TextDecoration.Underline,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                 ) {
                     append("${projects.size}")
                 }
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.inverseSurface)
+                        .copy(
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
                 ) {
                     append(" projects.")
                 }
