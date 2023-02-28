@@ -22,7 +22,7 @@ class AllProjectsViewModel @Inject constructor(
     private val appContext: Application,
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(AllProjectsStates())
+    private val _state = mutableStateOf(AllProjectsScreenStates())
     val state = _state
 
     private val _searchParam = mutableStateOf("")
@@ -39,16 +39,16 @@ class AllProjectsViewModel @Inject constructor(
     fun onEvent(projectsEvent: AllProjectsEvent) {
         when (projectsEvent) {
             is AllProjectsEvent.OrderProjects -> {
-                if (state.value.projectsOrder::class == projectsEvent.projectsOrder::class &&
-                    state.value.projectsOrder.orderType == projectsEvent.projectsOrder.orderType
+                if (state.value.data.projectsOrder::class == projectsEvent.projectsOrder::class &&
+                    state.value.data.projectsOrder.orderType == projectsEvent.projectsOrder.orderType
                 ) {
                     return
                 }
-                getProjects(projectsEvent.projectsOrder, state.value.selectedProjectStatus)
+                getProjects(projectsEvent.projectsOrder, state.value.data.selectedProjectStatus)
             }
             is AllProjectsEvent.ResetProjectsOrder -> {
 
-                getProjects(projectsEvent.projectsOrder, state.value.selectedProjectStatus)
+                getProjects(projectsEvent.projectsOrder, state.value.data.selectedProjectStatus)
             }
             is AllProjectsEvent.DeleteProject -> {
                 viewModelScope.launch {
@@ -63,10 +63,10 @@ class AllProjectsViewModel @Inject constructor(
                 }
             }
             is AllProjectsEvent.SelectProjectStatus -> {
-                if (state.value.selectedProjectStatus == projectsEvent.projectStatus) {
+                if (state.value.data.selectedProjectStatus == projectsEvent.projectStatus) {
                     return
                 }
-                state.value.projects.filterProjects(
+                state.value.data.projects.filterProjects(
                     projectStatus = projectsEvent.projectStatus,
                     searchParam = searchParam.value
                 )
@@ -74,14 +74,16 @@ class AllProjectsViewModel @Inject constructor(
 
             is AllProjectsEvent.ToggleBottomSheetVisibility -> {
                 _state.value = state.value.copy(
-                    isFilterBottomSheetVisible = !state.value.isFilterBottomSheetVisible
+                    data = state.value.data.copy(
+                        isFilterBottomSheetVisible = !state.value.data.isFilterBottomSheetVisible
+                    )
                 )
             }
             is AllProjectsEvent.SearchProject -> {
                 _searchParam.value = projectsEvent.searchParam
 
-                state.value.projects.filterProjects(
-                    projectStatus = state.value.selectedProjectStatus,
+                state.value.data.projects.filterProjects(
+                    projectStatus = state.value.data.selectedProjectStatus,
                     searchParam = projectsEvent.searchParam,
                 )
             }
@@ -92,18 +94,27 @@ class AllProjectsViewModel @Inject constructor(
      * Whenever called, a new flow is emitted. Hence cancel the old coroutine that's observing db
      * */
     private fun getProjects(projectsOrder: ProjectsOrder, projectStatus: String) {
-        getProjectsJob?.cancel()
-        getProjectsJob =
-            projectsUseCases.getProjectsUseCase(projectsOrder)
-                // map the flow to AllProjects compose State
-                .onEach { projects ->
-                    _state.value = state.value.copy(
-                        projects = projects,
-                        projectsOrder = projectsOrder,
-                    )
-                    projects.filterProjects(projectStatus, searchParam.value)
-                }
-                .launchIn(viewModelScope)
+        viewModelScope.launch {
+            _state.value = state.value.copy(
+                isLoading = true
+            )
+
+            getProjectsJob?.cancel()
+            getProjectsJob =
+                projectsUseCases.getProjectsUseCase(projectsOrder)
+                    // map the flow to AllProjects compose State
+                    .onEach { projects ->
+                        _state.value = state.value.copy(
+                            data = state.value.data.copy(
+                                projects = projects,
+                                projectsOrder = projectsOrder,
+                            ),
+                            isLoading = false
+                        )
+                        projects.filterProjects(projectStatus, searchParam.value)
+                    }
+                    .launchIn(viewModelScope)
+        }
     }
 
     private fun List<Project>.filterProjects(
@@ -111,18 +122,21 @@ class AllProjectsViewModel @Inject constructor(
         searchParam: String,
     ) {
         _state.value = state.value.copy(
-            filteredProjects = if (projectStatus == appContext.getString(R.string.all)) {
-                this.filter {
-                    it.projectName.contains(searchParam)
-                }
-            } else {
-                this.filter {
-                    it.projectStatus == projectStatus
-                }.filter {
-                    it.projectName.contains(searchParam)
-                }
-            },
-            selectedProjectStatus = projectStatus
+            data = state.value.data.copy(
+                filteredProjects = if (projectStatus == appContext.getString(R.string.all)) {
+                    this.filter {
+                        it.projectName.contains(searchParam)
+                    }
+                } else {
+                    this.filter {
+                        it.projectStatus == projectStatus
+                    }.filter {
+                        it.projectName.contains(searchParam)
+                    }
+                },
+                selectedProjectStatus = projectStatus,
+            ),
+            isLoading = false
         )
     }
 }

@@ -42,11 +42,9 @@ import com.mumbicodes.projectie.presentation.allProjects.components.FilterBottom
 import com.mumbicodes.projectie.presentation.allProjects.components.ProjectItem
 import com.mumbicodes.projectie.presentation.allProjects.components.SearchBar
 import com.mumbicodes.projectie.presentation.allProjects.components.StaggeredVerticalGrid
-import com.mumbicodes.projectie.presentation.all_milestones.WelcomeMessageSection
 import com.mumbicodes.projectie.presentation.components.EmptyStateSlot
 import com.mumbicodes.projectie.presentation.components.ErrorStateSlot
 import com.mumbicodes.projectie.presentation.components.FilterChip
-import com.mumbicodes.projectie.presentation.projectDetails.EmptyStateSection
 import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
 import kotlinx.coroutines.launch
@@ -69,7 +67,7 @@ fun AllProjectsScreen(
 
     // Holds the user selection until they press filter
     val selectedProjectOrder =
-        remember { mutableStateOf(state.projectsOrder) }
+        remember { mutableStateOf(state.data.projectsOrder) }
 
     BackHandler(modalBottomSheetState.isVisible) {
         scope.launch { modalBottomSheetState.hide() }
@@ -78,7 +76,7 @@ fun AllProjectsScreen(
     ModalBottomSheetLayout(
         sheetContent = {
             FilterBottomSheetContent(
-                projectsOrder = state.projectsOrder,
+                projectsOrder = state.data.projectsOrder,
                 selectedProjectsOrder = selectedProjectOrder.value,
                 onOrderChange = { userProjectOrder ->
                     selectedProjectOrder.value = userProjectOrder
@@ -115,7 +113,7 @@ fun AllProjectsScreen(
                     modifier = Modifier.padding(
                         top = 24.dp
                     ),
-                    projectsState = state,
+                    projectsScreenState = state,
                     onClickProject = onClickProject,
                     onClickFilterBtn = {
                         scope.launch {
@@ -150,7 +148,7 @@ fun AllProjectsScreen(
 @Composable
 fun AllProjectsScreenContent(
     modifier: Modifier = Modifier,
-    projectsState: AllProjectsStates,
+    projectsScreenState: AllProjectsScreenStates,
     onClickProject: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
@@ -159,12 +157,22 @@ fun AllProjectsScreenContent(
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
 
-    if (projectsState.projects.isEmpty()) {
-        EmptyStateSlot(
-            illustration = R.drawable.add_project,
-            title = R.string.allProjects,
-            description = R.string.allProjectsEmptyText,
-        )
+    if (projectsScreenState.data.projects.isEmpty()) {
+        if (projectsScreenState.isLoading) {
+            // TODO Add a loading state
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = stringResource(id = R.string.delete),
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            )
+        } else {
+            EmptyStateSlot(
+                illustration = R.drawable.add_project,
+                title = R.string.allProjects,
+                description = R.string.allProjectsEmptyText,
+            )
+        }
     } else {
         Column(modifier = modifier) {
             WelcomeMessageSection(
@@ -174,7 +182,7 @@ fun AllProjectsScreenContent(
                         start = Space20dp,
                         end = Space20dp,
                     ),
-                projects = projectsState.projects
+                projects = projectsScreenState.data.projects
             )
             Spacer(modifier = Modifier.height(Space24dp))
 
@@ -219,10 +227,10 @@ fun AllProjectsScreenContent(
                 contentPadding = PaddingValues(horizontal = Space20dp),
                 horizontalArrangement = Arrangement.spacedBy(Space8dp)
             ) {
-                itemsIndexed(projectsState.filtersStatus) { _, filter ->
+                itemsIndexed(projectsScreenState.data.filtersStatus) { _, filter ->
                     FilterChip(
                         text = filter,
-                        selected = filter == projectsState.selectedProjectStatus,
+                        selected = filter == projectsScreenState.data.selectedProjectStatus,
                         onClick = onClickFilterStatus,
                     )
                 }
@@ -230,18 +238,18 @@ fun AllProjectsScreenContent(
 
             Spacer(modifier = Modifier.height(Space8dp))
 
-            if (projectsState.filteredProjects.isEmpty()) {
+            if (projectsScreenState.data.filteredProjects.isEmpty()) {
                 if (searchedText.isEmpty()) {
                     EmptyStateSection(
-                        filter = projectsState.selectedProjectStatus,
-                        projects = projectsState.projects
+                        filter = projectsScreenState.data.selectedProjectStatus,
+                        projects = projectsScreenState.data.projects
                     )
                 } else {
                     ErrorStateSlot(
                         illustration = R.drawable.empty_state,
                         description = R.string.projectsErrorText,
                         searchParam = searchedText,
-                        filter = projectsState.selectedProjectStatus,
+                        filter = projectsScreenState.data.selectedProjectStatus,
                     )
                 }
             } else {
@@ -254,7 +262,7 @@ fun AllProjectsScreenContent(
                     verticalArrangement = Arrangement.spacedBy(Space16dp),
                     horizontalArrangement = Arrangement.spacedBy(Space16dp)
                 ) {
-                    items(projectsState.filteredProjects) { project ->
+                    items(projectsScreenState.data.filteredProjects) { project ->
                         ProjectItem(
                             // modifier = Modifier.padding(Space8dp),
                             project = project,
