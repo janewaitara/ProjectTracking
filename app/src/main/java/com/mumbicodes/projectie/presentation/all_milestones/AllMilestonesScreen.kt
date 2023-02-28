@@ -41,6 +41,7 @@ import com.mumbicodes.projectie.presentation.allProjects.rememberProjectsColumns
 import com.mumbicodes.projectie.presentation.all_milestones.components.AllMilestonesItem
 import com.mumbicodes.projectie.presentation.all_milestones.components.FilterMilestonesBottomSheetContent
 import com.mumbicodes.projectie.presentation.components.EmptyStateSlot
+import com.mumbicodes.projectie.presentation.components.ErrorStateSlot
 import com.mumbicodes.projectie.presentation.components.FilterChip
 import com.mumbicodes.projectie.presentation.projectDetails.MilestoneDetailsBottomSheetContent
 import com.mumbicodes.projectie.presentation.theme.*
@@ -318,7 +319,7 @@ fun AllMilestonesScreenContent(
             Spacer(modifier = Modifier.height(Space8dp))
 
             if (milestonesStates.data.filteredMilestones.isEmpty()) {
-                if (searchedText.isBlank()) {
+                if (searchedText.isEmpty()) {
                     EmptyState(
                         modifier = Modifier
                             .fillMaxSize()
@@ -326,7 +327,12 @@ fun AllMilestonesScreenContent(
                         filter = milestonesStates.data.selectedMilestoneStatus,
                     )
                 } else {
-                    // TODO Add an error state
+                    ErrorStateSlot(
+                        illustration = R.drawable.empty_state,
+                        description = R.string.milestonesErrorText,
+                        searchParam = searchedText,
+                        filter = milestonesStates.data.selectedMilestoneStatus,
+                    )
                 }
             } else {
                 LazyVerticalStaggeredGrid(
@@ -409,41 +415,6 @@ fun WelcomeMessageSection(
 fun EmptyState(
     modifier: Modifier,
     filter: String,
-) {
-    val illustration: Int
-    val emptyText: Int
-
-    when (filter) {
-        stringResource(id = R.string.notStarted) -> {
-            illustration = R.drawable.ic_incomplete_illustration
-            emptyText = R.string.milestonesNotStartedEmptyText
-        }
-        stringResource(id = R.string.inProgress) -> {
-            illustration = R.drawable.ic_inprogress_illustration
-            emptyText = R.string.milestonesInProgressEmptyText
-        }
-        stringResource(id = R.string.completed) -> {
-            illustration = R.drawable.ic_complete_progress_illustration
-            emptyText = R.string.milestonesCompleteEmptyText
-        }
-        else -> {
-            illustration = R.drawable.add_project
-            emptyText = R.string.allProjectsEmptyText
-        }
-    }
-    EmptyStateSlot(
-        modifier = modifier,
-        illustration = illustration,
-        title = R.string.allMilestones,
-        description = emptyText,
-        titleIsVisible = false
-    )
-} @Composable
-
-fun ErrorState(
-    modifier: Modifier,
-    filter: String,
-    searchParam: String,
 ) {
     val illustration: Int
     val emptyText: Int
