@@ -60,6 +60,7 @@
     <string name="milestonesInProgressEmptyText">Move your milestones to In progress by marking their tasks as done. </string>
     <string name="milestonesNotStartedEmptyText">Yeeeey!! 🎉. You have started all your milestones.</string>
     <string name="milestonesErrorText">No results found for %1$s in %2$s milestones</string>
+    <string name="projectsErrorText">No results found for %1$s in %2$s projects</string>
     <string name="coming_soon">This feature is coming soon.</string>
     <string name="notifications">Notifications.</string>
     <string name="next">Next</string>

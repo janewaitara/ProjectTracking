@@ -42,8 +42,11 @@ import com.mumbicodes.projectie.presentation.allProjects.components.FilterBottom
 import com.mumbicodes.projectie.presentation.allProjects.components.ProjectItem
 import com.mumbicodes.projectie.presentation.allProjects.components.SearchBar
 import com.mumbicodes.projectie.presentation.allProjects.components.StaggeredVerticalGrid
+import com.mumbicodes.projectie.presentation.all_milestones.WelcomeMessageSection
 import com.mumbicodes.projectie.presentation.components.EmptyStateSlot
+import com.mumbicodes.projectie.presentation.components.ErrorStateSlot
 import com.mumbicodes.projectie.presentation.components.FilterChip
+import com.mumbicodes.projectie.presentation.projectDetails.EmptyStateSection
 import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
 import kotlinx.coroutines.launch
@@ -228,10 +231,19 @@ fun AllProjectsScreenContent(
             Spacer(modifier = Modifier.height(Space8dp))
 
             if (projectsState.filteredProjects.isEmpty()) {
-                EmptyStateSection(
-                    filter = projectsState.selectedProjectStatus,
-                    projects = projectsState.projects
-                )
+                if (searchedText.isEmpty()) {
+                    EmptyStateSection(
+                        filter = projectsState.selectedProjectStatus,
+                        projects = projectsState.projects
+                    )
+                } else {
+                    ErrorStateSlot(
+                        illustration = R.drawable.empty_state,
+                        description = R.string.projectsErrorText,
+                        searchParam = searchedText,
+                        filter = projectsState.selectedProjectStatus,
+                    )
+                }
             } else {
                 LazyVerticalStaggeredGrid(
                     columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
