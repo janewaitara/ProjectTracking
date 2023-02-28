@@ -1,8 +1,6 @@
 package com.mumbicodes.projectie.presentation.all_milestones
 
 import android.app.Application
-import android.text.method.TextKeyListener.clear
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
@@ -25,8 +23,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.util.*
-import java.util.Collections.addAll
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +34,9 @@ class AllMilestonesViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = mutableStateOf(AllMilestonesStates())
     val state = _state
+
+    private val _screenStates = mutableStateOf(ScreenStates())
+    val screenStates = _screenStates
 
     private val _searchParam = mutableStateOf("")
     val searchParam = _searchParam
@@ -56,24 +55,33 @@ class AllMilestonesViewModel @Inject constructor(
 
     init {
         getAllMilestones(
-            milestonesOrder = state.value.milestonesOrder,
-            milestoneStatus = state.value.selectedMilestoneStatus,
+            milestonesOrder = screenStates.value.data.milestonesOrder,
+            milestoneStatus = screenStates.value.data.selectedMilestoneStatus,
         )
     }
 
     private fun getAllMilestones(milestonesOrder: AllMilestonesOrder, milestoneStatus: String) {
-        getMilestonesJob?.cancel()
+        viewModelScope.launch {
+            _screenStates.value = screenStates.value.copy(
+                isLoading = true
+            )
 
-        getMilestonesJob = milestonesUseCases.getAllMilestonesUseCase(milestonesOrder)
-            .onEach { milestonesWithTasks ->
-                _state.value = _state.value.copy(
-                    milestones = milestonesWithTasks,
-                    milestonesOrder = milestonesOrder,
-                )
-                milestonesWithTasks.filterMilestones(milestoneStatus, searchParam.value)
-                getProjectNameAndId()
-            }
-            .launchIn(viewModelScope)
+            getMilestonesJob?.cancel()
+
+            getMilestonesJob = milestonesUseCases.getAllMilestonesUseCase(milestonesOrder)
+                .onEach { milestonesWithTasks ->
+                    _screenStates.value = screenStates.value.copy(
+                        data = screenStates.value.data.copy(
+                            milestones = milestonesWithTasks,
+                            milestonesOrder = milestonesOrder,
+                        ),
+                        isLoading = false,
+                    )
+                    milestonesWithTasks.filterMilestones(milestoneStatus, searchParam.value)
+                    getProjectNameAndId()
+                }
+                .launchIn(viewModelScope)
+        }
     }
 
     private fun getProjectNameAndId() {
@@ -92,16 +100,18 @@ class AllMilestonesViewModel @Inject constructor(
         val mappedMilestonesWithProjectName = mutableMapOf<Int, String>()
 
         _projectNames.value.forEach { projectName ->
-            state.value.filteredMilestones.forEach { milestoneWithTasks ->
+            screenStates.value.data.filteredMilestones.forEach { milestoneWithTasks ->
                 if (milestoneWithTasks.milestone.projectId == projectName.projectId) {
                     mappedMilestonesWithProjectName[milestoneWithTasks.milestone.milestoneId] =
                         projectName.projectName
                 }
             }
         }
-
-        _state.value = _state.value.copy(
-            milestonesProjectName = mappedMilestonesWithProjectName
+        _screenStates.value = screenStates.value.copy(
+            data = screenStates.value.data.copy(
+                milestonesProjectName = mappedMilestonesWithProjectName
+            ),
+            isLoading = false,
         )
     }
 
@@ -115,34 +125,35 @@ class AllMilestonesViewModel @Inject constructor(
                 }
             }
             is AllMilestonesEvents.OrderMilestones -> {
-                if (state.value.milestonesOrder::class == milestonesEvents.milestonesOrder::class) {
+                if (screenStates.value.data.milestonesOrder::class == milestonesEvents.milestonesOrder::class) {
                     return
                 }
 
                 getAllMilestones(
                     milestonesOrder = milestonesEvents.milestonesOrder,
-                    milestoneStatus = state.value.selectedMilestoneStatus
+                    milestoneStatus = screenStates.value.data.selectedMilestoneStatus
                 )
             }
             is AllMilestonesEvents.ResetMilestonesOrder -> {
                 getAllMilestones(
                     milestonesOrder = milestonesEvents.milestonesOrder,
-                    milestoneStatus = state.value.selectedMilestoneStatus
+                    milestoneStatus = screenStates.value.data.selectedMilestoneStatus
                 )
             }
             is AllMilestonesEvents.SearchMilestone -> {
                 _searchParam.value = milestonesEvents.searchParam
 
-                state.value.milestones.filterMilestones(
-                    milestoneStatus = state.value.selectedMilestoneStatus,
+                screenStates.value.data.milestones.filterMilestones(
+                    milestoneStatus = screenStates.value.data.selectedMilestoneStatus,
                     searchParam = searchParam.value
                 )
             }
             is AllMilestonesEvents.SelectMilestoneStatus -> {
-                if (state.value.selectedMilestoneStatus == milestonesEvents.milestoneStatus) {
+                if (screenStates.value.data.selectedMilestoneStatus == milestonesEvents.milestoneStatus) {
                     return
                 }
-                state.value.milestones.filterMilestones(
+
+                screenStates.value.data.milestones.filterMilestones(
                     milestoneStatus = milestonesEvents.milestoneStatus,
                     searchParam = searchParam.value
                 )
@@ -177,19 +188,23 @@ class AllMilestonesViewModel @Inject constructor(
         milestoneStatus: String,
         searchParam: String,
     ) {
-        _state.value = _state.value.copy(
-            filteredMilestones = if (milestoneStatus == appContext.getString(R.string.all)) {
-                this.filter {
-                    it.milestone.milestoneTitle.contains(searchParam)
-                }
-            } else {
-                this.filter {
-                    it.milestone.status == milestoneStatus
-                }.filter {
-                    it.milestone.milestoneTitle.contains(searchParam)
-                }
-            },
-            selectedMilestoneStatus = milestoneStatus,
+        _screenStates.value = screenStates.value.copy(
+            data = screenStates.value.data.copy(
+                filteredMilestones = if (milestoneStatus == appContext.getString(R.string.all)) {
+                    this.filter {
+                        it.milestone.milestoneTitle.contains(searchParam)
+                    }
+                } else {
+                    this.filter {
+                        it.milestone.status == milestoneStatus
+                    }.filter {
+                        it.milestone.milestoneTitle.contains(searchParam)
+                    }
+                },
+                selectedMilestoneStatus = milestoneStatus,
+            ),
+            isLoading = false,
+
         )
     }
 
@@ -197,18 +212,21 @@ class AllMilestonesViewModel @Inject constructor(
         getAllMilestonesJob?.cancel()
         getAllMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
             .onEach { milestoneWithTask ->
-                _state.value = _state.value.copy(
-                    mileStone = milestoneWithTask ?: MilestoneWithTasks(
-                        milestone = Milestone(
-                            projectId = 0,
-                            milestoneId = 0,
-                            milestoneTitle = "",
-                            milestoneSrtDate = 0,
-                            milestoneEndDate = 0,
-                            status = "",
-                        ),
-                        tasks = listOf()
-                    )
+                _screenStates.value = screenStates.value.copy(
+                    data = screenStates.value.data.copy(
+                        mileStone = milestoneWithTask ?: MilestoneWithTasks(
+                            milestone = Milestone(
+                                projectId = 0,
+                                milestoneId = 0,
+                                milestoneTitle = "",
+                                milestoneSrtDate = 0,
+                                milestoneEndDate = 0,
+                                status = "",
+                            ),
+                            tasks = listOf()
+                        )
+                    ),
+                    isLoading = false,
                 )
                 // adding tasks to state
                 _stateTasks.apply {
@@ -229,7 +247,7 @@ class AllMilestonesViewModel @Inject constructor(
             val currentMilestoneStatus =
                 milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
             milestonesUseCases.addMilestoneUseCase(
-                state.value.mileStone.milestone.copy(
+                screenStates.value.data.mileStone.milestone.copy(
                     status = currentMilestoneStatus
                 )
             )
@@ -239,12 +257,10 @@ class AllMilestonesViewModel @Inject constructor(
     private fun checkAndUpdateProjectStatus() {
         viewModelScope.launch {
 
-            Log.e("Sttaus", "projectStatus")
-            val projectId = state.value.mileStone.milestone.projectId
+            val projectId = screenStates.value.data.mileStone.milestone.projectId
             val projectStatus =
                 projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
 
-            Log.e("Sttaus", projectStatus)
             val project: Project = projectsUseCases.getProjectByIdUseCase(projectId)
 
             projectsUseCases.updateProjectsUseCase.invoke(
