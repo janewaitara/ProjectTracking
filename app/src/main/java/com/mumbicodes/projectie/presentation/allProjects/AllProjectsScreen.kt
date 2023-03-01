@@ -45,6 +45,7 @@ import com.mumbicodes.projectie.presentation.allProjects.components.StaggeredVer
 import com.mumbicodes.projectie.presentation.components.EmptyStateSlot
 import com.mumbicodes.projectie.presentation.components.ErrorStateSlot
 import com.mumbicodes.projectie.presentation.components.FilterChip
+import com.mumbicodes.projectie.presentation.components.ShimmerEffectComposable
 import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
 import kotlinx.coroutines.launch
@@ -159,13 +160,7 @@ fun AllProjectsScreenContent(
 
     if (projectsScreenState.data.projects.isEmpty()) {
         if (projectsScreenState.isLoading) {
-            // TODO Add a loading state
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = stringResource(id = R.string.delete),
-                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-            )
+            ShimmerEffectComposable()
         } else {
             EmptyStateSlot(
                 illustration = R.drawable.add_project,
