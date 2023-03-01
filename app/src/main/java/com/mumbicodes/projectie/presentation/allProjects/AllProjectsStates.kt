@@ -19,3 +19,8 @@ val filters = listOf(
     "In Progress",
     "Completed",
 )
+
+data class AllProjectsScreenStates(
+    val isLoading: Boolean = false,
+    val data: AllProjectsStates = AllProjectsStates(),
+)

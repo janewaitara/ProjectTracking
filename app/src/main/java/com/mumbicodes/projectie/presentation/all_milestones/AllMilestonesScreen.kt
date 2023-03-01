@@ -1,8 +1,8 @@
 package com.mumbicodes.projectie.presentation.all_milestones
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -26,7 +26,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,6 +41,7 @@ import com.mumbicodes.projectie.presentation.allProjects.rememberProjectsColumns
 import com.mumbicodes.projectie.presentation.all_milestones.components.AllMilestonesItem
 import com.mumbicodes.projectie.presentation.all_milestones.components.FilterMilestonesBottomSheetContent
 import com.mumbicodes.projectie.presentation.components.EmptyStateSlot
+import com.mumbicodes.projectie.presentation.components.ErrorStateSlot
 import com.mumbicodes.projectie.presentation.components.FilterChip
 import com.mumbicodes.projectie.presentation.projectDetails.MilestoneDetailsBottomSheetContent
 import com.mumbicodes.projectie.presentation.theme.*
@@ -50,44 +50,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
 
-@Composable
-fun AllMilestonesScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Spacer(modifier = Modifier.height(Space24dp))
-        val illustration = R.drawable.under_construction_illustration
-
-        Image(
-            modifier = Modifier.height(200.dp),
-            painter = painterResource(id = illustration),
-            contentDescription = "Empty state illustration"
-        )
-
-        Spacer(modifier = Modifier.height(Space36dp))
-
-        Text(
-            text = stringResource(id = R.string.allMilestones),
-            style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-        )
-        Spacer(modifier = Modifier.height(Space16dp))
-
-        val emptyText: String = stringResource(id = R.string.coming_soon)
-
-        Text(
-            modifier = Modifier.padding(start = Space32dp, end = Space32dp),
-            text = emptyText,
-            style = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.inverseSurface),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AllMilestonesScreens(
@@ -95,10 +57,12 @@ fun AllMilestonesScreens(
     onModifyMilestone: (Int, Int) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
-    val state = allMilestonesViewModel.state.value
+    val screenState = allMilestonesViewModel.screenStates.value
     val searchedTextState = allMilestonesViewModel.searchParam.value
-    val modalBottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
@@ -108,19 +72,23 @@ fun AllMilestonesScreens(
 
     // Holds the user selection until they press filter - important to show user selection on radios
     val selectedMilestonesOrder = remember {
-        mutableStateOf(state.milestonesOrder)
+        mutableStateOf(screenState.data.milestonesOrder)
     }
 
     LaunchedEffect(key1 = true) {
         allMilestonesViewModel.uiEvents.collectLatest { UIEvents ->
             when (UIEvents) {
-                AllMilestonesUIEvents.DeleteMilestone -> {
+                is AllMilestonesUIEvents.DeleteMilestone -> {
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
                 }
             }
         }
+    }
+
+    BackHandler(modalBottomSheetState.isVisible) {
+        scope.launch { modalBottomSheetState.hide() }
     }
 
     ModalBottomSheetLayout(
@@ -134,7 +102,7 @@ fun AllMilestonesScreens(
             when (bottomSheetType.value) {
                 BottomSheetType.FILTER -> {
                     FilterMilestonesBottomSheetContent(
-                        milestonesOrder = state.milestonesOrder,
+                        milestonesOrder = screenState.data.milestonesOrder,
                         selectedMilestonesOrder = selectedMilestonesOrder.value,
                         onOrderChange = { milestoneOrder ->
                             selectedMilestonesOrder.value = milestoneOrder
@@ -161,7 +129,7 @@ fun AllMilestonesScreens(
                 }
                 BottomSheetType.MILESTONE_DETAILS -> {
                     MilestoneDetailsBottomSheetContent(
-                        milestoneWithTasks = state.mileStone,
+                        milestoneWithTasks = screenState.data.mileStone,
                         onDeleteClicked = { milestone ->
                             allMilestonesViewModel.onEvent(
                                 AllMilestonesEvents.DeleteMilestone(
@@ -177,7 +145,10 @@ fun AllMilestonesScreens(
                             scope.launch {
                                 modalBottomSheetState.hide()
                             }
-                            onModifyMilestone(state.mileStone.milestone.projectId, milestoneId)
+                            onModifyMilestone(
+                                screenState.data.mileStone.milestone.projectId,
+                                milestoneId
+                            )
                         },
                         onTaskClicked = { taskId ->
                             allMilestonesViewModel.onEvent(
@@ -189,8 +160,6 @@ fun AllMilestonesScreens(
                     )
                 }
             }
-
-            // TODO add 2 bottom sheets
         },
         sheetState = modalBottomSheetState,
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
@@ -206,7 +175,7 @@ fun AllMilestonesScreens(
                     modifier = Modifier.padding(
                         top = 24.dp
                     ),
-                    milestonesStates = state,
+                    milestonesStates = screenState,
                     onClickMilestone = { milestoneId ->
                         allMilestonesViewModel.onEvent(
                             AllMilestonesEvents.PassMilestone(
@@ -239,7 +208,7 @@ fun AllMilestonesScreens(
                     windowWidthSizeClass = windowWidthSizeClass,
                     passBottomSheetType = { passedBottomSheetType ->
                         bottomSheetType.value = passedBottomSheetType
-                    }
+                    },
                 )
             }
         }
@@ -250,7 +219,7 @@ fun AllMilestonesScreens(
 @Composable
 fun AllMilestonesScreenContent(
     modifier: Modifier = Modifier,
-    milestonesStates: AllMilestonesStates,
+    milestonesStates: ScreenStates,
     onClickMilestone: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
@@ -259,12 +228,23 @@ fun AllMilestonesScreenContent(
     windowWidthSizeClass: WindowWidthSizeClass,
     passBottomSheetType: (BottomSheetType) -> Unit,
 ) {
-    if (milestonesStates.milestones.isEmpty()) {
-        EmptyStateSlot(
-            illustration = R.drawable.add_project,
-            title = R.string.allMilestones,
-            description = R.string.allMilestonesEmptyText,
-        )
+
+    if (milestonesStates.data.milestones.isEmpty()) {
+        if (milestonesStates.isLoading) {
+            // TODO Add a loading state
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = stringResource(id = R.string.delete),
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            )
+        } else {
+            EmptyStateSlot(
+                illustration = R.drawable.add_project,
+                title = R.string.allMilestones,
+                description = R.string.allMilestonesEmptyText,
+            )
+        }
     } else {
 
         Column(modifier = modifier) {
@@ -276,7 +256,7 @@ fun AllMilestonesScreenContent(
                         start = Space20dp,
                         end = Space20dp,
                     ),
-                milestones = milestonesStates.milestones
+                milestones = milestonesStates.data.milestones
             )
             Spacer(modifier = Modifier.height(Space24dp))
 
@@ -327,10 +307,10 @@ fun AllMilestonesScreenContent(
                 contentPadding = PaddingValues(horizontal = Space20dp),
                 horizontalArrangement = Arrangement.spacedBy(Space8dp)
             ) {
-                itemsIndexed(milestonesStates.filtersStatus) { _, filter ->
+                itemsIndexed(milestonesStates.data.filtersStatus) { _, filter ->
                     FilterChip(
                         text = filter,
-                        selected = filter == milestonesStates.selectedMilestoneStatus,
+                        selected = filter == milestonesStates.data.selectedMilestoneStatus,
                         onClick = onClickFilterStatus,
                     )
                 }
@@ -338,14 +318,22 @@ fun AllMilestonesScreenContent(
 
             Spacer(modifier = Modifier.height(Space8dp))
 
-            if (milestonesStates.filteredMilestones.isEmpty()) {
-                // TODO Add an empty state
-                EmptyState(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = Space20dp, end = Space20dp),
-                    filters = milestonesStates.selectedMilestoneStatus,
-                )
+            if (milestonesStates.data.filteredMilestones.isEmpty()) {
+                if (searchedText.isEmpty()) {
+                    EmptyState(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(start = Space20dp, end = Space20dp),
+                        filter = milestonesStates.data.selectedMilestoneStatus,
+                    )
+                } else {
+                    ErrorStateSlot(
+                        illustration = R.drawable.empty_state,
+                        description = R.string.milestonesErrorText,
+                        searchParam = searchedText,
+                        filter = milestonesStates.data.selectedMilestoneStatus,
+                    )
+                }
             } else {
                 LazyVerticalStaggeredGrid(
                     columns = rememberAllMilestonesColumns(windowWidthSizeClass = windowWidthSizeClass),
@@ -356,11 +344,11 @@ fun AllMilestonesScreenContent(
                     verticalArrangement = Arrangement.spacedBy(Space16dp),
                     horizontalArrangement = Arrangement.spacedBy(Space16dp)
                 ) {
-                    items(milestonesStates.filteredMilestones) { milestoneWithTasks ->
+                    items(milestonesStates.data.filteredMilestones) { milestoneWithTasks ->
 
                         AllMilestonesItem(
                             milestoneWithTasks = milestoneWithTasks,
-                            projectName = milestonesStates.milestonesProjectName[milestoneWithTasks.milestone.milestoneId]!!,
+                            projectName = milestonesStates.data.milestonesProjectName[milestoneWithTasks.milestone.milestoneId]!!,
                             onClickMilestone = {
                                 onClickMilestone(it)
 
@@ -426,22 +414,22 @@ fun WelcomeMessageSection(
 @Composable
 fun EmptyState(
     modifier: Modifier,
-    filters: String,
+    filter: String,
 ) {
     val illustration: Int
     val emptyText: Int
 
-    when (filters) {
+    when (filter) {
         stringResource(id = R.string.notStarted) -> {
-            illustration = R.drawable.ic_incomplete_projects
+            illustration = R.drawable.ic_incomplete_illustration
             emptyText = R.string.milestonesNotStartedEmptyText
         }
         stringResource(id = R.string.inProgress) -> {
-            illustration = R.drawable.inprogress
+            illustration = R.drawable.ic_inprogress_illustration
             emptyText = R.string.milestonesInProgressEmptyText
         }
         stringResource(id = R.string.completed) -> {
-            illustration = R.drawable.ic_incomplete_projects
+            illustration = R.drawable.ic_complete_progress_illustration
             emptyText = R.string.milestonesCompleteEmptyText
         }
         else -> {

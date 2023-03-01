@@ -25,3 +25,8 @@ data class AllMilestonesStates(
     val isFilterBottomSheetVisible: Boolean = false,
     val milestonesProjectName: Map<Int, String> = emptyMap(),
 )
+
+data class ScreenStates(
+    val isLoading: Boolean = false,
+    val data: AllMilestonesStates = AllMilestonesStates(),
+)

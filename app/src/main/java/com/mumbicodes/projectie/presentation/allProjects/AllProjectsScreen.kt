@@ -1,5 +1,6 @@
 package com.mumbicodes.projectie.presentation.allProjects
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -42,6 +43,7 @@ import com.mumbicodes.projectie.presentation.allProjects.components.ProjectItem
 import com.mumbicodes.projectie.presentation.allProjects.components.SearchBar
 import com.mumbicodes.projectie.presentation.allProjects.components.StaggeredVerticalGrid
 import com.mumbicodes.projectie.presentation.components.EmptyStateSlot
+import com.mumbicodes.projectie.presentation.components.ErrorStateSlot
 import com.mumbicodes.projectie.presentation.components.FilterChip
 import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
@@ -56,19 +58,25 @@ fun AllProjectsScreen(
 ) {
     val state = projectsViewModel.state.value
     val searchedTextState = projectsViewModel.searchParam.value
-    val modalBottomSheetState =
-        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true,
+    )
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
 
     // Holds the user selection until they press filter
     val selectedProjectOrder =
-        remember { mutableStateOf(state.projectsOrder) }
+        remember { mutableStateOf(state.data.projectsOrder) }
+
+    BackHandler(modalBottomSheetState.isVisible) {
+        scope.launch { modalBottomSheetState.hide() }
+    }
 
     ModalBottomSheetLayout(
         sheetContent = {
             FilterBottomSheetContent(
-                projectsOrder = state.projectsOrder,
+                projectsOrder = state.data.projectsOrder,
                 selectedProjectsOrder = selectedProjectOrder.value,
                 onOrderChange = { userProjectOrder ->
                     selectedProjectOrder.value = userProjectOrder
@@ -105,7 +113,7 @@ fun AllProjectsScreen(
                     modifier = Modifier.padding(
                         top = 24.dp
                     ),
-                    projectsState = state,
+                    projectsScreenState = state,
                     onClickProject = onClickProject,
                     onClickFilterBtn = {
                         scope.launch {
@@ -140,7 +148,7 @@ fun AllProjectsScreen(
 @Composable
 fun AllProjectsScreenContent(
     modifier: Modifier = Modifier,
-    projectsState: AllProjectsStates,
+    projectsScreenState: AllProjectsScreenStates,
     onClickProject: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
@@ -149,12 +157,22 @@ fun AllProjectsScreenContent(
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
 
-    if (projectsState.projects.isEmpty()) {
-        EmptyStateSlot(
-            illustration = R.drawable.add_project,
-            title = R.string.allProjects,
-            description = R.string.allProjectsEmptyText,
-        )
+    if (projectsScreenState.data.projects.isEmpty()) {
+        if (projectsScreenState.isLoading) {
+            // TODO Add a loading state
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = stringResource(id = R.string.delete),
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            )
+        } else {
+            EmptyStateSlot(
+                illustration = R.drawable.add_project,
+                title = R.string.allProjects,
+                description = R.string.allProjectsEmptyText,
+            )
+        }
     } else {
         Column(modifier = modifier) {
             WelcomeMessageSection(
@@ -164,7 +182,7 @@ fun AllProjectsScreenContent(
                         start = Space20dp,
                         end = Space20dp,
                     ),
-                projects = projectsState.projects
+                projects = projectsScreenState.data.projects
             )
             Spacer(modifier = Modifier.height(Space24dp))
 
@@ -209,10 +227,10 @@ fun AllProjectsScreenContent(
                 contentPadding = PaddingValues(horizontal = Space20dp),
                 horizontalArrangement = Arrangement.spacedBy(Space8dp)
             ) {
-                itemsIndexed(projectsState.filtersStatus) { _, filter ->
+                itemsIndexed(projectsScreenState.data.filtersStatus) { _, filter ->
                     FilterChip(
                         text = filter,
-                        selected = filter == projectsState.selectedProjectStatus,
+                        selected = filter == projectsScreenState.data.selectedProjectStatus,
                         onClick = onClickFilterStatus,
                     )
                 }
@@ -220,11 +238,20 @@ fun AllProjectsScreenContent(
 
             Spacer(modifier = Modifier.height(Space8dp))
 
-            if (projectsState.filteredProjects.isEmpty()) {
-                EmptyStateSection(
-                    filter = projectsState.selectedProjectStatus,
-                    projects = projectsState.projects
-                )
+            if (projectsScreenState.data.filteredProjects.isEmpty()) {
+                if (searchedText.isEmpty()) {
+                    EmptyStateSection(
+                        filter = projectsScreenState.data.selectedProjectStatus,
+                        projects = projectsScreenState.data.projects
+                    )
+                } else {
+                    ErrorStateSlot(
+                        illustration = R.drawable.empty_state,
+                        description = R.string.projectsErrorText,
+                        searchParam = searchedText,
+                        filter = projectsScreenState.data.selectedProjectStatus,
+                    )
+                }
             } else {
                 LazyVerticalStaggeredGrid(
                     columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
@@ -235,7 +262,7 @@ fun AllProjectsScreenContent(
                     verticalArrangement = Arrangement.spacedBy(Space16dp),
                     horizontalArrangement = Arrangement.spacedBy(Space16dp)
                 ) {
-                    items(projectsState.filteredProjects) { project ->
+                    items(projectsScreenState.data.filteredProjects) { project ->
                         ProjectItem(
                             // modifier = Modifier.padding(Space8dp),
                             project = project,
@@ -263,19 +290,28 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
             text = buildAnnotatedString {
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.inverseSurface)
+                        .copy(
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
                 ) {
                     append("You have ")
                 }
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(textDecoration = TextDecoration.Underline, color = MaterialTheme.colorScheme.primary)
+                        .copy(
+                            textDecoration = TextDecoration.Underline,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                 ) {
                     append("${projects.size}")
                 }
                 withStyle(
                     style = MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.inverseSurface)
+                        .copy(
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
                 ) {
                     append(" projects.")
                 }
@@ -303,9 +339,9 @@ fun EmptyStateSection(
                 R.drawable.add_project
             } else {
                 when (filter) {
-                    "Not Started" -> R.drawable.ic_incomplete_projects
-                    "In Progress" -> R.drawable.inprogress
-                    "Completed" -> R.drawable.ic_incomplete_projects
+                    "Not Started" -> R.drawable.ic_incomplete_illustration
+                    "In Progress" -> R.drawable.ic_inprogress_illustration
+                    "Completed" -> R.drawable.ic_complete_progress_illustration
                     else -> R.drawable.add_project
                 }
             }

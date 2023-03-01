@@ -29,8 +29,8 @@
     <string name="daysRemaining">%1$s days Left</string>
     <string name="dueDate">Due on %1$s</string>
     <string name="passedDeadline">%Deadline passed</string>
-    <string name="schedule">SCHEDULE</string>
-    <string name="miniTasks">MINI TASKS</string>
+    <string name="milestoneDueDate">Due Date</string>
+    <string name="miniTasks">Mini Tasks</string>
     <string name="modifyMilestone">Modify Milestone</string>
     <string name="createMilestone">Create Milestone</string>
     <string name="addMilestone">Add Milestone</string>
@@ -59,6 +59,8 @@
     <string name="milestonesCompleteEmptyText">It seems like you haven’t completed any milestones yet. Mark all tasks as done.</string>
     <string name="milestonesInProgressEmptyText">Move your milestones to In progress by marking their tasks as done. </string>
     <string name="milestonesNotStartedEmptyText">Yeeeey!! 🎉. You have started all your milestones.</string>
+    <string name="milestonesErrorText">No results found for %1$s in %2$s milestones</string>
+    <string name="projectsErrorText">No results found for %1$s in %2$s projects</string>
     <string name="coming_soon">This feature is coming soon.</string>
     <string name="notifications">Notifications.</string>
     <string name="next">Next</string>
@@ -68,4 +70,7 @@
     <string name="leastUrgent">Least Urgent</string>
     <string name="passedDay">%1$s day passed </string>
     <string name="passedDays">%1$s days passed </string>
+    <string name="today">Ends today </string>
+    <string name="tomorrow">Ends tomorrow </string>
+    <string name="yesterday">Ended Yesterday </string>
 </resources>
