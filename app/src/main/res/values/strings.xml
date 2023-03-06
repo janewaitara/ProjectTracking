@@ -73,4 +73,5 @@
     <string name="today">Ends today </string>
     <string name="tomorrow">Ends tomorrow </string>
     <string name="yesterday">Ended Yesterday </string>
+    <string name="error_checking_milestone_Deadline">Error checking milestone deadline</string>
 </resources>

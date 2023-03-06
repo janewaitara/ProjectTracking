@@ -63,6 +63,9 @@ object Versions {
 
     //Firebase
     const val firebase = "31.2.0"
+
+    //WorkManager
+    const val workManager = "2.8.0"
 }
 
 object BuildPlugins {
@@ -147,6 +150,9 @@ object Libraries {
     const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics-ktx"
     const val firebaseAnalytics =  "com.google.firebase:firebase-analytics-ktx"
     const val firebasePerformance = "com.google.firebase:firebase-perf-ktx"
+
+    //WorkManager
+    const val workManager = "androidx.work:work-runtime-ktx:${Versions.workManager}"
 }
 
 object TestLibraries {

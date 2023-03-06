@@ -118,6 +118,9 @@ dependencies {
     implementation(Libraries.firebasePerformance)
     implementation(Libraries.firebaseMessaging)
 
+    // WorkManager
+    implementation(Libraries.workManager)
+
     // Unit tests
     testImplementation(TestLibraries.junit4)
 
