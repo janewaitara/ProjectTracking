@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-private const val TAG = "PDueInTwoDaysWorker"
+private const val TAG = "ProjectWorker"
 
-class CheckProjectDeadlineIsInTwoDaysWorker(
+class CheckProjectDeadlineWorker(
     appContext: Context,
     params: WorkerParameters,
     private val projectsRepository: ProjectsRepository,
@@ -28,17 +28,23 @@ class CheckProjectDeadlineIsInTwoDaysWorker(
             return@withContext try {
                 val allProjects = projectsRepository.getAllProjects()
                 val deadlineInTwoDays = LocalDate.now().plusDays(2)
+                val today = LocalDate.now()
 
-                val filteredProjects: MutableList<Project> = mutableListOf()
+                val deadlineIsInTwoDaysProjects: MutableList<Project> = mutableListOf()
+                val deadlineIsTodayProjects: MutableList<Project> = mutableListOf()
 
                 allProjects.collectLatest { projects ->
                     projects.forEach {
                         if (it.projectDeadline.toLocalDate("dd MMM yyyy") == deadlineInTwoDays) {
-                            filteredProjects.add(it)
+                            deadlineIsInTwoDaysProjects.add(it)
+                        } else if (it.projectDeadline.toLocalDate("dd MMM yyyy") == today) {
+                            deadlineIsTodayProjects.add(it)
                         }
                     }
                 }
-                val outputData = workDataOf(KEY_ENDING_MILESTONES to filteredProjects)
+
+                // TODO make a notification
+                val outputData = workDataOf(KEY_ENDING_MILESTONES to deadlineIsTodayProjects)
                 Result.success(outputData)
             } catch (throwable: Throwable) {
                 Log.e(
