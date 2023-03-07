@@ -5,6 +5,7 @@ import com.mumbicodes.projectie.data.repository.OnBoardingDataStoreRepository
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.domain.repository.TasksRepository
+import com.mumbicodes.projectie.domain.repository.WorkersRepository
 import com.mumbicodes.projectie.domain.use_case.milestones.*
 import com.mumbicodes.projectie.domain.use_case.onBoarding.OnBoardingUseCases
 import com.mumbicodes.projectie.domain.use_case.onBoarding.ReadOnBoardingStateUseCase
@@ -14,6 +15,9 @@ import com.mumbicodes.projectie.domain.use_case.tasks.AddTasksUseCase
 import com.mumbicodes.projectie.domain.use_case.tasks.DeleteTaskUseCase
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TransformTasksUseCase
+import com.mumbicodes.projectie.domain.use_case.workers.CancelWorkerUseCase
+import com.mumbicodes.projectie.domain.use_case.workers.CheckDeadlinesUseCase
+import com.mumbicodes.projectie.domain.use_case.workers.WorkersUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -82,6 +86,15 @@ object UseCaseModule {
         return OnBoardingUseCases(
             readOnBoardingStateUseCase = ReadOnBoardingStateUseCase(repository),
             saveOnBoardingStateUseCase = SaveOnBoardingStateUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkersUseCases(repository: WorkersRepository): WorkersUseCases {
+        return WorkersUseCases(
+            checkDeadlinesUseCase = CheckDeadlinesUseCase(repository),
+            cancelWorkerUseCase = CancelWorkerUseCase(repository)
         )
     }
 }
