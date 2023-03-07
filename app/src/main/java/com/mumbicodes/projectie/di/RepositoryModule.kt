@@ -2,10 +2,7 @@ package com.mumbicodes.projectie.di
 
 import android.content.Context
 import com.mumbicodes.projectie.data.db.ProjectsDatabase
-import com.mumbicodes.projectie.data.repository.MilestonesRepositoryImpl
-import com.mumbicodes.projectie.data.repository.OnBoardingDataStoreRepository
-import com.mumbicodes.projectie.data.repository.ProjectsRepositoryImpl
-import com.mumbicodes.projectie.data.repository.TaskRepositoryImpl
+import com.mumbicodes.projectie.data.repository.*
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.domain.repository.TasksRepository
@@ -42,4 +39,9 @@ object RepositoryModule {
     @Singleton
     fun provideOnBoardingDataStoreRepository(@ApplicationContext context: Context) =
         OnBoardingDataStoreRepository(context = context)
+
+    @Provides
+    @Singleton
+    fun provideWorkersRepository(@ApplicationContext context: Context) =
+        WorkersRepositoryImpl(context = context)
 }
