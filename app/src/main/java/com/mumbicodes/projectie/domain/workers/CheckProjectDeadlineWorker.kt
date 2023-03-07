@@ -12,6 +12,7 @@ import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.presentation.util.KEY_ENDING_MILESTONES
 import com.mumbicodes.projectie.presentation.util.toLocalDate
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
@@ -20,7 +21,7 @@ import java.time.LocalDate
 private const val TAG = "ProjectWorker"
 
 @HiltWorker
-class CheckProjectDeadlineWorker(
+class CheckProjectDeadlineWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val projectsRepository: ProjectsRepository,

@@ -12,6 +12,7 @@ import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.presentation.util.KEY_ENDING_MILESTONES
 import com.mumbicodes.projectie.presentation.util.toLong
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
@@ -19,7 +20,7 @@ import java.time.LocalDate
 
 private const val TAG = "MilestonesWorker"
 @HiltWorker
-class CheckMilestoneDeadlineWorker(
+class CheckMilestoneDeadlineWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val milestonesRepository: MilestonesRepository,
