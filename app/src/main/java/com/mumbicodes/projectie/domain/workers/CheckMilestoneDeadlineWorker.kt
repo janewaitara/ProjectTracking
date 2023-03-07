@@ -2,6 +2,7 @@ package com.mumbicodes.projectie.domain.workers
 
 import android.content.Context
 import android.util.Log
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -10,16 +11,17 @@ import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.presentation.util.KEY_ENDING_MILESTONES
 import com.mumbicodes.projectie.presentation.util.toLong
+import dagger.assisted.Assisted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 private const val TAG = "MilestonesWorker"
-
+@HiltWorker
 class CheckMilestoneDeadlineWorker(
-    appContext: Context,
-    params: WorkerParameters,
+    @Assisted appContext: Context,
+    @Assisted params: WorkerParameters,
     private val milestonesRepository: MilestonesRepository,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {

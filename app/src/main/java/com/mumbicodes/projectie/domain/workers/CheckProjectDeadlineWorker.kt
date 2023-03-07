@@ -2,6 +2,7 @@ package com.mumbicodes.projectie.domain.workers
 
 import android.content.Context
 import android.util.Log
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -10,6 +11,7 @@ import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.presentation.util.KEY_ENDING_MILESTONES
 import com.mumbicodes.projectie.presentation.util.toLocalDate
+import dagger.assisted.Assisted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
@@ -17,9 +19,10 @@ import java.time.LocalDate
 
 private const val TAG = "ProjectWorker"
 
+@HiltWorker
 class CheckProjectDeadlineWorker(
-    appContext: Context,
-    params: WorkerParameters,
+    @Assisted appContext: Context,
+    @Assisted params: WorkerParameters,
     private val projectsRepository: ProjectsRepository,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {

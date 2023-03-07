@@ -90,6 +90,7 @@ dependencies {
     kapt(Libraries.hiltCompilerAndroid)
     kapt(Libraries.hiltCompiler)
     implementation(Libraries.hiltNavigation)
+    implementation(Libraries.hiltWork)
 
     // Moshi
     implementation(Libraries.moshi)

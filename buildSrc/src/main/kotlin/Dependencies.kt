@@ -122,6 +122,7 @@ object Libraries {
     const val hiltCompilerAndroid = "com.google.dagger:hilt-android-compiler:${Versions.hilt}"
     const val hiltCompiler = "androidx.hilt:hilt-compiler:${Versions.hiltWithOtherLibs}"
     const val hiltNavigation = "androidx.hilt:hilt-navigation-compose:${Versions.hiltWithOtherLibs}"
+    const val hiltWork = "androidx.hilt:hilt-work:${Versions.hiltWithOtherLibs}"
 
     // Moshi
     const val moshi = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
