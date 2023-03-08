@@ -6,6 +6,7 @@ import com.mumbicodes.projectie.data.repository.*
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.domain.repository.TasksRepository
+import com.mumbicodes.projectie.domain.repository.WorkersRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,6 +43,6 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideWorkersRepository(@ApplicationContext context: Context) =
+    fun provideWorkersRepository(@ApplicationContext context: Context): WorkersRepository =
         WorkersRepositoryImpl(context = context)
 }

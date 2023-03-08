@@ -28,7 +28,7 @@ object Versions {
     const val ktlint = "10.2.1"
 
     //Room
-    const val room = "2.4.2"
+    const val room = "2.5.0"
 
     // Coroutines
     const val coroutines = "1.5.0"
