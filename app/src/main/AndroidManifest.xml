@@ -4,6 +4,7 @@
     package="com.mumbicodes.projectie">
 
     <uses-sdk tools:overrideLibrary="com.squaredem.composecalendar"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".ProjectsApplication"
