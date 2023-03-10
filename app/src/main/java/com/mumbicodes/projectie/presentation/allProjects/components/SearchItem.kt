@@ -25,6 +25,7 @@ import com.mumbicodes.projectie.presentation.theme.Space48dp
  * TODO research on how to reduce the icon and text spacing and the whole margin
  * Todo - With the custom size < 56, the text is cut off - how to solve that
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,

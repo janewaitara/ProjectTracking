@@ -3,7 +3,7 @@ object Versions {
     //Version codes for all the libraries
     const val androidApplication = "7.2.1"
     const val androidLibrary = "7.2.1"
-    const val kotlin = "1.7.10"
+    const val kotlin = "1.8.10"
 
     const val appCompat = "1.4.1"
     const val ktx = "1.7.0"
@@ -15,11 +15,12 @@ object Versions {
     const val espresso = "3.5.0-alpha03"
 
     //Compose
-    const val composeUi = "1.3.0"
-    const val composeMaterial3 = "1.0.0-alpha14"
+    const val composeUi = "1.4.0-beta01"
+    const val composeMaterial3 = "1.1.0-alpha07"
     const val composeMaterial2 = "1.2.1"
     const val constraintLayoutCompose = "1.0.0-beta02"
     const val activityCompose = "1.3.1"
+    const val composeCompiler = "1.4.2"
 
     // Lifecycle
     const val lifecycle = "2.4.1"
@@ -37,7 +38,7 @@ object Versions {
     const val navVersion = "2.5.1"
 
     // Hilt
-    const val hilt = "2.42"
+    const val hilt = "2.45"
     const val hiltWithOtherLibs = "1.0.0"
 
     // Moshi
@@ -96,7 +97,9 @@ object Libraries {
         "androidx.constraintlayout:constraintlayout-compose:${Versions.constraintLayoutCompose}"
     const val composeMaterial2 = "androidx.compose.material:material:${Versions.composeMaterial2}"
     const val materialWindowClassSize =
-        "androidx.compose.material3:material3-window-size-class:${Versions.composeMaterial3}"
+        "androidx.compose.material3:material3-window-size-class:1.0.0-alpha14"
+    const val composeCompiler = "androidx.compose.compiler:compiler:${Versions.composeCompiler}"
+
 
     //Navigation
     const val navigationCompose = "androidx.navigation:navigation-compose:${Versions.navVersion}"
@@ -135,6 +138,9 @@ object Libraries {
     const val pager = "com.google.accompanist:accompanist-pager:${Versions.accompanist}"
     const val pagerIndicators =
         "com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}"
+
+    //Accompanist Permissions
+    const val accompanistPermissions = "com.google.accompanist:accompanist-permissions:${Versions.accompanist}"
 
     //Splash API
     const val splashScreen = "androidx.core:core-splashscreen:${Versions.splashScreen}"

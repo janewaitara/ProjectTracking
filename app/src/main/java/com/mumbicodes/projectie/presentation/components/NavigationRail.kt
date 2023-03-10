@@ -39,7 +39,7 @@ fun NavigationRailComposable(
     val navStackBackEntry by navController.currentBackStackEntryAsState()
     val selectedDestination = navStackBackEntry?.destination
 
-    NavigationRail(modifier = Modifier.fillMaxHeight()) {
+    NavigationRail(modifier = Modifier.fillMaxHeight().width(80.dp)) {
 
         Spacer(modifier = Modifier.height(Space32dp))
 

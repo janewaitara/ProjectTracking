@@ -46,7 +46,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Versions.composeUi
+        kotlinCompilerExtensionVersion = Versions.composeCompiler
     }
     packagingOptions {
         resources {
@@ -67,6 +67,7 @@ dependencies {
     implementation(Libraries.constraintLayoutCompose)
     implementation(Libraries.composeMaterial2)
     implementation(Libraries.materialWindowClassSize)
+    implementation(Libraries.composeCompiler)
 
     // Lifecycle
     implementation(Libraries.lifecycle)
@@ -121,6 +122,9 @@ dependencies {
 
     // WorkManager
     implementation(Libraries.workManager)
+
+    // Accompanist permissions
+    implementation(Libraries.accompanistPermissions)
 
     // Unit tests
     testImplementation(TestLibraries.junit4)

@@ -15,6 +15,7 @@ buildscript {
         classpath(Libraries.hiltGradle)
         classpath(Libraries.googleServices)
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
+        classpath("com.android.tools.build:gradle:7.4.2")
     }
 }
 
