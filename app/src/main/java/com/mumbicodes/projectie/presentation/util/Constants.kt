@@ -11,6 +11,7 @@ const val PROJECTS_DEADLINE_WORK_NAME = "milestones_deadline_worker"
 const val CHANNEL_ID = "VERBOSE_NOTIFICATION"
 val VERBOSE_NOTIFICATION_CHANNEL_NAME: CharSequence = "Verbose WorkManager Notifications"
 const val VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION = "Shows notifications whenever work starts"
+const val NOTIFICATION_ID = 1
 
 val PROJECTS_NOTIFICATION_TITLE: CharSequence = "Projects Deadline"
-val MILESTONES_NOTIFICATION_TITLE: CharSequence = "Projects Deadline"
+val MILESTONES_NOTIFICATION_TITLE: CharSequence = "Milestones Deadline"
