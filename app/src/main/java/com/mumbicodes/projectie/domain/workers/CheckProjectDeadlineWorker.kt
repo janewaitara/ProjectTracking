@@ -41,8 +41,18 @@ class CheckProjectDeadlineWorker @AssistedInject constructor(
                     projects.forEach {
                         if (it.projectDeadline.toLocalDate("dd MMM yyyy") == deadlineInTwoDays) {
                             deadlineIsInTwoDaysProjects.add(it)
+                            makeNotification(
+                                notificationType = NotificationType.PROJECTS,
+                                message = "${it.projectName} deadline is in 2 days and it's ${it.projectStatus}",
+                                context = applicationContext,
+                            )
                         } else if (it.projectDeadline.toLocalDate("dd MMM yyyy") == today) {
                             deadlineIsTodayProjects.add(it)
+                            makeNotification(
+                                NotificationType.PROJECTS,
+                                "${it.projectName} deadline is today and it's ${it.projectStatus}",
+                                applicationContext,
+                            )
                         }
                     }
                 }

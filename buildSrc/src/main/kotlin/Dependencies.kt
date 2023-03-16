@@ -35,7 +35,7 @@ object Versions {
     const val coroutines = "1.5.0"
 
     //Navigation
-    const val navVersion = "2.5.1"
+    const val navVersion = "2.5.0-alpha03"
 
     // Hilt
     const val hilt = "2.45"
