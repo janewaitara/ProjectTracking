@@ -4,10 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.presentation.components.*
 import com.mumbicodes.projectie.presentation.theme.*
-import com.squaredem.composecalendar.ComposeCalendar
+import com.mumbicodes.projectie.presentation.util.fromMillisToLocalDate
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
@@ -190,7 +187,7 @@ fun ScreenHeader(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FieldForms(
     modifier: Modifier = Modifier,
@@ -216,6 +213,7 @@ fun FieldForms(
     var calendarTrigger by remember {
         mutableStateOf("test")
     }
+    val datePickerState = rememberDatePickerState()
 
     LazyColumn(
         modifier = modifier
@@ -281,7 +279,7 @@ fun FieldForms(
             }
 
             if (isCalendarVisible) {
-                ComposeCalendar(
+                /*ComposeCalendar(
                     onDone = { userDateSelection ->
                         if (calendarTrigger == "StartDate") {
                             onStartDateChanged(userDateSelection)
@@ -291,7 +289,35 @@ fun FieldForms(
                     },
                     onDismiss =
                     onDatesClicked
-                )
+                )*/
+                DatePickerDialog(
+                    onDismissRequest = onDatesClicked,
+                    confirmButton = {
+                        TextButton(onClick = {
+                            if (datePickerState.selectedDateMillis == null) {
+                                onDatesClicked()
+                            } else {
+                                if (calendarTrigger == "StartDate") {
+                                    onStartDateChanged(datePickerState.selectedDateMillis!!.fromMillisToLocalDate())
+                                } else {
+                                    onEndDateChanged(datePickerState.selectedDateMillis!!.fromMillisToLocalDate())
+                                }
+                            }
+                        }) {
+                            Text("Ok")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = onDatesClicked) {
+                            Text("Cancel")
+                        }
+                    }
+                ) {
+                    DatePicker(
+                        state = datePickerState,
+                        showModeToggle = false,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(Space20dp))
