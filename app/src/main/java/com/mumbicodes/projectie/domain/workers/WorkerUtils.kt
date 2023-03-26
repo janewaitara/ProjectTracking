@@ -9,7 +9,12 @@ import androidx.core.app.NotificationManagerCompat
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.presentation.util.*
 
-fun makeNotification(notificationType: NotificationType, message: String, context: Context,) {
+fun makeNotification(
+    notificationType: NotificationType,
+    notificationId: Int,
+    message: String,
+    context: Context,
+) {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         // Notification Channel
@@ -42,9 +47,9 @@ fun makeNotification(notificationType: NotificationType, message: String, contex
         .setVibrate(LongArray(0))
         .build()
 
-    NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+    // Each notification has an it's own unique ID
+    NotificationManagerCompat.from(context).notify(notificationId, notification)
 }
-
 enum class NotificationType {
     PROJECTS, MILESTONES
 }

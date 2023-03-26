@@ -5,16 +5,16 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import androidx.work.workDataOf
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
-import com.mumbicodes.projectie.presentation.util.KEY_ENDING_MILESTONES
 import com.mumbicodes.projectie.presentation.util.toLocalDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
@@ -37,29 +37,35 @@ class CheckProjectDeadlineWorker @AssistedInject constructor(
                 val deadlineIsInTwoDaysProjects: MutableList<Project> = mutableListOf()
                 val deadlineIsTodayProjects: MutableList<Project> = mutableListOf()
 
-                allProjects.collectLatest { projects ->
-                    projects.forEach {
-                        if (it.projectDeadline.toLocalDate("dd MMM yyyy") == deadlineInTwoDays) {
-                            deadlineIsInTwoDaysProjects.add(it)
-                            makeNotification(
-                                notificationType = NotificationType.PROJECTS,
-                                message = "${it.projectName} deadline is in 2 days and it's ${it.projectStatus}",
-                                context = applicationContext,
-                            )
-                        } else if (it.projectDeadline.toLocalDate("dd MMM yyyy") == today) {
-                            deadlineIsTodayProjects.add(it)
-                            makeNotification(
-                                NotificationType.PROJECTS,
-                                "${it.projectName} deadline is today and it's ${it.projectStatus}",
-                                applicationContext,
-                            )
+                CoroutineScope(Dispatchers.IO).launch {
+                    allProjects.collectLatest { projects ->
+                        projects.forEach {
+                            if (it.projectDeadline.toLocalDate("dd MMM yyyy") == deadlineInTwoDays) {
+                                deadlineIsInTwoDaysProjects.add(it)
+                                makeNotification(
+                                    notificationType = NotificationType.PROJECTS,
+                                    notificationId = it.projectId,
+                                    message = "${it.projectName} deadline is in 2 days and it's ${it.projectStatus}",
+                                    context = applicationContext,
+                                )
+                            } else if (it.projectDeadline.toLocalDate("dd MMM yyyy") == today) {
+                                deadlineIsTodayProjects.add(it)
+                                makeNotification(
+                                    notificationType = NotificationType.PROJECTS,
+                                    notificationId = it.projectId,
+                                    message = "${it.projectName} deadline is today and it's ${it.projectStatus}",
+                                    context = applicationContext,
+                                )
+                            }
                         }
                     }
                 }
 
                 // TODO make a notification
-                val outputData = workDataOf(KEY_ENDING_MILESTONES to deadlineIsTodayProjects)
-                Result.success(outputData)
+                // TODO group notifications
+                // TODO Research why when the outputData is not commented, the other worker is not reached
+                // val outputData = workDataOf(KEY_ENDING_MILESTONES to deadlineIsTodayProjects)
+                Result.success()
             } catch (throwable: Throwable) {
                 Log.e(
                     TAG,

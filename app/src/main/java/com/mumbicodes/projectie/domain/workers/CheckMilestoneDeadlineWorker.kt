@@ -14,6 +14,7 @@ import com.mumbicodes.projectie.presentation.util.toLong
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -27,8 +28,12 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
 
+        // Without this, the notification is shown immediately after the projects ones, blocking them
+        delay(3000)
+
         return withContext(Dispatchers.IO) {
             return@withContext try {
+                Log.e("Reached 2", "It has been reached ")
                 val allMilestones = milestonesRepository.getAllMilestones()
                 val today = LocalDate.now()
 
@@ -38,6 +43,12 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
                     milestonesWithTasks.forEach {
                         if (it.milestone.milestoneEndDate == today.toLong()) {
                             filteredMilestones.add(it)
+                            makeNotification(
+                                NotificationType.MILESTONES,
+                                it.milestone.milestoneId,
+                                "${it.milestone.milestoneTitle} deadline is today and it's ${it.milestone.status}",
+                                applicationContext,
+                            )
                         }
                     }
                 }
