@@ -32,19 +32,24 @@ class CheckProjectDeadlineIsInTwoDaysWorker @AssistedInject constructor(
                 Log.e("Reached 3", "It has been reached - 2 days ")
 
                 val allProjects = projectsRepository.getAllProjects()
-                val deadlineInTwoDays = LocalDate.now().plusDays(2)
-
-                val deadlineIsInTwoDaysProjects: MutableList<Project> = mutableListOf()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     allProjects.collectLatest { projects ->
-                        projects.forEach {
-                            if (it.projectDeadline.toLocalDate("dd MMM yyyy") == deadlineInTwoDays) {
-                                deadlineIsInTwoDaysProjects.add(it)
+                        val deadlineIsInTwoDaysProjects =
+                            async { checkDeadlineIsInTwoDays(projects) }
+                        deadlineIsInTwoDaysProjects.await().let { deadlineProjects ->
+                            if (deadlineProjects.size > 1) {
                                 makeNotification(
                                     notificationType = NotificationType.PROJECTS,
-                                    notificationId = it.projectId,
-                                    message = "${it.projectName} deadline is in 2 days and it's ${it.projectStatus}",
+                                    notificationId = deadlineProjects.first().projectId,
+                                    message = "You have ${deadlineProjects.size} projects ending in 2 days",
+                                    context = applicationContext,
+                                )
+                            } else if (deadlineProjects.size == 1) {
+                                makeNotification(
+                                    notificationType = NotificationType.PROJECTS,
+                                    notificationId = deadlineProjects.first().projectId,
+                                    message = "${deadlineProjects.first().projectName} deadline is in 2 days and it's ${deadlineProjects.first().projectStatus}",
                                     context = applicationContext,
                                 )
                             }
@@ -52,8 +57,6 @@ class CheckProjectDeadlineIsInTwoDaysWorker @AssistedInject constructor(
                     }
                 }
 
-                // TODO make a notification
-                // TODO group notifications
                 // TODO Research why when the outputData is not commented, the other worker is not reached
                 // val outputData = workDataOf(KEY_ENDING_MILESTONES to deadlineIsTodayProjects)
                 Result.success()
@@ -66,5 +69,17 @@ class CheckProjectDeadlineIsInTwoDaysWorker @AssistedInject constructor(
                 Result.failure()
             }
         }
+    }
+
+    private fun checkDeadlineIsInTwoDays(projects: List<Project>): MutableList<Project> {
+        val deadlineInTwoDays = LocalDate.now().plusDays(2)
+        val deadlineIsInTwoDaysProjects: MutableList<Project> = mutableListOf()
+
+        projects.forEach {
+            if (it.projectDeadline.toLocalDate("dd MMM yyyy") == deadlineInTwoDays) {
+                deadlineIsInTwoDaysProjects.add(it)
+            }
+        }
+        return deadlineIsInTwoDaysProjects
     }
 }
