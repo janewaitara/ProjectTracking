@@ -11,11 +11,8 @@ import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.presentation.util.toLocalDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 private const val TAG = "ProjectWorkerIsToday"
@@ -31,19 +28,25 @@ class CheckProjectDeadlineWorker @AssistedInject constructor(
         return withContext(Dispatchers.IO) {
             return@withContext try {
                 val allProjects = projectsRepository.getAllProjects()
-                val today = LocalDate.now()
-
-                val deadlineIsTodayProjects: MutableList<Project> = mutableListOf()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     allProjects.collectLatest { projects ->
-                        projects.forEach {
-                            if (it.projectDeadline.toLocalDate("dd MMM yyyy") == today) {
-                                deadlineIsTodayProjects.add(it)
+                        val deadlineIsTodayProjects = async { checkDeadlineIsToday(projects) }
+                        deadlineIsTodayProjects.await().let { deadlineProjects ->
+                            if (deadlineProjects.isNotEmpty() && deadlineProjects.size > 1) {
+                                // Grouped Notifications
                                 makeNotification(
                                     notificationType = NotificationType.PROJECTS,
-                                    notificationId = it.projectId,
-                                    message = "${it.projectName} deadline is today and it's ${it.projectStatus}",
+                                    notificationId = deadlineProjects.first().projectId,
+                                    message = "You have ${deadlineProjects.size} projects ending Today",
+                                    context = applicationContext,
+                                )
+                            } else if (deadlineProjects.size == 1) {
+                                // One notification
+                                makeNotification(
+                                    notificationType = NotificationType.PROJECTS,
+                                    notificationId = deadlineProjects.first().projectId,
+                                    message = "${deadlineProjects.first().projectName} deadline is today and it's ${deadlineProjects.first().projectStatus}",
                                     context = applicationContext,
                                 )
                             }
@@ -51,8 +54,6 @@ class CheckProjectDeadlineWorker @AssistedInject constructor(
                     }
                 }
 
-                // TODO make a notification
-                // TODO group notifications
                 // TODO Research why when the outputData is not commented, the other worker is not reached
                 // val outputData = workDataOf(KEY_ENDING_MILESTONES to deadlineIsTodayProjects)
                 Result.success()
@@ -65,5 +66,17 @@ class CheckProjectDeadlineWorker @AssistedInject constructor(
                 Result.failure()
             }
         }
+    }
+
+    private fun checkDeadlineIsToday(projects: List<Project>): MutableList<Project> {
+        val today = LocalDate.now()
+        val deadlineIsTodayProjects: MutableList<Project> = mutableListOf()
+
+        projects.forEach {
+            if (it.projectDeadline.toLocalDate("dd MMM yyyy") == today) {
+                deadlineIsTodayProjects.add(it)
+            }
+        }
+        return deadlineIsTodayProjects
     }
 }
