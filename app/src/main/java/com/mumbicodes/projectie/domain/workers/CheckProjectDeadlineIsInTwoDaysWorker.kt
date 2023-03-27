@@ -11,39 +11,40 @@ import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.presentation.util.toLocalDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-private const val TAG = "ProjectWorkerIsToday"
+private const val TAG = "ProjectWorkerInTwoDays"
 
 @HiltWorker
-class CheckProjectDeadlineWorker @AssistedInject constructor(
+class CheckProjectDeadlineIsInTwoDaysWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val projectsRepository: ProjectsRepository,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
 
+        delay(3000)
+
         return withContext(Dispatchers.IO) {
             return@withContext try {
-                val allProjects = projectsRepository.getAllProjects()
-                val today = LocalDate.now()
+                Log.e("Reached 3", "It has been reached - 2 days ")
 
-                val deadlineIsTodayProjects: MutableList<Project> = mutableListOf()
+                val allProjects = projectsRepository.getAllProjects()
+                val deadlineInTwoDays = LocalDate.now().plusDays(2)
+
+                val deadlineIsInTwoDaysProjects: MutableList<Project> = mutableListOf()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     allProjects.collectLatest { projects ->
                         projects.forEach {
-                            if (it.projectDeadline.toLocalDate("dd MMM yyyy") == today) {
-                                deadlineIsTodayProjects.add(it)
+                            if (it.projectDeadline.toLocalDate("dd MMM yyyy") == deadlineInTwoDays) {
+                                deadlineIsInTwoDaysProjects.add(it)
                                 makeNotification(
                                     notificationType = NotificationType.PROJECTS,
                                     notificationId = it.projectId,
-                                    message = "${it.projectName} deadline is today and it's ${it.projectStatus}",
+                                    message = "${it.projectName} deadline is in 2 days and it's ${it.projectStatus}",
                                     context = applicationContext,
                                 )
                             }

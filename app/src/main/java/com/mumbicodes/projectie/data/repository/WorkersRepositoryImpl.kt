@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.*
 import com.mumbicodes.projectie.domain.repository.WorkersRepository
 import com.mumbicodes.projectie.domain.workers.CheckMilestoneDeadlineWorker
+import com.mumbicodes.projectie.domain.workers.CheckProjectDeadlineIsInTwoDaysWorker
 import com.mumbicodes.projectie.domain.workers.CheckProjectDeadlineWorker
 import com.mumbicodes.projectie.presentation.util.PROJECTS_DEADLINE_WORK_NAME
 import java.time.Duration
@@ -34,6 +35,9 @@ class WorkersRepositoryImpl(context: Context) : WorkersRepository {
         val projectsWorker = OneTimeWorkRequestBuilder<CheckProjectDeadlineWorker>()
             .setInitialDelay(duration.seconds, TimeUnit.SECONDS)
             .build()
+        val projectsDeadlineInTwoDaysWorker =
+            OneTimeWorkRequestBuilder<CheckProjectDeadlineIsInTwoDaysWorker>()
+                .build()
         val milestonesWorker = OneTimeWorkRequestBuilder<CheckMilestoneDeadlineWorker>()
             .build()
 
@@ -41,7 +45,8 @@ class WorkersRepositoryImpl(context: Context) : WorkersRepository {
             PROJECTS_DEADLINE_WORK_NAME,
             ExistingWorkPolicy.REPLACE,
             projectsWorker
-        ).then(milestonesWorker)
+        ).then(projectsDeadlineInTwoDaysWorker)
+            .then(milestonesWorker)
 
         continuation.enqueue()
     }
