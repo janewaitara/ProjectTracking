@@ -5,18 +5,15 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import androidx.work.workDataOf
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
-import com.mumbicodes.projectie.presentation.util.KEY_ENDING_MILESTONES
+import com.mumbicodes.projectie.domain.repository.WorkersRepository
 import com.mumbicodes.projectie.presentation.util.toLong
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 private const val TAG = "MilestonesWorker"
@@ -25,6 +22,7 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val milestonesRepository: MilestonesRepository,
+    private val workersRepository: WorkersRepository,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
 
@@ -39,21 +37,24 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
 
                 val filteredMilestones: MutableList<MilestoneWithTasks> = mutableListOf()
 
-                allMilestones.collectLatest { milestonesWithTasks ->
-                    milestonesWithTasks.forEach {
-                        if (it.milestone.milestoneEndDate == today.toLong()) {
-                            filteredMilestones.add(it)
-                            makeNotification(
-                                NotificationType.MILESTONES,
-                                it.milestone.milestoneId,
-                                "${it.milestone.milestoneTitle} deadline is today and it's ${it.milestone.status}",
-                                applicationContext,
-                            )
+                CoroutineScope(Dispatchers.IO).launch {
+                    allMilestones.collectLatest { milestonesWithTasks ->
+                        milestonesWithTasks.forEach {
+                            if (it.milestone.milestoneEndDate == today.toLong()) {
+                                filteredMilestones.add(it)
+                                makeNotification(
+                                    NotificationType.MILESTONES,
+                                    it.milestone.milestoneId,
+                                    "${it.milestone.milestoneTitle} deadline is today and it's ${it.milestone.status}",
+                                    applicationContext,
+                                )
+                            }
                         }
                     }
                 }
-                val outputData = workDataOf(KEY_ENDING_MILESTONES to filteredMilestones)
-                Result.success(outputData)
+                // val outputData = workDataOf(KEY_ENDING_MILESTONES to filteredMilestones)
+                workersRepository.checkDeadlines()
+                Result.success()
             } catch (throwable: Throwable) {
                 Log.e(
                     TAG,
