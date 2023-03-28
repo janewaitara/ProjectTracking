@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
 private const val TAG = "MilestonesWorker"
+
 @HiltWorker
 class CheckMilestoneDeadlineWorker @AssistedInject constructor(
     @Assisted appContext: Context,
@@ -33,19 +34,25 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
             return@withContext try {
                 Log.e("Reached 2", "It has been reached ")
                 val allMilestones = milestonesRepository.getAllMilestones()
-                val today = LocalDate.now()
-
-                val filteredMilestones: MutableList<MilestoneWithTasks> = mutableListOf()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     allMilestones.collectLatest { milestonesWithTasks ->
-                        milestonesWithTasks.forEach {
-                            if (it.milestone.milestoneEndDate == today.toLong()) {
-                                filteredMilestones.add(it)
+                        val filteredMilestones =
+                            async { checkMilestoneDeadlineIsToday(milestonesWithTasks) }
+
+                        filteredMilestones.await().let { milestones ->
+                            if (milestones.size > 1) {
+                                makeNotification(
+                                    notificationType = NotificationType.MILESTONES,
+                                    notificationId = milestones.first().milestone.milestoneId,
+                                    message = "You have ${milestones.size} milestones ending Today",
+                                    context = applicationContext,
+                                )
+                            } else if (milestones.size == 1) {
                                 makeNotification(
                                     NotificationType.MILESTONES,
-                                    it.milestone.milestoneId,
-                                    "${it.milestone.milestoneTitle} deadline is today and it's ${it.milestone.status}",
+                                    milestones.first().milestone.milestoneId,
+                                    "${milestones.first().milestone.milestoneTitle} deadline is today and it's ${milestones.first().milestone.status}",
                                     applicationContext,
                                 )
                             }
@@ -64,5 +71,17 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
                 Result.failure()
             }
         }
+    }
+
+    private fun checkMilestoneDeadlineIsToday(milestonesWithTasks: List<MilestoneWithTasks>): MutableList<MilestoneWithTasks> {
+        val today = LocalDate.now()
+        val filteredMilestones: MutableList<MilestoneWithTasks> = mutableListOf()
+
+        milestonesWithTasks.forEach {
+            if (it.milestone.milestoneEndDate == today.toLong()) {
+                filteredMilestones.add(it)
+            }
+        }
+        return filteredMilestones
     }
 }
