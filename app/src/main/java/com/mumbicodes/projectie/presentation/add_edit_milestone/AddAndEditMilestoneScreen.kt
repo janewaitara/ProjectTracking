@@ -279,17 +279,6 @@ fun FieldForms(
             }
 
             if (isCalendarVisible) {
-                /*ComposeCalendar(
-                    onDone = { userDateSelection ->
-                        if (calendarTrigger == "StartDate") {
-                            onStartDateChanged(userDateSelection)
-                        } else {
-                            onEndDateChanged(userDateSelection)
-                        }
-                    },
-                    onDismiss =
-                    onDatesClicked
-                )*/
                 DatePickerDialog(
                     onDismissRequest = onDatesClicked,
                     confirmButton = {

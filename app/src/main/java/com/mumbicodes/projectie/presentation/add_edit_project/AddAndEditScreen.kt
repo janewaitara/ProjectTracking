@@ -187,14 +187,6 @@ fun FieldForms(
             )
         }
         if (isCalendarVisible) {
-            /* ComposeCalendar(
-                 minDate = LocalDate.now(),
-                 onDone = { userDateSelection ->
-                     onDeadlineChanged(userDateSelection)
-                 },
-                 onDismiss = onDeadlineClicked
-             )*/
-
             DatePickerDialog(
                 onDismissRequest = onDeadlineClicked,
                 confirmButton = {

@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
-import com.mumbicodes.projectie.domain.use_case.workers.WorkersUseCases
 import com.mumbicodes.projectie.domain.util.OrderType
 import com.mumbicodes.projectie.domain.util.ProjectsOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
