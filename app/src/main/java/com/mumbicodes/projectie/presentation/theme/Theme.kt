@@ -16,6 +16,11 @@ private val DarkColorPalette = darkColorScheme(
     onPrimaryContainer = BlueLightest,
     inversePrimary = BlueMain,
 
+    secondary = SubtleWarning,
+    onSecondary = DarkestWarning,
+    secondaryContainer = DarkerWarning,
+    onSecondaryContainer = LightWarning,
+
     error = Red80,
     onError = Red20,
     errorContainer = Red30,
@@ -41,6 +46,11 @@ private val LightColorPalette = lightColorScheme(
     primaryContainer = BlueLight,
     onPrimaryContainer = BlueDark,
     inversePrimary = BlueSubtle,
+
+    secondary = Warning,
+    onSecondary = LightWarning,
+    secondaryContainer = SubtleWarning,
+    onSecondaryContainer = DarkWarning,
 
     error = RedMain,
     onError = Red90,

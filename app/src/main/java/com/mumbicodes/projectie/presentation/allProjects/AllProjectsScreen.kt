@@ -2,6 +2,7 @@ package com.mumbicodes.projectie.presentation.allProjects
 
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -77,7 +78,7 @@ fun AllProjectsScreen(
     BackHandler(modalBottomSheetState.isVisible) {
         scope.launch { modalBottomSheetState.hide() }
     }
-
+/*
     val context = LocalContext.current
     var hasNotificationPermission by remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -96,16 +97,18 @@ fun AllProjectsScreen(
             hasNotificationPermission = isGranted
         }
     )
+    Log.e("Permission granted", hasNotificationPermission.toString())
     LaunchedEffect(key1 = true) {
         if (!hasNotificationPermission) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                /**
-                 * Request for notification permission on API 33
-                 */
+                */
+    /**
+     * Request for notification permission on API 33
+     *//*
                 permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             }
         }
-    }
+    }*/
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -212,6 +215,10 @@ fun AllProjectsScreenContent(
                     ),
                 projects = projectsScreenState.data.projects
             )
+            Spacer(modifier = Modifier.height(Space24dp))
+
+            RequestNotifications()
+
             Spacer(modifier = Modifier.height(Space24dp))
 
             Row(
@@ -346,6 +353,53 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
             },
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable
+fun RequestNotifications() {
+    val context = LocalContext.current
+    var hasNotificationPermission by remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mutableStateOf(
+                ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            )
+        } else mutableStateOf(true)
+    }
+
+    // TODO store this in datastore
+    var hasBeenClicked by remember {
+        mutableStateOf(false)
+    }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            hasNotificationPermission = isGranted
+        }
+    )
+    Log.e("Permission granted", hasNotificationPermission.toString())
+
+    val visibility by remember {
+        mutableStateOf(!hasNotificationPermission && !hasBeenClicked)
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (!hasNotificationPermission && !hasBeenClicked) {
+            // AnimatedVisibility(visible = visibility) {
+            NotificationsAlertComposable(
+                modifier = Modifier
+                    .padding(
+                        start = Space20dp,
+                        end = Space20dp,
+                    ),
+                onClick = {
+                    permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    hasBeenClicked = !hasBeenClicked
+                }
+            )
+        }
     }
 }
 
