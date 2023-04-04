@@ -1,12 +1,16 @@
 package com.mumbicodes.projectie.di
 
 import android.app.Application
+import com.mumbicodes.projectie.data.repository.NotificationPromptDataStoreRepository
 import com.mumbicodes.projectie.data.repository.OnBoardingDataStoreRepository
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.domain.repository.TasksRepository
 import com.mumbicodes.projectie.domain.repository.WorkersRepository
 import com.mumbicodes.projectie.domain.use_case.milestones.*
+import com.mumbicodes.projectie.domain.use_case.notifications.NotificationUseCases
+import com.mumbicodes.projectie.domain.use_case.notifications.ReadNotificationPromptStateUseCase
+import com.mumbicodes.projectie.domain.use_case.notifications.SaveNotificationPromptStateUseCase
 import com.mumbicodes.projectie.domain.use_case.onBoarding.OnBoardingUseCases
 import com.mumbicodes.projectie.domain.use_case.onBoarding.ReadOnBoardingStateUseCase
 import com.mumbicodes.projectie.domain.use_case.onBoarding.SaveOnBoardingStateUseCase
@@ -95,6 +99,15 @@ object UseCaseModule {
         return WorkersUseCases(
             checkDeadlinesUseCase = CheckDeadlinesUseCase(repository),
             cancelWorkerUseCase = CancelWorkerUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationUseCases(repository: NotificationPromptDataStoreRepository): NotificationUseCases {
+        return NotificationUseCases(
+            readNotificationPromptStateUseCase = ReadNotificationPromptStateUseCase(repository),
+            saveNotificationPromptStateUseCase = SaveNotificationPromptStateUseCase(repository)
         )
     }
 }
