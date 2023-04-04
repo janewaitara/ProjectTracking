@@ -45,4 +45,9 @@ object RepositoryModule {
     @Singleton
     fun provideWorkersRepository(@ApplicationContext context: Context): WorkersRepository =
         WorkersRepositoryImpl(context = context)
+
+    @Provides
+    @Singleton
+    fun provideNotificationPromptDataStoreRepository(@ApplicationContext context: Context) =
+        NotificationPromptDataStoreRepository(context = context)
 }
