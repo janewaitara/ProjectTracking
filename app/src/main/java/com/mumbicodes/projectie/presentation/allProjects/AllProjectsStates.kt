@@ -11,6 +11,7 @@ data class AllProjectsStates(
     val filtersStatus: List<String> = filters,
     val selectedProjectStatus: String = filters.first(),
     val isFilterBottomSheetVisible: Boolean = false,
+    val hasRequestedNotificationPermission: Boolean = false,
 )
 
 val filters = listOf(

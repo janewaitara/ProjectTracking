@@ -78,37 +78,6 @@ fun AllProjectsScreen(
     BackHandler(modalBottomSheetState.isVisible) {
         scope.launch { modalBottomSheetState.hide() }
     }
-/*
-    val context = LocalContext.current
-    var hasNotificationPermission by remember {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            mutableStateOf(
-                ContextCompat.checkSelfPermission(
-                    context,
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-            )
-        } else mutableStateOf(true)
-    }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            hasNotificationPermission = isGranted
-        }
-    )
-    Log.e("Permission granted", hasNotificationPermission.toString())
-    LaunchedEffect(key1 = true) {
-        if (!hasNotificationPermission) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                */
-    /**
-     * Request for notification permission on API 33
-     *//*
-                permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-    }*/
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -174,7 +143,10 @@ fun AllProjectsScreen(
                             )
                         )
                     },
-                    windowWidthSizeClass = windowWidthSizeClass
+                    windowWidthSizeClass = windowWidthSizeClass,
+                    onClickNotBtn = {
+                        projectsViewModel.saveNotPromptState(it)
+                    }
                 )
             }
         }
@@ -192,6 +164,7 @@ fun AllProjectsScreenContent(
     searchedText: String,
     onSearchParamChanged: (String) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
+    onClickNotBtn: (Boolean) -> Unit,
 ) {
 
     if (projectsScreenState.data.projects.isEmpty()) {
@@ -217,9 +190,10 @@ fun AllProjectsScreenContent(
             )
             Spacer(modifier = Modifier.height(Space24dp))
 
-            RequestNotifications()
-
-            Spacer(modifier = Modifier.height(Space24dp))
+            RequestNotifications(
+                hasRequestedNotificationPermission = projectsScreenState.data.hasRequestedNotificationPermission,
+                onClickNotBtn = onClickNotBtn
+            )
 
             Row(
                 modifier = Modifier
@@ -357,7 +331,10 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
 }
 
 @Composable
-fun RequestNotifications() {
+fun RequestNotifications(
+    hasRequestedNotificationPermission: Boolean,
+    onClickNotBtn: (Boolean) -> Unit,
+) {
     val context = LocalContext.current
     var hasNotificationPermission by remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -370,10 +347,6 @@ fun RequestNotifications() {
         } else mutableStateOf(true)
     }
 
-    // TODO store this in datastore
-    var hasBeenClicked by remember {
-        mutableStateOf(false)
-    }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
@@ -382,12 +355,8 @@ fun RequestNotifications() {
     )
     Log.e("Permission granted", hasNotificationPermission.toString())
 
-    val visibility by remember {
-        mutableStateOf(!hasNotificationPermission && !hasBeenClicked)
-    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        if (!hasNotificationPermission && !hasBeenClicked) {
-            // AnimatedVisibility(visible = visibility) {
+        if (!hasRequestedNotificationPermission && !hasNotificationPermission) {
             NotificationsAlertComposable(
                 modifier = Modifier
                     .padding(
@@ -396,9 +365,13 @@ fun RequestNotifications() {
                     ),
                 onClick = {
                     permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                    hasBeenClicked = !hasBeenClicked
+
+                    // TODO research how to this after the launcher Modal is dismissed
+                    onClickNotBtn(!hasNotificationPermission)
                 }
             )
+
+            Spacer(modifier = Modifier.height(Space24dp))
         }
     }
 }
