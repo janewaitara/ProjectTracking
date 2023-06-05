@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -54,7 +53,6 @@ import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AllProjectsScreen(
