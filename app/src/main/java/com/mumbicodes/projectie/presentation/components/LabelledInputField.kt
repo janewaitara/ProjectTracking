@@ -23,6 +23,7 @@ import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
 import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskTextFieldState
 import com.mumbicodes.projectie.presentation.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LabelledInputField(
     modifier: Modifier = Modifier,
@@ -61,7 +62,7 @@ fun LabelledInputField(
                 )
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                 containerColor = MaterialTheme.colorScheme.surface,
                 cursorColor = MaterialTheme.colorScheme.primary,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -73,6 +74,7 @@ fun LabelledInputField(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LabelledInputFieldWithIcon(
     modifier: Modifier = Modifier,
@@ -119,7 +121,7 @@ fun LabelledInputFieldWithIcon(
                 )
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                 containerColor = MaterialTheme.colorScheme.surface,
                 cursorColor = MaterialTheme.colorScheme.primary,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,

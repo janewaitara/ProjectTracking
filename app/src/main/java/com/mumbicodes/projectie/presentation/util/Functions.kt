@@ -4,7 +4,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 fun provideFormatter(pattern: String) = DateTimeFormatter.ofPattern(pattern)
@@ -53,6 +55,11 @@ fun String.toLocalDate(pattern: String): LocalDate {
     val formatter = provideFormatter(pattern)
     return LocalDate.parse(this, formatter)
 }
+
+fun Long.fromMillisToLocalDate(): LocalDate =
+    Instant.ofEpochMilli(this).atZone(
+        ZoneId.systemDefault()
+    ).toLocalDate()
 
 fun TaskState.toTask() = Task(
     milestoneId = milestoneId,

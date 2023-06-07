@@ -38,6 +38,7 @@ fun NavigationDrawerComposable(
     Column(
         modifier = Modifier
             .fillMaxHeight()
+            .width(360.dp)
             .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = Space24dp, vertical = Space32dp),
     ) {

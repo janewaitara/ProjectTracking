@@ -73,4 +73,9 @@
     <string name="today">Ends today </string>
     <string name="tomorrow">Ends tomorrow </string>
     <string name="yesterday">Ended Yesterday </string>
+    <string name="error_checking_milestone_Deadline">Error checking milestone deadline</string>
+    <string name="error_checking_project_Deadline">Error checking Projects deadline</string>
+    <string name="allow_notifications">Allow</string>
+    <string name="notification_reason">We will notify you when your projects and milestones are due</string>
+    <string name="deny_notifications">Deny</string>
 </resources>

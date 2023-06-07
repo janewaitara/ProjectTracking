@@ -3,10 +3,7 @@ package com.mumbicodes.projectie.presentation.add_edit_project
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -26,7 +23,7 @@ import com.mumbicodes.projectie.presentation.components.PrimaryButton
 import com.mumbicodes.projectie.presentation.theme.ProjectTrackingTheme
 import com.mumbicodes.projectie.presentation.theme.Space20dp
 import com.mumbicodes.projectie.presentation.theme.Space48dp
-import com.squaredem.composecalendar.ComposeCalendar
+import com.mumbicodes.projectie.presentation.util.fromMillisToLocalDate
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
@@ -129,6 +126,7 @@ fun ScreenHeader(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FieldForms(
     modifier: Modifier = Modifier,
@@ -142,6 +140,8 @@ fun FieldForms(
     isCalendarVisible: Boolean,
     onSaveProject: () -> Unit,
 ) {
+
+    val datePickerState = rememberDatePickerState()
 
     Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(Space20dp))
@@ -187,13 +187,30 @@ fun FieldForms(
             )
         }
         if (isCalendarVisible) {
-            ComposeCalendar(
-                minDate = LocalDate.now(),
-                onDone = { userDateSelection ->
-                    onDeadlineChanged(userDateSelection)
+            DatePickerDialog(
+                onDismissRequest = onDeadlineClicked,
+                confirmButton = {
+                    TextButton(onClick = {
+                        if (datePickerState.selectedDateMillis == null) {
+                            onDeadlineClicked()
+                        } else {
+                            onDeadlineChanged(datePickerState.selectedDateMillis!!.fromMillisToLocalDate())
+                        }
+                    }) {
+                        Text("Ok")
+                    }
                 },
-                onDismiss = onDeadlineClicked
-            )
+                dismissButton = {
+                    TextButton(onClick = onDeadlineClicked) {
+                        Text("Cancel")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    showModeToggle = false,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(Space48dp))

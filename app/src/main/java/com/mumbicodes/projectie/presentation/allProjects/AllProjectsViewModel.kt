@@ -1,11 +1,13 @@
 package com.mumbicodes.projectie.presentation.allProjects
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Project
+import com.mumbicodes.projectie.domain.use_case.notifications.NotificationUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.domain.util.OrderType
 import com.mumbicodes.projectie.domain.util.ProjectsOrder
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AllProjectsViewModel @Inject constructor(
     private val projectsUseCases: ProjectsUseCases,
+    private val notificationUseCases: NotificationUseCases,
     private val appContext: Application,
 ) : ViewModel() {
 
@@ -34,6 +37,7 @@ class AllProjectsViewModel @Inject constructor(
 
     init {
         getProjects(ProjectsOrder.DateAdded(OrderType.Descending), "All")
+        readNotPromptState()
     }
 
     fun onEvent(projectsEvent: AllProjectsEvent) {
@@ -138,5 +142,24 @@ class AllProjectsViewModel @Inject constructor(
             ),
             isLoading = false
         )
+    }
+
+    private fun readNotPromptState() {
+        viewModelScope.launch {
+            notificationUseCases.readNotificationPromptStateUseCase.invoke().collect { isPrompted ->
+                _state.value = state.value.copy(
+                    data = state.value.data.copy(
+                        hasRequestedNotificationPermission = isPrompted
+                    )
+                )
+                Log.e("Notification Permission", isPrompted.toString())
+            }
+        }
+    }
+
+    fun saveNotPromptState(isPrompted: Boolean) {
+        viewModelScope.launch {
+            notificationUseCases.saveNotificationPromptStateUseCase(isPrompted)
+        }
     }
 }

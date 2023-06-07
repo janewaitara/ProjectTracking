@@ -1,6 +1,11 @@
 package com.mumbicodes.projectie.presentation.allProjects
 
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -10,19 +15,18 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,7 +36,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.*
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.util.OrderType
@@ -42,10 +48,7 @@ import com.mumbicodes.projectie.presentation.allProjects.components.FilterBottom
 import com.mumbicodes.projectie.presentation.allProjects.components.ProjectItem
 import com.mumbicodes.projectie.presentation.allProjects.components.SearchBar
 import com.mumbicodes.projectie.presentation.allProjects.components.StaggeredVerticalGrid
-import com.mumbicodes.projectie.presentation.components.EmptyStateSlot
-import com.mumbicodes.projectie.presentation.components.ErrorStateSlot
-import com.mumbicodes.projectie.presentation.components.FilterChip
-import com.mumbicodes.projectie.presentation.components.ShimmerEffectComposable
+import com.mumbicodes.projectie.presentation.components.*
 import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
 import kotlinx.coroutines.launch
@@ -138,7 +141,10 @@ fun AllProjectsScreen(
                             )
                         )
                     },
-                    windowWidthSizeClass = windowWidthSizeClass
+                    windowWidthSizeClass = windowWidthSizeClass,
+                    onClickNotBtn = {
+                        projectsViewModel.saveNotPromptState(it)
+                    }
                 )
             }
         }
@@ -156,6 +162,7 @@ fun AllProjectsScreenContent(
     searchedText: String,
     onSearchParamChanged: (String) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
+    onClickNotBtn: (Boolean) -> Unit,
 ) {
 
     if (projectsScreenState.data.projects.isEmpty()) {
@@ -180,6 +187,11 @@ fun AllProjectsScreenContent(
                 projects = projectsScreenState.data.projects
             )
             Spacer(modifier = Modifier.height(Space24dp))
+
+            RequestNotifications(
+                hasRequestedNotificationPermission = projectsScreenState.data.hasRequestedNotificationPermission,
+                onClickNotBtn = onClickNotBtn
+            )
 
             Row(
                 modifier = Modifier
@@ -313,6 +325,52 @@ fun WelcomeMessageSection(modifier: Modifier = Modifier, projects: List<Project>
             },
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable
+fun RequestNotifications(
+    hasRequestedNotificationPermission: Boolean,
+    onClickNotBtn: (Boolean) -> Unit,
+) {
+    val context = LocalContext.current
+    var hasNotificationPermission by remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mutableStateOf(
+                ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            )
+        } else mutableStateOf(true)
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            hasNotificationPermission = isGranted
+        }
+    )
+    Log.e("Permission granted", hasNotificationPermission.toString())
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (!hasRequestedNotificationPermission && !hasNotificationPermission) {
+            NotificationsAlertComposable(
+                modifier = Modifier
+                    .padding(
+                        start = Space20dp,
+                        end = Space20dp,
+                    ),
+                onClick = {
+                    permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+
+                    // TODO research how to this after the launcher Modal is dismissed
+                    onClickNotBtn(!hasNotificationPermission)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(Space24dp))
+        }
     }
 }
 

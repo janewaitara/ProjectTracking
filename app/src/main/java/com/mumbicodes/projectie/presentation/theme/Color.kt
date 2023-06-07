@@ -27,7 +27,13 @@ val RedMain = Color(0xFFFB000D) // Red49
 val Red80 = Color(0xFFff999e)
 val Red90 = Color(0xFFffcccf)
 
+val DarkestWarning = Color(0xFF332200)
+val DarkerWarning = Color(0xFF664400)
+val DarkWarning = Color(0xFFb37600)
 val Warning = Color(0xFFFFA900)
+val SubtleWarning = Color(0xFFffe0a2)
+// val SubtleWarning = Color(0xFFffd88b)
+// val SubtleWarning = Color(0xFFffd074)
 val LightWarning = Color(0xFFFFF6E5)
 
 val Success = Color(0xFF00A49E)
