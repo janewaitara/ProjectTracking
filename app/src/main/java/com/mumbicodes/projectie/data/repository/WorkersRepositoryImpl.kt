@@ -7,6 +7,7 @@ import com.mumbicodes.projectie.domain.workers.CheckMilestoneDeadlineWorker
 import com.mumbicodes.projectie.domain.workers.CheckProjectDeadlineIsInTwoDaysWorker
 import com.mumbicodes.projectie.domain.workers.CheckProjectDeadlineWorker
 import com.mumbicodes.projectie.presentation.util.PROJECTS_DEADLINE_WORK_NAME
+import com.mumbicodes.projectie.presentation.util.PROJECTS_WORKER_TAG
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -34,6 +35,7 @@ class WorkersRepositoryImpl(context: Context) : WorkersRepository {
 
         val projectsWorker = OneTimeWorkRequestBuilder<CheckProjectDeadlineWorker>()
             .setInitialDelay(duration.seconds, TimeUnit.SECONDS)
+            .addTag(PROJECTS_WORKER_TAG)
             .build()
         val projectsDeadlineInTwoDaysWorker =
             OneTimeWorkRequestBuilder<CheckProjectDeadlineIsInTwoDaysWorker>()
