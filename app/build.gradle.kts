@@ -126,6 +126,9 @@ dependencies {
     // Accompanist permissions
     implementation(Libraries.accompanistPermissions)
 
+    // Livedata
+    implementation(Libraries.livedata)
+
     // Unit tests
     testImplementation(TestLibraries.junit4)
 

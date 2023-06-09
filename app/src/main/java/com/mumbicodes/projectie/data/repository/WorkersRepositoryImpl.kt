@@ -1,6 +1,7 @@
 package com.mumbicodes.projectie.data.repository
 
 import android.content.Context
+import androidx.lifecycle.asFlow
 import androidx.work.*
 import com.mumbicodes.projectie.domain.repository.WorkersRepository
 import com.mumbicodes.projectie.domain.workers.CheckMilestoneDeadlineWorker
@@ -8,6 +9,8 @@ import com.mumbicodes.projectie.domain.workers.CheckProjectDeadlineIsInTwoDaysWo
 import com.mumbicodes.projectie.domain.workers.CheckProjectDeadlineWorker
 import com.mumbicodes.projectie.presentation.util.PROJECTS_DEADLINE_WORK_NAME
 import com.mumbicodes.projectie.presentation.util.PROJECTS_WORKER_TAG
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -17,6 +20,10 @@ import java.util.concurrent.TimeUnit
 class WorkersRepositoryImpl(context: Context) : WorkersRepository {
 
     private val workManager = WorkManager.getInstance(context)
+    override val projectsWorkInfo: Flow<WorkInfo> =
+        workManager.getWorkInfosByTagLiveData(PROJECTS_WORKER_TAG).asFlow().mapNotNull {
+            if (it.isNotEmpty()) it.first() else null
+        }
 
     /**
      * Create the WorkRequests to check for projects and milestones deadlines and show a notification
