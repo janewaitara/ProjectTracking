@@ -21,6 +21,7 @@ import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TransformTasksUseCase
 import com.mumbicodes.projectie.domain.use_case.workers.CancelWorkerUseCase
 import com.mumbicodes.projectie.domain.use_case.workers.CheckDeadlinesUseCase
+import com.mumbicodes.projectie.domain.use_case.workers.CheckWorkInfoStateUseCase
 import com.mumbicodes.projectie.domain.use_case.workers.WorkersUseCases
 import dagger.Module
 import dagger.Provides
@@ -98,7 +99,8 @@ object UseCaseModule {
     fun provideWorkersUseCases(repository: WorkersRepository): WorkersUseCases {
         return WorkersUseCases(
             checkDeadlinesUseCase = CheckDeadlinesUseCase(repository),
-            cancelWorkerUseCase = CancelWorkerUseCase(repository)
+            cancelWorkerUseCase = CancelWorkerUseCase(repository),
+            checkWorkInfoStateUseCase = CheckWorkInfoStateUseCase(repository),
         )
     }
 
