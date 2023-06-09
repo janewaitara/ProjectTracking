@@ -9,10 +9,13 @@ import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.use_case.notifications.NotificationUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
+import com.mumbicodes.projectie.domain.use_case.workers.WorkersUseCases
 import com.mumbicodes.projectie.domain.util.OrderType
 import com.mumbicodes.projectie.domain.util.ProjectsOrder
+import com.mumbicodes.projectie.domain.util.WorkerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -22,6 +25,7 @@ import javax.inject.Inject
 class AllProjectsViewModel @Inject constructor(
     private val projectsUseCases: ProjectsUseCases,
     private val notificationUseCases: NotificationUseCases,
+    private val workersUserUseCases: WorkersUseCases,
     private val appContext: Application,
 ) : ViewModel() {
 
@@ -38,6 +42,7 @@ class AllProjectsViewModel @Inject constructor(
     init {
         getProjects(ProjectsOrder.DateAdded(OrderType.Descending), "All")
         readNotPromptState()
+        checkWorkInfoState()
     }
 
     fun onEvent(projectsEvent: AllProjectsEvent) {
@@ -50,22 +55,26 @@ class AllProjectsViewModel @Inject constructor(
                 }
                 getProjects(projectsEvent.projectsOrder, state.value.data.selectedProjectStatus)
             }
+
             is AllProjectsEvent.ResetProjectsOrder -> {
 
                 getProjects(projectsEvent.projectsOrder, state.value.data.selectedProjectStatus)
             }
+
             is AllProjectsEvent.DeleteProject -> {
                 viewModelScope.launch {
                     projectsUseCases.deleteProjectUseCase(projectsEvent.project)
                     recentlyDeletedProject = projectsEvent.project
                 }
             }
+
             is AllProjectsEvent.RestoreProject -> {
                 viewModelScope.launch {
                     projectsUseCases.addProjectsUseCase(recentlyDeletedProject ?: return@launch)
                     recentlyDeletedProject = null
                 }
             }
+
             is AllProjectsEvent.SelectProjectStatus -> {
                 if (state.value.data.selectedProjectStatus == projectsEvent.projectStatus) {
                     return
@@ -83,6 +92,7 @@ class AllProjectsViewModel @Inject constructor(
                     )
                 )
             }
+
             is AllProjectsEvent.SearchProject -> {
                 _searchParam.value = projectsEvent.searchParam
 
@@ -160,6 +170,22 @@ class AllProjectsViewModel @Inject constructor(
     fun saveNotPromptState(isPrompted: Boolean) {
         viewModelScope.launch {
             notificationUseCases.saveNotificationPromptStateUseCase(isPrompted)
+        }
+    }
+
+    /**
+     * For users that had installed the app before the worker was enqueued on the onBoarding screen
+     * The worker will be build from here
+     * */
+    private fun checkWorkInfoState() {
+        viewModelScope.launch {
+            workersUserUseCases.checkWorkInfoStateUseCase.invoke()
+                .collectLatest { projectsWorkerState ->
+                    when (projectsWorkerState) {
+                        WorkerState.STARTED -> Log.e("Worker State", projectsWorkerState.toString())
+                        WorkerState.NOT_STARTED -> workersUserUseCases.checkDeadlinesUseCase.invoke()
+                    }
+                }
         }
     }
 }
