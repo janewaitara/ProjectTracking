@@ -182,7 +182,7 @@ class AllProjectsViewModel @Inject constructor(
             workersUserUseCases.checkWorkInfoStateUseCase.invoke()
                 .collectLatest { projectsWorkerState ->
                     when (projectsWorkerState) {
-                        WorkerState.STARTED -> Log.e("Worker State", projectsWorkerState.toString())
+                        WorkerState.STARTED -> {} // do nothing
                         WorkerState.NOT_STARTED -> workersUserUseCases.checkDeadlinesUseCase.invoke()
                     }
                 }
