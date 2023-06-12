@@ -67,6 +67,9 @@ object Versions {
 
     //WorkManager
     const val workManager = "2.8.0"
+
+    //Livedata
+    const val livedata = "2.6.1"
 }
 
 object BuildPlugins {
@@ -160,6 +163,9 @@ object Libraries {
 
     //WorkManager
     const val workManager = "androidx.work:work-runtime-ktx:${Versions.workManager}"
+
+    //Livedata
+    const val livedata = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.livedata}"
 }
 
 object TestLibraries {
