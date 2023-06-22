@@ -2,6 +2,10 @@
 
 A Jetpack Compose App which allows users(humans) to track their projects progress. The app allows the user to break down their projects into easier manageable tasks where they can easily update their tasks' progress.
 
+# Playstore
+
+[![Download it on Google Play](https://raw.githubusercontent.com/tamzi/ReadMe-MasterTemplates/master/android/images/gplay.png)](https://play.google.com/store/apps/details?id=com.mumbicodes.projectie)
+
 # Designs
 There is a slight mismatch between the designs and the app implementation: The app does not have project's collaboration - no team members and authentication.
 
