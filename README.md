@@ -60,6 +60,7 @@ The app uses MVVM (Model View View Model) architecture to have a unidirectional 
 
 - [ ] Write tests
 - [ ] Performance optimization
+- [ ] Configure detekt
 - [ ] Complete large screen design implementation 
 - [ ] Improve notifications feature to show notifications on the notifications screen
 - [ ] User Experience improvements
