@@ -36,12 +36,18 @@ fun AddAndEditMilestoneScreen(
     val passedMilestoneId = milestonesViewModel.passedMilestoneId
     val isCalendarVisible = milestonesViewModel.isCalendarVisible.value
     val tasksState = milestonesViewModel.stateTasks.distinctBy { it.taskId }
+    val snackbarHostState = remember{SnackbarHostState()}
 
     LaunchedEffect(key1 = true) {
         milestonesViewModel.uiEvents.collectLatest { uIEvents ->
             when (uIEvents) {
                 is UIEvents.ShowSnackBar -> {
-                    // TODO
+                    uIEvents.message.let {
+                        snackbarHostState.showSnackbar(
+                            message = it,
+                            duration = SnackbarDuration.Long
+                        )
+                    }
                 }
                 is UIEvents.AddEditMilestone -> {
                     onAddEditMilestone()
@@ -152,6 +158,18 @@ fun AddAndEditMilestoneScreen(
                 milestoneStartDateState.isNotBlank() &&
                 milestoneEndDateState.isNotBlank()
         )
+        SnackbarHost(
+            hostState = snackbarHostState,
+        ) { data ->
+            Snackbar(  containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .fillMaxWidth(),
+                content = { Text(data.visuals.message) },
+                action = {}
+            )
+        }
 
         Spacer(modifier = Modifier.height(Space24dp))
     }

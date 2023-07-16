@@ -18,6 +18,7 @@ import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.projectie.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -175,6 +176,9 @@ class AddEditMilestonesViewModel @Inject constructor(
                             status = currentMilestoneStatus,
                         )
                     )
+
+                    uiEvents.emit(UIEvents.ShowSnackBar("Your milestone added successfully"))
+                    delay(2000)
 
                     tasksUseCases.addTasksUseCase(
                         tasksUseCases.transformTasksUseCase.transformTaskStatesToTasks(
