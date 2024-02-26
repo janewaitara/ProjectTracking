@@ -4,6 +4,9 @@ import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.util.OrderType
 import com.mumbicodes.projectie.domain.util.ProjectsOrder
 
+/**
+ * @param selectedProjectOrder  Holds the user selection until they press filter
+ * */
 data class AllProjectsStates(
     val projects: List<Project> = emptyList(),
     val filteredProjects: List<Project> = emptyList(),
@@ -12,6 +15,8 @@ data class AllProjectsStates(
     val selectedProjectStatus: String = filters.first(),
     val isFilterBottomSheetVisible: Boolean = false,
     val hasRequestedNotificationPermission: Boolean = false,
+    val selectedProjectOrder: ProjectsOrder = projectsOrder,
+    val searchParam: String = "",
 )
 
 val filters = listOf(
