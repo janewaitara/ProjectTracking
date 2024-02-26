@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.mumbicodes.projectie.presentation.allProjects.AllProjectsScreen
+import com.mumbicodes.projectie.presentation.allProjects.AllProjectsScreenRoute
 import com.mumbicodes.projectie.presentation.projectDetails.ProjectDetailsScreen
 import com.mumbicodes.projectie.presentation.theme.Space20dp
 import com.mumbicodes.projectie.presentation.util.ContentType
@@ -32,7 +32,7 @@ fun ProjectsScreen(
             windowWidthSizeClass = windowWidthSizeClass
         )
     } else {
-        AllProjectsScreen(
+        AllProjectsScreenRoute(
             onClickProject = onClickProject,
             windowWidthSizeClass = windowWidthSizeClass
         )
@@ -52,7 +52,7 @@ fun ProjectsListDetailComposable(
                 .weight(1f)
                 .fillMaxHeight(),
         ) {
-            AllProjectsScreen(
+            AllProjectsScreenRoute(
                 onClickProject = { projectIdSelected ->
                     projectId.value = projectIdSelected
                 },

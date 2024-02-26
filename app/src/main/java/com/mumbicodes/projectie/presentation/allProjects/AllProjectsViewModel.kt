@@ -32,9 +32,6 @@ class AllProjectsViewModel @Inject constructor(
     private val _state = mutableStateOf(AllProjectsScreenStates())
     val state = _state
 
-    private val _searchParam = mutableStateOf("")
-    val searchParam = _searchParam
-
     private var recentlyDeletedProject: Project? = null
 
     private var getProjectsJob: Job? = null
@@ -48,12 +45,15 @@ class AllProjectsViewModel @Inject constructor(
     fun onEvent(projectsEvent: AllProjectsEvent) {
         when (projectsEvent) {
             is AllProjectsEvent.OrderProjects -> {
-                if (state.value.data.projectsOrder::class == projectsEvent.projectsOrder::class &&
-                    state.value.data.projectsOrder.orderType == projectsEvent.projectsOrder.orderType
+                if (state.value.data.projectsOrder::class == state.value.data.selectedProjectOrder::class &&
+                    state.value.data.projectsOrder.orderType == state.value.data.selectedProjectOrder.orderType
                 ) {
                     return
                 }
-                getProjects(projectsEvent.projectsOrder, state.value.data.selectedProjectStatus)
+                getProjects(
+                    state.value.data.selectedProjectOrder,
+                    state.value.data.selectedProjectStatus
+                )
             }
 
             is AllProjectsEvent.ResetProjectsOrder -> {
@@ -81,7 +81,7 @@ class AllProjectsViewModel @Inject constructor(
                 }
                 state.value.data.projects.filterProjects(
                     projectStatus = projectsEvent.projectStatus,
-                    searchParam = searchParam.value
+                    searchParam = state.value.data.searchParam
                 )
             }
 
@@ -94,11 +94,22 @@ class AllProjectsViewModel @Inject constructor(
             }
 
             is AllProjectsEvent.SearchProject -> {
-                _searchParam.value = projectsEvent.searchParam
-
+                _state.value = state.value.copy(
+                    data = state.value.data.copy(
+                        searchParam = projectsEvent.searchParam
+                    )
+                )
                 state.value.data.projects.filterProjects(
                     projectStatus = state.value.data.selectedProjectStatus,
                     searchParam = projectsEvent.searchParam,
+                )
+            }
+
+            is AllProjectsEvent.UpdateProjectOrder -> {
+                _state.value = state.value.copy(
+                    data = state.value.data.copy(
+                        selectedProjectOrder = projectsEvent.projectsOrder
+                    )
                 )
             }
         }
@@ -125,7 +136,7 @@ class AllProjectsViewModel @Inject constructor(
                             ),
                             isLoading = false
                         )
-                        projects.filterProjects(projectStatus, searchParam.value)
+                        projects.filterProjects(projectStatus, state.value.data.searchParam)
                     }
                     .launchIn(viewModelScope)
         }
