@@ -4,7 +4,9 @@ import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
 
 sealed class AllMilestonesEvents {
-    data class OrderMilestones(val milestonesOrder: AllMilestonesOrder) : AllMilestonesEvents()
+    object OrderMilestones : AllMilestonesEvents()
+
+    data class UpdateMilestoneOrder(val milestonesOrder: AllMilestonesOrder) : AllMilestonesEvents()
 
     data class ResetMilestonesOrder(val milestonesOrder: AllMilestonesOrder) : AllMilestonesEvents()
 

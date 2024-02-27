@@ -47,19 +47,96 @@ import com.mumbicodes.projectie.presentation.components.ShimmerEffectComposable
 import com.mumbicodes.projectie.presentation.projectDetails.MilestoneDetailsBottomSheetContent
 import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AllMilestonesScreens(
+fun AllMilestonesScreenRoute(
     allMilestonesViewModel: AllMilestonesViewModel = hiltViewModel(),
     onModifyMilestone: (Int, Int) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     val screenState = allMilestonesViewModel.screenStates.value
-    val searchedTextState = allMilestonesViewModel.searchParam.value
+    val uiEvents = allMilestonesViewModel.uiEvents
+
+    AllMilestonesScreen(
+        screenState = screenState,
+        uiEvents = uiEvents,
+        onModifyMilestone = onModifyMilestone,
+        onFiltersApplied = {
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.OrderMilestones
+            )
+        },
+        onFiltersReset = {
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.ResetMilestonesOrder(AllMilestonesOrder.MostUrgent)
+            )
+        },
+        onDeleteClicked = { milestone ->
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.DeleteMilestone(
+                    milestone
+                )
+            )
+        },
+        onTaskClicked = { taskId ->
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.ToggleTaskState(
+                    taskId
+                )
+            )
+        },
+        onClickMilestone = { milestoneId ->
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.PassMilestone(
+                    milestoneId = milestoneId
+                )
+            )
+        },
+        onClickFilterStatus = { selectedFilterStatus ->
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.SelectMilestoneStatus(selectedFilterStatus)
+            )
+        },
+        onSearchParamChanged = { searchParam ->
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.SearchMilestone(
+                    searchParam = searchParam
+                )
+            )
+        },
+        onMilestoneOrderUpdated = { milestoneOrder ->
+            allMilestonesViewModel.onEvent(
+                AllMilestonesEvents.UpdateMilestoneOrder(
+                    milestoneOrder
+                )
+            )
+        },
+        windowWidthSizeClass = windowWidthSizeClass,
+
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AllMilestonesScreen(
+    screenState: ScreenStates,
+    uiEvents: MutableSharedFlow<AllMilestonesUIEvents>,
+    onModifyMilestone: (Int, Int) -> Unit,
+    onFiltersApplied: () -> Unit,
+    onFiltersReset: () -> Unit,
+    onDeleteClicked: (Milestone) -> Unit,
+    onTaskClicked: (Int) -> Unit = {},
+    onClickMilestone: (Int) -> Unit,
+    onClickFilterStatus: (String) -> Unit,
+    onSearchParamChanged: (String) -> Unit,
+    onMilestoneOrderUpdated: (AllMilestonesOrder) -> Unit,
+    windowWidthSizeClass: WindowWidthSizeClass,
+) {
+
     val modalBottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -71,13 +148,8 @@ fun AllMilestonesScreens(
         mutableStateOf(BottomSheetType.MILESTONE_DETAILS)
     }
 
-    // Holds the user selection until they press filter - important to show user selection on radios
-    val selectedMilestonesOrder = remember {
-        mutableStateOf(screenState.data.milestonesOrder)
-    }
-
     LaunchedEffect(key1 = true) {
-        allMilestonesViewModel.uiEvents.collectLatest { UIEvents ->
+        uiEvents.collectLatest { UIEvents ->
             when (UIEvents) {
                 is AllMilestonesUIEvents.DeleteMilestone -> {
                     scope.launch {
@@ -104,39 +176,28 @@ fun AllMilestonesScreens(
                 BottomSheetType.FILTER -> {
                     FilterMilestonesBottomSheetContent(
                         milestonesOrder = screenState.data.milestonesOrder,
-                        selectedMilestonesOrder = selectedMilestonesOrder.value,
-                        onOrderChange = { milestoneOrder ->
-                            selectedMilestonesOrder.value = milestoneOrder
-                        },
+                        selectedMilestonesOrder = screenState.data.selectedMilestoneOrder,
+                        onOrderChange = onMilestoneOrderUpdated,
                         onFiltersApplied = {
-                            allMilestonesViewModel.onEvent(
-                                AllMilestonesEvents.OrderMilestones(
-                                    selectedMilestonesOrder.value
-                                )
-                            )
+                            onFiltersApplied()
                             scope.launch {
                                 modalBottomSheetState.hide()
                             }
                         },
                         onFiltersReset = {
-                            allMilestonesViewModel.onEvent(
-                                AllMilestonesEvents.ResetMilestonesOrder(AllMilestonesOrder.MostUrgent)
-                            )
+                            onFiltersReset()
                             scope.launch {
                                 modalBottomSheetState.hide()
                             }
                         }
                     )
                 }
+
                 BottomSheetType.MILESTONE_DETAILS -> {
                     MilestoneDetailsBottomSheetContent(
                         milestoneWithTasks = screenState.data.mileStone,
                         onDeleteClicked = { milestone ->
-                            allMilestonesViewModel.onEvent(
-                                AllMilestonesEvents.DeleteMilestone(
-                                    milestone
-                                )
-                            )
+                            onDeleteClicked(milestone)
                             scope.launch {
                                 modalBottomSheetState.hide()
                             }
@@ -151,13 +212,7 @@ fun AllMilestonesScreens(
                                 milestoneId
                             )
                         },
-                        onTaskClicked = { taskId ->
-                            allMilestonesViewModel.onEvent(
-                                AllMilestonesEvents.ToggleTaskState(
-                                    taskId
-                                )
-                            )
-                        },
+                        onTaskClicked = onTaskClicked,
                     )
                 }
             }
@@ -178,11 +233,7 @@ fun AllMilestonesScreens(
                     ),
                     milestonesStates = screenState,
                     onClickMilestone = { milestoneId ->
-                        allMilestonesViewModel.onEvent(
-                            AllMilestonesEvents.PassMilestone(
-                                milestoneId = milestoneId
-                            )
-                        )
+                        onClickMilestone(milestoneId)
 
                         scope.launch {
                             modalBottomSheetState.show()
@@ -193,19 +244,9 @@ fun AllMilestonesScreens(
                             modalBottomSheetState.show()
                         }
                     },
-                    onClickFilterStatus = { selectedFilterStatus ->
-                        allMilestonesViewModel.onEvent(
-                            AllMilestonesEvents.SelectMilestoneStatus(selectedFilterStatus)
-                        )
-                    },
-                    searchedText = searchedTextState,
-                    onSearchParamChanged = { searchParam ->
-                        allMilestonesViewModel.onEvent(
-                            AllMilestonesEvents.SearchMilestone(
-                                searchParam = searchParam
-                            )
-                        )
-                    },
+                    onClickFilterStatus = onClickFilterStatus,
+                    searchedText = screenState.data.searchParam,
+                    onSearchParamChanged = onSearchParamChanged,
                     windowWidthSizeClass = windowWidthSizeClass,
                     passBottomSheetType = { passedBottomSheetType ->
                         bottomSheetType.value = passedBottomSheetType
@@ -343,7 +384,8 @@ fun AllMilestonesScreenContent(
 
                         AllMilestonesItem(
                             milestoneWithTasks = milestoneWithTasks,
-                            projectName = milestonesStates.data.milestonesProjectName[milestoneWithTasks.milestone.milestoneId] ?: "No project name",
+                            projectName = milestonesStates.data.milestonesProjectName[milestoneWithTasks.milestone.milestoneId]
+                                ?: "No project name",
                             onClickMilestone = {
                                 onClickMilestone(it)
 
@@ -419,14 +461,17 @@ fun EmptyState(
             illustration = R.drawable.ic_incomplete_illustration
             emptyText = R.string.milestonesNotStartedEmptyText
         }
+
         stringResource(id = R.string.inProgress) -> {
             illustration = R.drawable.ic_inprogress_illustration
             emptyText = R.string.milestonesInProgressEmptyText
         }
+
         stringResource(id = R.string.completed) -> {
             illustration = R.drawable.ic_complete_progress_illustration
             emptyText = R.string.milestonesCompleteEmptyText
         }
+
         else -> {
             illustration = R.drawable.add_project
             emptyText = R.string.allProjectsEmptyText
