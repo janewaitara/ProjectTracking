@@ -6,8 +6,11 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.mumbicodes.projectie.R
+import com.mumbicodes.projectie.data.helpers.LocalResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
+import com.mumbicodes.projectie.domain.util.OrderType
+import com.mumbicodes.projectie.domain.util.ProjectsOrder
 import com.mumbicodes.projectie.presentation.util.toLocalDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -27,28 +30,38 @@ class CheckProjectDeadlineWorker @AssistedInject constructor(
 
         return withContext(Dispatchers.IO) {
             return@withContext try {
-                val allProjects = projectsRepository.getAllProjects()
+                val allProjects = projectsRepository.getAllProjects(
+                    projectOrder = ProjectsOrder.DateAdded(
+                        OrderType.Descending
+                    )
+                )
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    allProjects.collectLatest { projects ->
-                        val deadlineIsTodayProjects = async { checkDeadlineIsToday(projects) }
-                        deadlineIsTodayProjects.await().let { deadlineProjects ->
-                            if (deadlineProjects.isNotEmpty() && deadlineProjects.size > 1) {
-                                // Grouped Notifications
-                                makeNotification(
-                                    notificationType = NotificationType.PROJECTS,
-                                    notificationId = deadlineProjects.first().projectId,
-                                    message = "You have ${deadlineProjects.size} projects ending Today",
-                                    context = applicationContext,
-                                )
-                            } else if (deadlineProjects.size == 1) {
-                                // One notification
-                                makeNotification(
-                                    notificationType = NotificationType.PROJECTS,
-                                    notificationId = deadlineProjects.first().projectId,
-                                    message = "${deadlineProjects.first().projectName} deadline is today and it's ${deadlineProjects.first().projectStatus}",
-                                    context = applicationContext,
-                                )
+                    when (allProjects) {
+                        is LocalResult.Error -> Result.failure()
+                        is LocalResult.Success -> {
+                            allProjects.data.collectLatest { projects ->
+                                val deadlineIsTodayProjects =
+                                    async { checkDeadlineIsToday(projects) }
+                                deadlineIsTodayProjects.await().let { deadlineProjects ->
+                                    if (deadlineProjects.isNotEmpty() && deadlineProjects.size > 1) {
+                                        // Grouped Notifications
+                                        makeNotification(
+                                            notificationType = NotificationType.PROJECTS,
+                                            notificationId = deadlineProjects.first().projectId,
+                                            message = "You have ${deadlineProjects.size} projects ending Today",
+                                            context = applicationContext,
+                                        )
+                                    } else if (deadlineProjects.size == 1) {
+                                        // One notification
+                                        makeNotification(
+                                            notificationType = NotificationType.PROJECTS,
+                                            notificationId = deadlineProjects.first().projectId,
+                                            message = "${deadlineProjects.first().projectName} deadline is today and it's ${deadlineProjects.first().projectStatus}",
+                                            context = applicationContext,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
