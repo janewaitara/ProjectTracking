@@ -5,6 +5,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.projectie.data.helpers.LocalResult
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.Task
@@ -175,24 +176,33 @@ class ProjectDetailsViewModel @Inject constructor(
      * Needed when someone deletes a project before navigating up
      * */
     private fun getProject(projectId: Int, milestoneStatus: String) {
-        getProjectJob?.cancel()
-        getProjectJob = projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
-            .onEach { projectWithMilestones ->
-                _state.value = state.value.copy(
-                    project = projectWithMilestones?.project ?: Project(
-                        projectId = 0,
-                        projectName = "",
-                        projectDesc = "",
-                        projectDeadline = "",
-                        projectStatus = "",
-                        timeStamp = 1
-                    ),
-                    milestones = projectWithMilestones?.milestones ?: emptyList(),
-                    filteredMilestones = projectWithMilestones?.milestones ?: emptyList(),
-                    selectedMilestoneStatus = milestoneStatus,
-                )
+        viewModelScope.launch {
+            getProjectJob?.cancel()
+            getProjectJob = when (
+                val results =
+                    projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
+            ) {
+                is LocalResult.Error -> TODO()
+                is LocalResult.Success -> {
+                    results.data.onEach { projectWithMilestones ->
+                        _state.value = state.value.copy(
+                            project = projectWithMilestones?.project ?: Project(
+                                projectId = 0,
+                                projectName = "",
+                                projectDesc = "",
+                                projectDeadline = "",
+                                projectStatus = "",
+                                timeStamp = 1
+                            ),
+                            milestones = projectWithMilestones?.milestones ?: emptyList(),
+                            filteredMilestones = projectWithMilestones?.milestones ?: emptyList(),
+                            selectedMilestoneStatus = milestoneStatus,
+                        )
+                    }
+                        .launchIn(viewModelScope)
+                }
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun List<MilestoneWithTasks>.filterMilestones(

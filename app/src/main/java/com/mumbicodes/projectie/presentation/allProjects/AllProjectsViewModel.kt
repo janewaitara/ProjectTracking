@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
+import com.mumbicodes.projectie.data.helpers.LocalResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.use_case.notifications.NotificationUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
@@ -123,22 +124,26 @@ class AllProjectsViewModel @Inject constructor(
             _state.value = state.value.copy(
                 isLoading = true
             )
-
             getProjectsJob?.cancel()
             getProjectsJob =
-                projectsUseCases.getProjectsUseCase(projectsOrder)
-                    // map the flow to AllProjects compose State
-                    .onEach { projects ->
-                        _state.value = state.value.copy(
-                            data = state.value.data.copy(
-                                projects = projects,
-                                projectsOrder = projectsOrder,
-                            ),
-                            isLoading = false
-                        )
-                        projects.filterProjects(projectStatus, state.value.data.searchParam)
+                when (val results = projectsUseCases.getProjectsUseCase(projectsOrder)) {
+                    is LocalResult.Error -> TODO()
+                    is LocalResult.Success -> {
+                        results.data
+                            // map the flow to AllProjects compose State
+                            .onEach { projects ->
+                                _state.value = state.value.copy(
+                                    data = state.value.data.copy(
+                                        projects = projects,
+                                        projectsOrder = projectsOrder,
+                                    ),
+                                    isLoading = false
+                                )
+                                projects.filterProjects(projectStatus, state.value.data.searchParam)
+                            }
+                            .launchIn(viewModelScope)
                     }
-                    .launchIn(viewModelScope)
+                }
         }
     }
 

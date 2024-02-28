@@ -1,8 +1,10 @@
 package com.mumbicodes.projectie.domain.repository
 
+import com.mumbicodes.projectie.data.helpers.LocalResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.relations.ProjectWithMilestones
+import com.mumbicodes.projectie.domain.util.ProjectsOrder
 import kotlinx.coroutines.flow.Flow
 
 interface ProjectsRepository {
@@ -13,11 +15,11 @@ interface ProjectsRepository {
 
     suspend fun getProjectById(projectId: Int): Project
 
-    fun getProjectByIdWithMilestones(projectId: Int): Flow<ProjectWithMilestones?>
+    suspend fun getProjectByIdWithMilestones(projectId: Int): LocalResult <Flow<ProjectWithMilestones?>>
 
-    fun getAllProjects(): Flow<List<Project>>
+    suspend fun getAllProjects(projectOrder: ProjectsOrder): LocalResult<Flow<List<Project>>>
 
-    fun getProjectNameAndId(): Flow<List<ProjectName>>
+    suspend fun getProjectNameAndId(): LocalResult<Flow<List<ProjectName>>>
 
     suspend fun deleteProject(project: Project)
 

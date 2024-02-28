@@ -7,6 +7,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
+import com.mumbicodes.projectie.data.helpers.LocalResult
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.ProjectName
@@ -80,14 +81,21 @@ class AllMilestonesViewModel @Inject constructor(
     }
 
     private fun getProjectNameAndId() {
-        getProjectsJob?.cancel()
-        getProjectsJob = projectsUseCases.getProjectNameAndIdUseCase()
-            .onEach { projectNames ->
-                _projectNames.value = projectNames
+        viewModelScope.launch {
+            getProjectsJob?.cancel()
+            getProjectsJob = when (val results = projectsUseCases.getProjectNameAndIdUseCase()) {
 
-                mapProjectNameWithMilestoneId()
+                is LocalResult.Error -> TODO()
+                is LocalResult.Success -> {
+                    results.data.onEach { projectNames ->
+                        _projectNames.value = projectNames
+
+                        mapProjectNameWithMilestoneId()
+                    }
+                        .launchIn(viewModelScope)
+                }
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun mapProjectNameWithMilestoneId() {
