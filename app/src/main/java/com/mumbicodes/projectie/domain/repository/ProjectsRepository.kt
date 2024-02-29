@@ -13,7 +13,7 @@ interface ProjectsRepository {
 
     suspend fun updateProject(project: Project)
 
-    suspend fun getProjectById(projectId: Int): Project
+    suspend fun getProjectById(projectId: Int): LocalResult<Flow<Project>>
 
     suspend fun getProjectByIdWithMilestones(projectId: Int): LocalResult <Flow<ProjectWithMilestones?>>
 

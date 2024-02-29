@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.projectie.data.helpers.LocalResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.presentation.util.PROJECT_ID
@@ -13,6 +14,7 @@ import com.mumbicodes.projectie.presentation.util.convertDateToString
 import com.mumbicodes.projectie.presentation.util.convertLocalDateToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -58,18 +60,25 @@ class AddEditProjectViewModel @Inject constructor(
         savedStateHandle.get<Int>(PROJECT_ID)?.let { projectId ->
             if (projectId != -1) {
                 viewModelScope.launch {
-                    projectsUseCases.getProjectByIdUseCase(projectId).also { projectPassed ->
-                        currentProjectId = projectPassed.projectId
-                        _projectNameState.value = projectPassed.projectName
-                        _projectDescState.value = projectPassed.projectDesc
-                        _projectDeadlineState.value =
-                            convertDateFormatsStrings(
-                                projectPassed.projectDeadline,
-                                "dd MMM yyyy",
-                                "dd/MM/yyyy"
-                            )
-                        projectDeadlineStateDb.value = projectPassed.projectDeadline
-                        currentProjectStatus = projectPassed.projectStatus
+                    when (val result = projectsUseCases.getProjectByIdUseCase(projectId)) {
+                        is LocalResult.Error -> TODO()
+                        is LocalResult.Success -> {
+                            result.data.collectLatest { project ->
+                                project.also { projectPassed ->
+                                    currentProjectId = projectPassed.projectId
+                                    _projectNameState.value = projectPassed.projectName
+                                    _projectDescState.value = projectPassed.projectDesc
+                                    _projectDeadlineState.value =
+                                        convertDateFormatsStrings(
+                                            projectPassed.projectDeadline,
+                                            "dd MMM yyyy",
+                                            "dd/MM/yyyy"
+                                        )
+                                    projectDeadlineStateDb.value = projectPassed.projectDeadline
+                                    currentProjectStatus = projectPassed.projectStatus
+                                }
+                            }
+                        }
                     }
                 }
             }
