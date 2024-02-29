@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.data.helpers.LocalResult
 import com.mumbicodes.projectie.domain.model.Milestone
-import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
@@ -21,6 +20,7 @@ import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -73,7 +73,10 @@ class AllMilestonesViewModel @Inject constructor(
                         ),
                         isLoading = false,
                     )
-                    milestonesWithTasks.filterMilestones(milestoneStatus, screenStates.value.data.searchParam)
+                    milestonesWithTasks.filterMilestones(
+                        milestoneStatus,
+                        screenStates.value.data.searchParam
+                    )
                     getProjectNameAndId()
                 }
                 .launchIn(viewModelScope)
@@ -127,6 +130,7 @@ class AllMilestonesViewModel @Inject constructor(
                     uiEvents.emit(AllMilestonesUIEvents.DeleteMilestone)
                 }
             }
+
             is AllMilestonesEvents.OrderMilestones -> {
                 if (screenStates.value.data.milestonesOrder::class == screenStates.value.data.selectedMilestoneOrder::class) {
                     return
@@ -137,6 +141,7 @@ class AllMilestonesViewModel @Inject constructor(
                     milestoneStatus = screenStates.value.data.selectedMilestoneStatus
                 )
             }
+
             is AllMilestonesEvents.UpdateMilestoneOrder -> {
                 _screenStates.value = screenStates.value.copy(
                     data = screenStates.value.data.copy(
@@ -144,6 +149,7 @@ class AllMilestonesViewModel @Inject constructor(
                     )
                 )
             }
+
             is AllMilestonesEvents.ResetMilestonesOrder -> {
                 _screenStates.value = screenStates.value.copy(
                     data = screenStates.value.data.copy(
@@ -155,6 +161,7 @@ class AllMilestonesViewModel @Inject constructor(
                     milestoneStatus = screenStates.value.data.selectedMilestoneStatus
                 )
             }
+
             is AllMilestonesEvents.SearchMilestone -> {
                 _screenStates.value = screenStates.value.copy(
                     data = screenStates.value.data.copy(
@@ -167,6 +174,7 @@ class AllMilestonesViewModel @Inject constructor(
                     searchParam = screenStates.value.data.searchParam
                 )
             }
+
             is AllMilestonesEvents.SelectMilestoneStatus -> {
                 if (screenStates.value.data.selectedMilestoneStatus == milestonesEvents.milestoneStatus) {
                     return
@@ -181,6 +189,7 @@ class AllMilestonesViewModel @Inject constructor(
             is AllMilestonesEvents.PassMilestone -> {
                 getMilestoneById(milestonesEvents.milestoneId)
             }
+
             is AllMilestonesEvents.ToggleTaskState -> {
                 _stateTasks.find {
                     it.taskId == milestonesEvents.taskId
@@ -279,12 +288,16 @@ class AllMilestonesViewModel @Inject constructor(
             val projectId = screenStates.value.data.mileStone.milestone.projectId
             val projectStatus =
                 projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
-
-            val project: Project = projectsUseCases.getProjectByIdUseCase(projectId)
-
-            projectsUseCases.updateProjectsUseCase.invoke(
-                project.copy(projectStatus = projectStatus)
-            )
+            when (val result = projectsUseCases.getProjectByIdUseCase(projectId)) {
+                is LocalResult.Error -> TODO()
+                is LocalResult.Success -> {
+                    result.data.collectLatest { project ->
+                        projectsUseCases.updateProjectsUseCase.invoke(
+                            project.copy(projectStatus = projectStatus)
+                        )
+                    }
+                }
+            }
         }
     }
 }

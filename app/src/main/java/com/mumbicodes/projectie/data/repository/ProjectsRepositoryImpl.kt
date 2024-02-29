@@ -23,8 +23,8 @@ class ProjectsRepositoryImpl(
         projectsDao.updateProject(project = project)
     }
 
-    override suspend fun getProjectById(projectId: Int): Project =
-        projectsDao.getProjectById(projectId)
+    override suspend fun getProjectById(projectId: Int): LocalResult<Flow<Project>> =
+        safeTransaction { projectsDao.getProjectById(projectId) }
 
     override suspend fun getProjectByIdWithMilestones(projectId: Int): LocalResult<Flow<ProjectWithMilestones?>> =
         safeTransaction { projectsDao.getProjectByIdWithMilestones(projectId) }
