@@ -1,6 +1,6 @@
 package com.mumbicodes.projectie.domain.use_case.projects
 
-import com.mumbicodes.projectie.data.helpers.LocalResult
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.domain.util.OrderType
@@ -12,6 +12,6 @@ class GetProjectsUseCase(
 ) {
     suspend operator fun invoke(
         projectOrder: ProjectsOrder = ProjectsOrder.DateAdded(OrderType.Descending),
-    ): LocalResult<Flow<List<Project>>> =
+    ): DataResult<Flow<List<Project>>> =
         repository.getAllProjects(projectOrder = projectOrder)
 }

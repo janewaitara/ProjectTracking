@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mumbicodes.projectie.data.helpers.LocalResult
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.presentation.util.PROJECT_ID
@@ -61,8 +61,8 @@ class AddEditProjectViewModel @Inject constructor(
             if (projectId != -1) {
                 viewModelScope.launch {
                     when (val result = projectsUseCases.getProjectByIdUseCase(projectId)) {
-                        is LocalResult.Error -> TODO()
-                        is LocalResult.Success -> {
+                        is DataResult.Error -> TODO()
+                        is DataResult.Success -> {
                             result.data.collectLatest { project ->
                                 project.also { projectPassed ->
                                     currentProjectId = projectPassed.projectId

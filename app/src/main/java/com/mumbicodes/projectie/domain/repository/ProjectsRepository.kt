@@ -1,6 +1,6 @@
 package com.mumbicodes.projectie.domain.repository
 
-import com.mumbicodes.projectie.data.helpers.LocalResult
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.relations.ProjectWithMilestones
@@ -13,13 +13,13 @@ interface ProjectsRepository {
 
     suspend fun updateProject(project: Project)
 
-    suspend fun getProjectById(projectId: Int): LocalResult<Flow<Project>>
+    suspend fun getProjectById(projectId: Int): DataResult<Flow<Project>>
 
-    suspend fun getProjectByIdWithMilestones(projectId: Int): LocalResult <Flow<ProjectWithMilestones?>>
+    suspend fun getProjectByIdWithMilestones(projectId: Int): DataResult <Flow<ProjectWithMilestones?>>
 
-    suspend fun getAllProjects(projectOrder: ProjectsOrder): LocalResult<Flow<List<Project>>>
+    suspend fun getAllProjects(projectOrder: ProjectsOrder): DataResult<Flow<List<Project>>>
 
-    suspend fun getProjectNameAndId(): LocalResult<Flow<List<ProjectName>>>
+    suspend fun getProjectNameAndId(): DataResult<Flow<List<ProjectName>>>
 
     suspend fun deleteProject(project: Project)
 
