@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
-import com.mumbicodes.projectie.data.helpers.LocalResult
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.use_case.notifications.NotificationUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
@@ -127,8 +127,8 @@ class AllProjectsViewModel @Inject constructor(
             getProjectsJob?.cancel()
             getProjectsJob =
                 when (val results = projectsUseCases.getProjectsUseCase(projectsOrder)) {
-                    is LocalResult.Error -> TODO()
-                    is LocalResult.Success -> {
+                    is DataResult.Error -> TODO()
+                    is DataResult.Success -> {
                         results.data
                             // map the flow to AllProjects compose State
                             .onEach { projects ->

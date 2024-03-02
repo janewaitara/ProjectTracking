@@ -9,7 +9,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mumbicodes.projectie.data.helpers.LocalResult
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
@@ -246,8 +246,8 @@ class AddEditMilestonesViewModel @Inject constructor(
             val projectStatus = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
 
             when (val result = projectsUseCases.getProjectByIdUseCase(passedProjectId)) {
-                is LocalResult.Error -> TODO()
-                is LocalResult.Success -> {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
                     result.data.collectLatest { project ->
                         projectsUseCases.updateProjectsUseCase.invoke(
                             project.copy(projectStatus = projectStatus)

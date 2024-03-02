@@ -6,7 +6,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mumbicodes.projectie.data.helpers.LocalResult
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.Task
@@ -199,8 +199,8 @@ class ProjectDetailsViewModel @Inject constructor(
                 val results =
                     projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
             ) {
-                is LocalResult.Error -> TODO()
-                is LocalResult.Success -> {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
                     Log.d("RESULTS", "rEACHED")
                     results.data.onEach { projectWithMilestones ->
                         Log.d("RESULTS", projectWithMilestones?.milestones.toString())
@@ -259,8 +259,8 @@ class ProjectDetailsViewModel @Inject constructor(
                 projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
 
             when (val result = projectsUseCases.getProjectByIdUseCase(projectId)) {
-                is LocalResult.Error -> TODO()
-                is LocalResult.Success -> {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
                     result.data.collectLatest { project ->
                         projectsUseCases.updateProjectsUseCase.invoke(
                             project.copy(projectStatus = projectStatus)

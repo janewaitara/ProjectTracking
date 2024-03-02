@@ -6,7 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.mumbicodes.projectie.R
-import com.mumbicodes.projectie.data.helpers.LocalResult
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
 import com.mumbicodes.projectie.domain.util.OrderType
@@ -40,8 +40,8 @@ class CheckProjectDeadlineIsInTwoDaysWorker @AssistedInject constructor(
 
                 CoroutineScope(Dispatchers.IO).launch {
                     when (allProjects) {
-                        is LocalResult.Error -> Result.failure()
-                        is LocalResult.Success -> {
+                        is DataResult.Error -> Result.failure()
+                        is DataResult.Success -> {
                             allProjects.data.collectLatest { projects ->
                                 val deadlineIsInTwoDaysProjects =
                                     async { checkDeadlineIsInTwoDays(projects) }
