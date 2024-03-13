@@ -6,8 +6,11 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.mumbicodes.projectie.R
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
+import com.mumbicodes.projectie.domain.util.OrderType
+import com.mumbicodes.projectie.domain.util.ProjectsOrder
 import com.mumbicodes.projectie.presentation.util.toLocalDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -31,27 +34,34 @@ class CheckProjectDeadlineIsInTwoDaysWorker @AssistedInject constructor(
             return@withContext try {
                 Log.e("Reached 3", "It has been reached - 2 days ")
 
-                val allProjects = projectsRepository.getAllProjects()
+                val allProjects = projectsRepository.getAllProjects(
+                    projectOrder = ProjectsOrder.DateAdded(OrderType.Descending)
+                )
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    allProjects.collectLatest { projects ->
-                        val deadlineIsInTwoDaysProjects =
-                            async { checkDeadlineIsInTwoDays(projects) }
-                        deadlineIsInTwoDaysProjects.await().let { deadlineProjects ->
-                            if (deadlineProjects.size > 1) {
-                                makeNotification(
-                                    notificationType = NotificationType.PROJECTS,
-                                    notificationId = deadlineProjects.first().projectId,
-                                    message = "You have ${deadlineProjects.size} projects ending in 2 days",
-                                    context = applicationContext,
-                                )
-                            } else if (deadlineProjects.size == 1) {
-                                makeNotification(
-                                    notificationType = NotificationType.PROJECTS,
-                                    notificationId = deadlineProjects.first().projectId,
-                                    message = "${deadlineProjects.first().projectName} deadline is in 2 days and it's ${deadlineProjects.first().projectStatus}",
-                                    context = applicationContext,
-                                )
+                    when (allProjects) {
+                        is DataResult.Error -> Result.failure()
+                        is DataResult.Success -> {
+                            allProjects.data.collectLatest { projects ->
+                                val deadlineIsInTwoDaysProjects =
+                                    async { checkDeadlineIsInTwoDays(projects) }
+                                deadlineIsInTwoDaysProjects.await().let { deadlineProjects ->
+                                    if (deadlineProjects.size > 1) {
+                                        makeNotification(
+                                            notificationType = NotificationType.PROJECTS,
+                                            notificationId = deadlineProjects.first().projectId,
+                                            message = "You have ${deadlineProjects.size} projects ending in 2 days",
+                                            context = applicationContext,
+                                        )
+                                    } else if (deadlineProjects.size == 1) {
+                                        makeNotification(
+                                            notificationType = NotificationType.PROJECTS,
+                                            notificationId = deadlineProjects.first().projectId,
+                                            message = "${deadlineProjects.first().projectName} deadline is in 2 days and it's ${deadlineProjects.first().projectStatus}",
+                                            context = applicationContext,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

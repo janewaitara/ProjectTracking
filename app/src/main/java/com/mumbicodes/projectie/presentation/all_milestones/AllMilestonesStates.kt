@@ -5,6 +5,9 @@ import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
 import com.mumbicodes.projectie.presentation.allProjects.filters
 
+/**
+ * @param selectedMilestoneOrder Holds the user selection until they press filter - important to show user selection on radios
+ * */
 data class AllMilestonesStates(
     val milestones: List<MilestoneWithTasks> = emptyList(),
     val filteredMilestones: List<MilestoneWithTasks> = emptyList(),
@@ -24,6 +27,8 @@ data class AllMilestonesStates(
     val selectedMilestoneStatus: String = filters.first(),
     val isFilterBottomSheetVisible: Boolean = false,
     val milestonesProjectName: Map<Int, String> = emptyMap(),
+    val searchParam: String = "",
+    val selectedMilestoneOrder: AllMilestonesOrder = milestonesOrder
 )
 
 data class ScreenStates(

@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.permissions.*
 import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.util.OrderType
@@ -53,25 +51,77 @@ import com.mumbicodes.projectie.presentation.theme.*
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AllProjectsScreen(
+fun AllProjectsScreenRoute(
     projectsViewModel: AllProjectsViewModel = hiltViewModel(),
     onClickProject: (Int) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     val state = projectsViewModel.state.value
-    val searchedTextState = projectsViewModel.searchParam.value
+
+    AllProjectsScreen(
+        state = state,
+        searchedTextState = state.data.searchParam,
+        onFiltersApplied = {
+            projectsViewModel.onEvent(
+                AllProjectsEvent.OrderProjects
+            )
+        },
+        onFiltersClicked = {
+            projectsViewModel.onEvent(AllProjectsEvent.UpdateProjectOrder(it))
+        },
+        onFiltersReset = {
+            projectsViewModel.onEvent(
+                AllProjectsEvent.ResetProjectsOrder(ProjectsOrder.DateAdded(OrderType.Descending))
+            )
+        },
+        onClickProject = onClickProject,
+        onClickNotBtn = {
+            projectsViewModel.saveNotPromptState(it)
+        },
+        onSearchParamChanged = { searchParam ->
+            projectsViewModel.onEvent(
+                AllProjectsEvent.SearchProject(
+                    searchParam
+                )
+            )
+        },
+        onClickFilterStatus = { selectedStatus ->
+            projectsViewModel.onEvent(
+                AllProjectsEvent.SelectProjectStatus(
+                    selectedStatus
+                )
+            )
+        },
+        onClickFilterBtn = {
+            projectsViewModel.onEvent(AllProjectsEvent.ToggleBottomSheetVisibility)
+        },
+        windowWidthSizeClass = windowWidthSizeClass,
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AllProjectsScreen(
+    modifier: Modifier = Modifier,
+    state: AllProjectsScreenStates,
+    searchedTextState: String,
+    onFiltersApplied: () -> Unit,
+    onFiltersClicked: (ProjectsOrder) -> Unit,
+    onFiltersReset: () -> Unit,
+    onClickProject: (Int) -> Unit,
+    onClickNotBtn: (Boolean) -> Unit,
+    onSearchParamChanged: (String) -> Unit,
+    onClickFilterStatus: (String) -> Unit,
+    onClickFilterBtn: () -> Unit,
+    windowWidthSizeClass: WindowWidthSizeClass,
+) {
     val modalBottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true,
     )
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState()
-
-    // Holds the user selection until they press filter
-    val selectedProjectOrder =
-        remember { mutableStateOf(state.data.projectsOrder) }
 
     BackHandler(modalBottomSheetState.isVisible) {
         scope.launch { modalBottomSheetState.hide() }
@@ -81,22 +131,18 @@ fun AllProjectsScreen(
         sheetContent = {
             FilterBottomSheetContent(
                 projectsOrder = state.data.projectsOrder,
-                selectedProjectsOrder = selectedProjectOrder.value,
-                onOrderChange = { userProjectOrder ->
-                    selectedProjectOrder.value = userProjectOrder
-                },
+                selectedProjectsOrder = state.data.selectedProjectOrder,
+                onOrderChange = onFiltersClicked,
                 onFiltersApplied = {
-                    projectsViewModel.onEvent(AllProjectsEvent.OrderProjects(selectedProjectOrder.value))
+                    onFiltersApplied()
                     // hide the sheet after applying filters
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
                 },
                 onFiltersReset = {
-                    projectsViewModel.onEvent(
-                        AllProjectsEvent.ResetProjectsOrder(ProjectsOrder.DateAdded(OrderType.Descending))
-                    )
-                    selectedProjectOrder.value = ProjectsOrder.DateAdded(OrderType.Descending)
+                    onFiltersReset()
+                    onFiltersClicked(ProjectsOrder.DateAdded(OrderType.Descending))
                     scope.launch {
                         modalBottomSheetState.hide()
                     }
@@ -124,27 +170,13 @@ fun AllProjectsScreen(
                             modalBottomSheetState.show()
                         }
                         // TODO test whether this needs to be here
-                        projectsViewModel.onEvent(AllProjectsEvent.ToggleBottomSheetVisibility)
+                        onClickFilterBtn()
                     },
-                    onClickFilterStatus = { selectedStatus ->
-                        projectsViewModel.onEvent(
-                            AllProjectsEvent.SelectProjectStatus(
-                                selectedStatus
-                            )
-                        )
-                    },
+                    onClickFilterStatus = onClickFilterStatus,
                     searchedText = searchedTextState,
-                    onSearchParamChanged = { searchParam ->
-                        projectsViewModel.onEvent(
-                            AllProjectsEvent.SearchProject(
-                                searchParam
-                            )
-                        )
-                    },
+                    onSearchParamChanged = onSearchParamChanged,
                     windowWidthSizeClass = windowWidthSizeClass,
-                    onClickNotBtn = {
-                        projectsViewModel.saveNotPromptState(it)
-                    }
+                    onClickNotBtn = onClickNotBtn
                 )
             }
         }

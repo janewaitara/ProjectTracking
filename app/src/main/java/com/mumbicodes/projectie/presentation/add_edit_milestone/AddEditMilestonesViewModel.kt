@@ -9,8 +9,8 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Milestone
-import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
@@ -19,6 +19,7 @@ import com.mumbicodes.projectie.presentation.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -244,11 +245,16 @@ class AddEditMilestonesViewModel @Inject constructor(
 
             val projectStatus = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
 
-            val project: Project = projectsUseCases.getProjectByIdUseCase(passedProjectId)
-
-            projectsUseCases.updateProjectsUseCase.invoke(
-                project.copy(projectStatus = projectStatus)
-            )
+            when (val result = projectsUseCases.getProjectByIdUseCase(passedProjectId)) {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
+                    result.data.collectLatest { project ->
+                        projectsUseCases.updateProjectsUseCase.invoke(
+                            project.copy(projectStatus = projectStatus)
+                        )
+                    }
+                }
+            }
         }
     }
 }

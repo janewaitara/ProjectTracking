@@ -17,7 +17,7 @@ interface ProjectsDao {
 
     /** Fetch */
     @Query("SELECT * from projects_table WHERE projectId = :projectId")
-    suspend fun getProjectById(projectId: Int): Project
+    fun getProjectById(projectId: Int): Flow<Project>
 
     @Transaction
     @Query("SELECT * FROM projects_table WHERE projectId = :projectId")

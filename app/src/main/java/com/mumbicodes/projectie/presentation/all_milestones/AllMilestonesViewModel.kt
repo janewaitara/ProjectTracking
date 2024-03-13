@@ -7,8 +7,8 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mumbicodes.projectie.R
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Milestone
-import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
@@ -20,6 +20,7 @@ import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -32,14 +33,9 @@ class AllMilestonesViewModel @Inject constructor(
     private val tasksUseCase: TasksUseCases,
     private val appContext: Application,
 ) : ViewModel() {
-    private val _state = mutableStateOf(AllMilestonesStates())
-    val state = _state
 
     private val _screenStates = mutableStateOf(ScreenStates())
     val screenStates = _screenStates
-
-    private val _searchParam = mutableStateOf("")
-    val searchParam = _searchParam
 
     private var getMilestonesJob: Job? = null
     private var getProjectsJob: Job? = null
@@ -77,7 +73,10 @@ class AllMilestonesViewModel @Inject constructor(
                         ),
                         isLoading = false,
                     )
-                    milestonesWithTasks.filterMilestones(milestoneStatus, searchParam.value)
+                    milestonesWithTasks.filterMilestones(
+                        milestoneStatus,
+                        screenStates.value.data.searchParam
+                    )
                     getProjectNameAndId()
                 }
                 .launchIn(viewModelScope)
@@ -85,14 +84,21 @@ class AllMilestonesViewModel @Inject constructor(
     }
 
     private fun getProjectNameAndId() {
-        getProjectsJob?.cancel()
-        getProjectsJob = projectsUseCases.getProjectNameAndIdUseCase()
-            .onEach { projectNames ->
-                _projectNames.value = projectNames
+        viewModelScope.launch {
+            getProjectsJob?.cancel()
+            getProjectsJob = when (val results = projectsUseCases.getProjectNameAndIdUseCase()) {
 
-                mapProjectNameWithMilestoneId()
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
+                    results.data.onEach { projectNames ->
+                        _projectNames.value = projectNames
+
+                        mapProjectNameWithMilestoneId()
+                    }
+                        .launchIn(viewModelScope)
+                }
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun mapProjectNameWithMilestoneId() {
@@ -124,30 +130,51 @@ class AllMilestonesViewModel @Inject constructor(
                     uiEvents.emit(AllMilestonesUIEvents.DeleteMilestone)
                 }
             }
+
             is AllMilestonesEvents.OrderMilestones -> {
-                if (screenStates.value.data.milestonesOrder::class == milestonesEvents.milestonesOrder::class) {
+                if (screenStates.value.data.milestonesOrder::class == screenStates.value.data.selectedMilestoneOrder::class) {
                     return
                 }
 
                 getAllMilestones(
-                    milestonesOrder = milestonesEvents.milestonesOrder,
+                    milestonesOrder = screenStates.value.data.selectedMilestoneOrder,
                     milestoneStatus = screenStates.value.data.selectedMilestoneStatus
                 )
             }
+
+            is AllMilestonesEvents.UpdateMilestoneOrder -> {
+                _screenStates.value = screenStates.value.copy(
+                    data = screenStates.value.data.copy(
+                        selectedMilestoneOrder = milestonesEvents.milestonesOrder
+                    )
+                )
+            }
+
             is AllMilestonesEvents.ResetMilestonesOrder -> {
+                _screenStates.value = screenStates.value.copy(
+                    data = screenStates.value.data.copy(
+                        selectedMilestoneOrder = milestonesEvents.milestonesOrder
+                    )
+                )
                 getAllMilestones(
                     milestonesOrder = milestonesEvents.milestonesOrder,
                     milestoneStatus = screenStates.value.data.selectedMilestoneStatus
                 )
             }
+
             is AllMilestonesEvents.SearchMilestone -> {
-                _searchParam.value = milestonesEvents.searchParam
+                _screenStates.value = screenStates.value.copy(
+                    data = screenStates.value.data.copy(
+                        searchParam = milestonesEvents.searchParam
+                    )
+                )
 
                 screenStates.value.data.milestones.filterMilestones(
                     milestoneStatus = screenStates.value.data.selectedMilestoneStatus,
-                    searchParam = searchParam.value
+                    searchParam = screenStates.value.data.searchParam
                 )
             }
+
             is AllMilestonesEvents.SelectMilestoneStatus -> {
                 if (screenStates.value.data.selectedMilestoneStatus == milestonesEvents.milestoneStatus) {
                     return
@@ -155,13 +182,14 @@ class AllMilestonesViewModel @Inject constructor(
 
                 screenStates.value.data.milestones.filterMilestones(
                     milestoneStatus = milestonesEvents.milestoneStatus,
-                    searchParam = searchParam.value
+                    searchParam = screenStates.value.data.searchParam
                 )
             }
 
             is AllMilestonesEvents.PassMilestone -> {
                 getMilestoneById(milestonesEvents.milestoneId)
             }
+
             is AllMilestonesEvents.ToggleTaskState -> {
                 _stateTasks.find {
                     it.taskId == milestonesEvents.taskId
@@ -260,12 +288,16 @@ class AllMilestonesViewModel @Inject constructor(
             val projectId = screenStates.value.data.mileStone.milestone.projectId
             val projectStatus =
                 projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
-
-            val project: Project = projectsUseCases.getProjectByIdUseCase(projectId)
-
-            projectsUseCases.updateProjectsUseCase.invoke(
-                project.copy(projectStatus = projectStatus)
-            )
+            when (val result = projectsUseCases.getProjectByIdUseCase(projectId)) {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
+                    result.data.collectLatest { project ->
+                        projectsUseCases.updateProjectsUseCase.invoke(
+                            project.copy(projectStatus = projectStatus)
+                        )
+                    }
+                }
+            }
         }
     }
 }

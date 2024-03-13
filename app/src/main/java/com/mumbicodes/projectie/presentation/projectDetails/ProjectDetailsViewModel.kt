@@ -1,10 +1,12 @@
 package com.mumbicodes.projectie.presentation.projectDetails
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.Task
@@ -17,6 +19,7 @@ import com.mumbicodes.projectie.presentation.util.PROJECT_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -52,13 +55,20 @@ class ProjectDetailsViewModel @Inject constructor(
 
     fun getProjectDetails(projectId: Int) {
         viewModelScope.launch {
-            // todo delete
-            projectsUseCases.getProjectByIdUseCase(projectId).also { projectPassed ->
-                _state.value = _state.value.copy(
-                    project = projectPassed,
-                )
+            // todo delete why isn't the other code reached
+            /*when (val projectResults = projectsUseCases.getProjectByIdUseCase(projectId)) {
+                is LocalResult.Error -> TODO()
+                is LocalResult.Success -> {
+                    projectResults.data.collectLatest {project ->
+                        project.also { projectPassed ->
+                            _state.value = _state.value.copy(
+                                project = projectPassed,
+                            )
+                        }
+                    }
+                }
             }
-
+*/
             getProject(projectId, state.value.selectedMilestoneStatus)
         }
     }
@@ -72,9 +82,11 @@ class ProjectDetailsViewModel @Inject constructor(
                 state.value.milestones.filterMilestones(projectDetailsEvents.milestoneStatus)
                 // getProject(projectId!!, projectDetailsEvents.milestoneStatus)
             }
+
             is ProjectDetailsEvents.GetMilestone -> {
                 getMilestoneById(projectDetailsEvents.milestoneId)
             }
+
             is ProjectDetailsEvents.DeleteProject -> {
                 viewModelScope.launch {
                     projectsUseCases.deleteProjectUseCase(projectDetailsEvents.project)
@@ -82,6 +94,7 @@ class ProjectDetailsViewModel @Inject constructor(
                     uiEvents.emit(ProjectUIEvents.DeleteProject)
                 }
             }
+
             is ProjectDetailsEvents.DeleteMilestone -> {
                 viewModelScope.launch {
                     milestonesUseCases.deleteMilestoneUseCase(projectDetailsEvents.milestone)
@@ -89,21 +102,25 @@ class ProjectDetailsViewModel @Inject constructor(
                     uiEvents.emit(ProjectUIEvents.DeleteMilestone)
                 }
             }
+
             is ProjectDetailsEvents.ToggleMenuOptionsVisibility -> {
                 _state.value = _state.value.copy(
                     isMenuOptionsVisible = !state.value.isMenuOptionsVisible
                 )
             }
+
             is ProjectDetailsEvents.ToggleDeleteDialogVisibility -> {
                 _state.value = _state.value.copy(
                     isDeleteDialogVisible = !state.value.isDeleteDialogVisible
                 )
             }
+
             is ProjectDetailsEvents.ToggleCongratulationsDialogVisibility -> {
                 _state.value = _state.value.copy(
                     isCongratsDialogVisible = !state.value.isCongratsDialogVisible
                 )
             }
+
             is ProjectDetailsEvents.ToggleTaskState -> {
                 _stateTasks.find {
                     it.taskId == projectDetailsEvents.taskId
@@ -175,24 +192,36 @@ class ProjectDetailsViewModel @Inject constructor(
      * Needed when someone deletes a project before navigating up
      * */
     private fun getProject(projectId: Int, milestoneStatus: String) {
-        getProjectJob?.cancel()
-        getProjectJob = projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
-            .onEach { projectWithMilestones ->
-                _state.value = state.value.copy(
-                    project = projectWithMilestones?.project ?: Project(
-                        projectId = 0,
-                        projectName = "",
-                        projectDesc = "",
-                        projectDeadline = "",
-                        projectStatus = "",
-                        timeStamp = 1
-                    ),
-                    milestones = projectWithMilestones?.milestones ?: emptyList(),
-                    filteredMilestones = projectWithMilestones?.milestones ?: emptyList(),
-                    selectedMilestoneStatus = milestoneStatus,
-                )
+        viewModelScope.launch {
+            Log.d("RESULTS", "Reached 1")
+            getProjectJob?.cancel()
+            getProjectJob = when (
+                val results =
+                    projectsUseCases.getProjectByIdWithMilestonesUseCase(projectId)
+            ) {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
+                    Log.d("RESULTS", "rEACHED")
+                    results.data.onEach { projectWithMilestones ->
+                        Log.d("RESULTS", projectWithMilestones?.milestones.toString())
+                        _state.value = state.value.copy(
+                            project = projectWithMilestones?.project ?: Project(
+                                projectId = 0,
+                                projectName = "",
+                                projectDesc = "",
+                                projectDeadline = "",
+                                projectStatus = "",
+                                timeStamp = 1
+                            ),
+                            milestones = projectWithMilestones?.milestones ?: emptyList(),
+                            filteredMilestones = projectWithMilestones?.milestones ?: emptyList(),
+                            selectedMilestoneStatus = milestoneStatus,
+                        )
+                    }
+                        .launchIn(viewModelScope)
+                }
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun List<MilestoneWithTasks>.filterMilestones(
@@ -229,11 +258,16 @@ class ProjectDetailsViewModel @Inject constructor(
             val projectStatus =
                 projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
 
-            val project: Project = projectsUseCases.getProjectByIdUseCase(projectId)
-
-            projectsUseCases.updateProjectsUseCase.invoke(
-                project.copy(projectStatus = projectStatus)
-            )
+            when (val result = projectsUseCases.getProjectByIdUseCase(projectId)) {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
+                    result.data.collectLatest { project ->
+                        projectsUseCases.updateProjectsUseCase.invoke(
+                            project.copy(projectStatus = projectStatus)
+                        )
+                    }
+                }
+            }
         }
     }
 }

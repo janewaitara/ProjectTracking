@@ -8,11 +8,12 @@ import com.mumbicodes.projectie.domain.util.ProjectsOrder
  * the viewModel to perform corresponding action
  * */
 sealed class AllProjectsEvent {
-    data class OrderProjects(val projectsOrder: ProjectsOrder) : AllProjectsEvent()
+    object OrderProjects : AllProjectsEvent()
+    object ToggleBottomSheetVisibility : AllProjectsEvent()
     data class ResetProjectsOrder(val projectsOrder: ProjectsOrder) : AllProjectsEvent()
     data class DeleteProject(val project: Project) : AllProjectsEvent()
     data class RestoreProject(val project: Project) : AllProjectsEvent()
     data class SelectProjectStatus(val projectStatus: String) : AllProjectsEvent()
     data class SearchProject(val searchParam: String) : AllProjectsEvent()
-    object ToggleBottomSheetVisibility : AllProjectsEvent()
+    data class UpdateProjectOrder(val projectsOrder: ProjectsOrder) : AllProjectsEvent()
 }
