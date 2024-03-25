@@ -1,5 +1,6 @@
 package com.mumbicodes.projectie.domain.use_case.milestones
 
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 
@@ -9,6 +10,6 @@ class GetMilestonesUseCase(
     suspend operator fun invoke(
         projectId: Int,
         status: String,
-    ): List<Milestone> =
+    ): DataResult<List<Milestone>> =
         repository.getAllMilestonesBasedOnProjIdAndStatus(projectId, status)
 }

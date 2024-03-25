@@ -158,33 +158,43 @@ class ProjectDetailsViewModel @Inject constructor(
       }*/
 
     private fun getMilestoneById(milestoneId: Int) {
-        getMilestonesJob?.cancel()
-        getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
-            .onEach { milestoneWithTask ->
-                _state.value = _state.value.copy(
-                    mileStone = milestoneWithTask ?: MilestoneWithTasks(
-                        milestone = Milestone(
-                            projectId = 0,
-                            milestoneId = 0,
-                            milestoneTitle = "",
-                            milestoneSrtDate = 0,
-                            milestoneEndDate = 0,
-                            status = "",
-                        ),
-                        tasks = listOf()
-                    )
-                )
-                // adding tasks to state
-                _stateTasks.apply {
-                    clear()
-                    addAll(
-                        tasksUseCase.transformTasksUseCase.transformTasksToTaskStates(
-                            milestoneWithTask!!.tasks
-                        )
-                    )
+        viewModelScope.launch {
+            getMilestonesJob?.cancel()
+            getMilestonesJob = when (
+                val milestoneById =
+                    milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
+            ) {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
+                    milestoneById.data
+                        .onEach { milestoneWithTask ->
+                            _state.value = _state.value.copy(
+                                mileStone = milestoneWithTask ?: MilestoneWithTasks(
+                                    milestone = Milestone(
+                                        projectId = 0,
+                                        milestoneId = 0,
+                                        milestoneTitle = "",
+                                        milestoneSrtDate = 0,
+                                        milestoneEndDate = 0,
+                                        status = "",
+                                    ),
+                                    tasks = listOf()
+                                )
+                            )
+                            // adding tasks to state
+                            _stateTasks.apply {
+                                clear()
+                                addAll(
+                                    tasksUseCase.transformTasksUseCase.transformTasksToTaskStates(
+                                        milestoneWithTask!!.tasks
+                                    )
+                                )
+                            }
+                        }
+                        .launchIn(viewModelScope)
                 }
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     /**
@@ -255,8 +265,13 @@ class ProjectDetailsViewModel @Inject constructor(
         viewModelScope.launch {
 
             val projectId = state.value.mileStone.milestone.projectId
-            val projectStatus =
-                projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
+            val projectStatus = when (
+                val status =
+                    projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
+            ) {
+                is DataResult.Error -> status.errorMessage
+                is DataResult.Success -> status.data
+            }
 
             when (val result = projectsUseCases.getProjectByIdUseCase(projectId)) {
                 is DataResult.Error -> TODO()

@@ -6,9 +6,11 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.mumbicodes.projectie.R
+import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.domain.repository.WorkersRepository
+import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
 import com.mumbicodes.projectie.presentation.util.toLong
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -33,28 +35,33 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
         return withContext(Dispatchers.IO) {
             return@withContext try {
                 Log.e("Reached 2", "It has been reached ")
-                val allMilestones = milestonesRepository.getAllMilestones()
+                val allMilestones = milestonesRepository.getAllMilestones(AllMilestonesOrder.MostUrgent)
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    allMilestones.collectLatest { milestonesWithTasks ->
-                        val filteredMilestones =
-                            async { checkMilestoneDeadlineIsToday(milestonesWithTasks) }
+                    when (allMilestones) {
+                        is DataResult.Error -> Result.failure()
+                        is DataResult.Success -> {
+                            allMilestones.data.collectLatest { milestonesWithTasks ->
+                                val filteredMilestones =
+                                    async { checkMilestoneDeadlineIsToday(milestonesWithTasks) }
 
-                        filteredMilestones.await().let { milestones ->
-                            if (milestones.size > 1) {
-                                makeNotification(
-                                    notificationType = NotificationType.MILESTONES,
-                                    notificationId = milestones.first().milestone.milestoneId,
-                                    message = "You have ${milestones.size} milestones ending Today",
-                                    context = applicationContext,
-                                )
-                            } else if (milestones.size == 1) {
-                                makeNotification(
-                                    NotificationType.MILESTONES,
-                                    milestones.first().milestone.milestoneId,
-                                    "${milestones.first().milestone.milestoneTitle} deadline is today and it's ${milestones.first().milestone.status}",
-                                    applicationContext,
-                                )
+                                filteredMilestones.await().let { milestones ->
+                                    if (milestones.size > 1) {
+                                        makeNotification(
+                                            notificationType = NotificationType.MILESTONES,
+                                            notificationId = milestones.first().milestone.milestoneId,
+                                            message = "You have ${milestones.size} milestones ending Today",
+                                            context = applicationContext,
+                                        )
+                                    } else if (milestones.size == 1) {
+                                        makeNotification(
+                                            NotificationType.MILESTONES,
+                                            milestones.first().milestone.milestoneId,
+                                            "${milestones.first().milestone.milestoneTitle} deadline is today and it's ${milestones.first().milestone.status}",
+                                            applicationContext,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

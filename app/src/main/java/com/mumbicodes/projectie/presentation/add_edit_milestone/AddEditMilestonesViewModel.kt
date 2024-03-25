@@ -193,25 +193,34 @@ class AddEditMilestonesViewModel @Inject constructor(
     }
 
     private fun getMilestoneByIdWithTasks(milestoneId: Int) {
-        getMilestonesJob?.cancel()
-        getMilestonesJob = milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
-            .onEach { milestoneWithTask ->
-                currentMilestoneId = milestoneId
-                _milestoneTitleState.value = milestoneWithTask!!.milestone.milestoneTitle
-                _milestoneStartDateState.value =
-                    milestoneWithTask.milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
-                _milestoneEndDateState.value =
-                    milestoneWithTask.milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
-                currentMilestoneStatus = milestoneWithTask.milestone.status
-                _stateTasks.apply {
-                    addAll(
-                        tasksUseCases.transformTasksUseCase.transformTasksToTaskStates(
-                            milestoneWithTask.tasks
-                        )
-                    )
+        viewModelScope.launch {
+            getMilestonesJob?.cancel()
+            getMilestonesJob = when (
+                val milestoneById =
+                    milestonesUseCases.getMilestoneByIdWithTasksUseCase(milestoneId)
+            ) {
+                is DataResult.Error -> TODO()
+                is DataResult.Success -> {
+                    milestoneById.data.onEach { milestoneWithTask ->
+                        currentMilestoneId = milestoneId
+                        _milestoneTitleState.value = milestoneWithTask!!.milestone.milestoneTitle
+                        _milestoneStartDateState.value =
+                            milestoneWithTask.milestone.milestoneSrtDate.toDateAsString("dd/MM/yyyy")
+                        _milestoneEndDateState.value =
+                            milestoneWithTask.milestone.milestoneEndDate.toDateAsString("dd/MM/yyyy")
+                        currentMilestoneStatus = milestoneWithTask.milestone.status
+                        _stateTasks.apply {
+                            addAll(
+                                tasksUseCases.transformTasksUseCase.transformTasksToTaskStates(
+                                    milestoneWithTask.tasks
+                                )
+                            )
+                        }
+                    }
+                        .launchIn(viewModelScope)
                 }
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun addNewTaskState() {
@@ -243,7 +252,13 @@ class AddEditMilestonesViewModel @Inject constructor(
     fun checkAndUpdateProjectStatus() {
         viewModelScope.launch {
 
-            val projectStatus = projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
+            val projectStatus = when (
+                val status =
+                    projectsUseCases.checkProjectStatusUseCase.invoke(passedProjectId)
+            ) {
+                is DataResult.Error -> status.errorMessage
+                is DataResult.Success -> status.data
+            }
 
             when (val result = projectsUseCases.getProjectByIdUseCase(passedProjectId)) {
                 is DataResult.Error -> TODO()
