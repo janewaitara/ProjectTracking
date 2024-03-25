@@ -1,8 +1,8 @@
 package com.mumbicodes.projectie.domain.use_case.tasks
 
 import com.mumbicodes.projectie.domain.model.Task
-import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
-import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskTextFieldState
+import com.mumbicodes.projectie.presentation.screens.add_edit_milestone.TaskState
+import com.mumbicodes.projectie.presentation.screens.add_edit_milestone.TaskTextFieldState
 
 class TransformTasksUseCase {
     fun transformTasksToTaskStates(tasks: List<Task>): List<TaskState> {

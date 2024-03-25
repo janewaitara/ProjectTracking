@@ -3,7 +3,7 @@ package com.mumbicodes.projectie.presentation.util
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.mumbicodes.projectie.domain.model.Task
-import com.mumbicodes.projectie.presentation.add_edit_milestone.TaskState
+import com.mumbicodes.projectie.presentation.screens.add_edit_milestone.TaskState
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId

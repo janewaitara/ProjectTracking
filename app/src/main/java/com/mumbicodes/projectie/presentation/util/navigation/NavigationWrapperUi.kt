@@ -8,7 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.mumbicodes.projectie.presentation.components.NavigationDrawerComposable
+import com.mumbicodes.projectie.presentation.designsystem.components.NavigationDrawerComposable
 import com.mumbicodes.projectie.presentation.util.ContentType
 import com.mumbicodes.projectie.presentation.util.NavigationType
 import com.mumbicodes.projectie.presentation.util.ProjectAppContent
