@@ -2,6 +2,7 @@ package com.mumbicodes.projectie.presentation.screens.allProjects
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,9 @@ import com.mumbicodes.projectie.domain.use_case.workers.WorkersUseCases
 import com.mumbicodes.projectie.domain.util.OrderType
 import com.mumbicodes.projectie.domain.util.ProjectsOrder
 import com.mumbicodes.projectie.domain.util.WorkerState
+import com.mumbicodes.projectie.presentation.util.state.ListState
+import com.mumbicodes.projectie.presentation.util.state.ScreenState
+import com.mumbicodes.projectie.presentation.util.state.SuccessState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -30,7 +34,8 @@ class AllProjectsViewModel @Inject constructor(
     private val appContext: Application,
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(AllProjectsScreenStates())
+    private val _state: MutableState<ScreenState<AllProjectsStates>> =
+        mutableStateOf(ScreenState.Loading)
     val state = _state
 
     private var recentlyDeletedProject: Project? = null
@@ -39,27 +44,32 @@ class AllProjectsViewModel @Inject constructor(
 
     init {
         getProjects(ProjectsOrder.DateAdded(OrderType.Descending), "All")
-        readNotPromptState()
+        if (state is ScreenState.Data<*>) {
+            readNotPromptState()
+        }
         checkWorkInfoState()
     }
 
     fun onEvent(projectsEvent: AllProjectsEvent) {
         when (projectsEvent) {
             is AllProjectsEvent.OrderProjects -> {
-                if (state.value.data.projectsOrder::class == state.value.data.selectedProjectOrder::class &&
-                    state.value.data.projectsOrder.orderType == state.value.data.selectedProjectOrder.orderType
+                if ((state.value as ScreenState.Data).data.projectsOrder::class == (state.value as ScreenState.Data).data.selectedProjectOrder::class &&
+                    (state.value as ScreenState.Data).data.projectsOrder.orderType == (state.value as ScreenState.Data).data.selectedProjectOrder.orderType
                 ) {
                     return
                 }
                 getProjects(
-                    state.value.data.selectedProjectOrder,
-                    state.value.data.selectedProjectStatus
+                    (state.value as ScreenState.Data).data.selectedProjectOrder,
+                    (state.value as ScreenState.Data).data.selectedProjectStatus
                 )
             }
 
             is AllProjectsEvent.ResetProjectsOrder -> {
 
-                getProjects(projectsEvent.projectsOrder, state.value.data.selectedProjectStatus)
+                getProjects(
+                    projectsEvent.projectsOrder,
+                    (state.value as ScreenState.Data).data.selectedProjectStatus
+                )
             }
 
             is AllProjectsEvent.DeleteProject -> {
@@ -77,38 +87,38 @@ class AllProjectsViewModel @Inject constructor(
             }
 
             is AllProjectsEvent.SelectProjectStatus -> {
-                if (state.value.data.selectedProjectStatus == projectsEvent.projectStatus) {
+                if ((state.value as ScreenState.Data).data.selectedProjectStatus == projectsEvent.projectStatus) {
                     return
                 }
-                state.value.data.projects.filterProjects(
+                (((state.value as ScreenState.Data).data.projects as ListState.Success).data as SuccessState.Data).data.filterProjects(
                     projectStatus = projectsEvent.projectStatus,
-                    searchParam = state.value.data.searchParam
+                    searchParam = (state.value as ScreenState.Data).data.searchParam
                 )
             }
 
             is AllProjectsEvent.ToggleBottomSheetVisibility -> {
-                _state.value = state.value.copy(
-                    data = state.value.data.copy(
-                        isFilterBottomSheetVisible = !state.value.data.isFilterBottomSheetVisible
+                _state.value = ScreenState.Data(
+                    data = (state.value as ScreenState.Data<AllProjectsStates>).data.copy(
+                        isFilterBottomSheetVisible = !(state.value as ScreenState.Data<AllProjectsStates>).data.isFilterBottomSheetVisible
                     )
                 )
             }
 
             is AllProjectsEvent.SearchProject -> {
-                _state.value = state.value.copy(
-                    data = state.value.data.copy(
+                _state.value = ScreenState.Data(
+                    data = (state.value as ScreenState.Data<AllProjectsStates>).data.copy(
                         searchParam = projectsEvent.searchParam
                     )
                 )
-                state.value.data.projects.filterProjects(
-                    projectStatus = state.value.data.selectedProjectStatus,
+                (((state.value as ScreenState.Data).data.projects as ListState.Success).data as SuccessState.Data).data.filterProjects(
+                    projectStatus = (state.value as ScreenState.Data<AllProjectsStates>).data.selectedProjectStatus,
                     searchParam = projectsEvent.searchParam,
                 )
             }
 
             is AllProjectsEvent.UpdateProjectOrder -> {
-                _state.value = state.value.copy(
-                    data = state.value.data.copy(
+                _state.value = ScreenState.Data(
+                    data = (state.value as ScreenState.Data<AllProjectsStates>).data.copy(
                         selectedProjectOrder = projectsEvent.projectsOrder
                     )
                 )
@@ -121,25 +131,43 @@ class AllProjectsViewModel @Inject constructor(
      * */
     private fun getProjects(projectsOrder: ProjectsOrder, projectStatus: String) {
         viewModelScope.launch {
-            _state.value = state.value.copy(
-                isLoading = true
-            )
+
             getProjectsJob?.cancel()
             getProjectsJob =
                 when (val results = projectsUseCases.getProjectsUseCase(projectsOrder)) {
-                    is DataResult.Error -> TODO()
+                    is DataResult.Error -> {
+                        // Doing this in a viewModelScope as we need to return a job
+                        viewModelScope.launch {
+                            _state.value = ScreenState.Data(
+                                data = (state.value as ScreenState.Data).data.copy(
+                                    projects = ListState.Error(errorMessage = results.errorMessage)
+                                )
+                            )
+                        }
+                    }
+
                     is DataResult.Success -> {
                         results.data
                             // map the flow to AllProjects compose State
                             .onEach { projects ->
-                                _state.value = state.value.copy(
-                                    data = state.value.data.copy(
-                                        projects = projects,
-                                        projectsOrder = projectsOrder,
-                                    ),
-                                    isLoading = false
-                                )
-                                projects.filterProjects(projectStatus, state.value.data.searchParam)
+                                if (projects.isEmpty()) {
+                                    _state.value = ScreenState.Empty
+                                } else {
+                                    _state.value = ScreenState.Data(
+                                        data = AllProjectsStates(
+                                            projects = ListState.Success(
+                                                data = SuccessState.Data(
+                                                    projects
+                                                )
+                                            ),
+                                            projectsOrder = projectsOrder,
+                                        ),
+                                    )
+                                    projects.filterProjects(
+                                        projectStatus,
+                                        (state.value as ScreenState.Data<AllProjectsStates>).data.searchParam
+                                    )
+                                }
                             }
                             .launchIn(viewModelScope)
                     }
@@ -151,30 +179,40 @@ class AllProjectsViewModel @Inject constructor(
         projectStatus: String,
         searchParam: String,
     ) {
-        _state.value = state.value.copy(
-            data = state.value.data.copy(
-                filteredProjects = if (projectStatus == appContext.getString(R.string.all)) {
-                    this.filter {
-                        it.projectName.contains(searchParam)
+        _state.value = ScreenState.Data(
+            data = (state.value as ScreenState.Data).data.copy(
+                filteredProjects = ListState.Success
+                (
+                    data = when (
+                        this.filter { projectStatus == appContext.getString(R.string.all) || it.projectStatus == projectStatus }
+                            .filter {
+                                it.projectName.contains(searchParam)
+                            }.isEmpty()
+                    ) {
+                        true -> {
+                            SuccessState.Empty
+                        }
+
+                        false -> {
+                            SuccessState.Data(
+                                this.filter { projectStatus == appContext.getString(R.string.all) || it.projectStatus == projectStatus }
+                                    .filter {
+                                        it.projectName.contains(searchParam)
+                                    }
+                            )
+                        }
                     }
-                } else {
-                    this.filter {
-                        it.projectStatus == projectStatus
-                    }.filter {
-                        it.projectName.contains(searchParam)
-                    }
-                },
+                ),
                 selectedProjectStatus = projectStatus,
-            ),
-            isLoading = false
+            )
         )
     }
 
     private fun readNotPromptState() {
         viewModelScope.launch {
             notificationUseCases.readNotificationPromptStateUseCase.invoke().collect { isPrompted ->
-                _state.value = state.value.copy(
-                    data = state.value.data.copy(
+                _state.value = ScreenState.Data(
+                    data = (state.value as ScreenState.Data).data.copy(
                         hasRequestedNotificationPermission = isPrompted
                     )
                 )

@@ -59,7 +59,11 @@ import com.mumbicodes.projectie.presentation.screens.allProjects.components.Filt
 import com.mumbicodes.projectie.presentation.screens.allProjects.components.ProjectItem
 import com.mumbicodes.projectie.presentation.screens.allProjects.components.SearchBar
 import com.mumbicodes.projectie.presentation.screens.allProjects.components.StaggeredVerticalGrid
+import com.mumbicodes.projectie.presentation.screens.all_milestones.WelcomeMessageSection
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
+import com.mumbicodes.projectie.presentation.util.state.ListState
+import com.mumbicodes.projectie.presentation.util.state.ScreenState
+import com.mumbicodes.projectie.presentation.util.state.SuccessState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -72,7 +76,6 @@ fun AllProjectsScreenRoute(
 
     AllProjectsScreen(
         state = state,
-        searchedTextState = state.data.searchParam,
         onFiltersApplied = {
             projectsViewModel.onEvent(
                 AllProjectsEvent.OrderProjects
@@ -115,8 +118,7 @@ fun AllProjectsScreenRoute(
 @Composable
 fun AllProjectsScreen(
     modifier: Modifier = Modifier,
-    state: AllProjectsScreenStates,
-    searchedTextState: String,
+    state: ScreenState<AllProjectsStates>,
     onFiltersApplied: () -> Unit,
     onFiltersClicked: (ProjectsOrder) -> Unit,
     onFiltersReset: () -> Unit,
@@ -138,57 +140,72 @@ fun AllProjectsScreen(
         scope.launch { modalBottomSheetState.hide() }
     }
 
-    ModalBottomSheetLayout(
-        sheetContent = {
-            FilterBottomSheetContent(
-                projectsOrder = state.data.projectsOrder,
-                selectedProjectsOrder = state.data.selectedProjectOrder,
-                onOrderChange = onFiltersClicked,
-                onFiltersApplied = {
-                    onFiltersApplied()
-                    // hide the sheet after applying filters
-                    scope.launch {
-                        modalBottomSheetState.hide()
-                    }
-                },
-                onFiltersReset = {
-                    onFiltersReset()
-                    onFiltersClicked(ProjectsOrder.DateAdded(OrderType.Descending))
-                    scope.launch {
-                        modalBottomSheetState.hide()
-                    }
-                },
+    when (state) {
+        ScreenState.Loading -> {
+            ShimmerEffectComposable()
+        }
+
+        ScreenState.Empty -> {
+            EmptyStateSlot(
+                illustration = R.drawable.add_project,
+                title = R.string.allProjects,
+                description = R.string.allProjectsEmptyText,
             )
-        },
-        sheetState = modalBottomSheetState,
-        sheetBackgroundColor = MaterialTheme.colorScheme.background,
-        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        scrimColor = GreyDark.copy(alpha = 0.5f)
-    ) {
-        Scaffold(
-            scaffoldState = scaffoldState,
-            backgroundColor = MaterialTheme.colorScheme.background
-        ) { padding -> // We need to pass scaffold's inner padding to content. That's why we use Box.
-            Box(modifier = Modifier.padding(padding)) {
-                AllProjectsScreenContent(
-                    modifier = Modifier.padding(
-                        top = 24.dp
-                    ),
-                    projectsScreenState = state,
-                    onClickProject = onClickProject,
-                    onClickFilterBtn = {
-                        scope.launch {
-                            modalBottomSheetState.show()
-                        }
-                        // TODO test whether this needs to be here
-                        onClickFilterBtn()
-                    },
-                    onClickFilterStatus = onClickFilterStatus,
-                    searchedText = searchedTextState,
-                    onSearchParamChanged = onSearchParamChanged,
-                    windowWidthSizeClass = windowWidthSizeClass,
-                    onClickNotBtn = onClickNotBtn
-                )
+        }
+
+        is ScreenState.Data -> {
+            ModalBottomSheetLayout(
+                sheetContent = {
+                    FilterBottomSheetContent(
+                        projectsOrder = (state as ScreenState.Data).data.projectsOrder,
+                        selectedProjectsOrder = state.data.selectedProjectOrder,
+                        onOrderChange = onFiltersClicked,
+                        onFiltersApplied = {
+                            onFiltersApplied()
+                            // hide the sheet after applying filters
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                        },
+                        onFiltersReset = {
+                            onFiltersReset()
+                            onFiltersClicked(ProjectsOrder.DateAdded(OrderType.Descending))
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                        },
+                    )
+                },
+                sheetState = modalBottomSheetState,
+                sheetBackgroundColor = MaterialTheme.colorScheme.background,
+                sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                scrimColor = GreyDark.copy(alpha = 0.5f)
+            ) {
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    backgroundColor = MaterialTheme.colorScheme.background
+                ) { padding -> // We need to pass scaffold's inner padding to content. That's why we use Box.
+                    Box(modifier = Modifier.padding(padding)) {
+                        AllProjectsScreenContent(
+                            modifier = Modifier.padding(
+                                top = 24.dp
+                            ),
+                            projectsScreenState = state,
+                            onClickProject = onClickProject,
+                            onClickFilterBtn = {
+                                scope.launch {
+                                    modalBottomSheetState.show()
+                                }
+                                // TODO test whether this needs to be here
+                                onClickFilterBtn()
+                            },
+                            onClickFilterStatus = onClickFilterStatus,
+                            onSearchParamChanged = onSearchParamChanged,
+                            windowWidthSizeClass = windowWidthSizeClass,
+                            onClickNotBtn = onClickNotBtn
+                        )
+                    }
+                }
             }
         }
     }
@@ -198,17 +215,167 @@ fun AllProjectsScreen(
 @Composable
 fun AllProjectsScreenContent(
     modifier: Modifier = Modifier,
-    projectsScreenState: AllProjectsScreenStates,
+    projectsScreenState: ScreenState.Data<AllProjectsStates>,
     onClickProject: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
-    searchedText: String,
     onSearchParamChanged: (String) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
     onClickNotBtn: (Boolean) -> Unit,
 ) {
 
-    if (projectsScreenState.data.projects.isEmpty()) {
+    Column(modifier = modifier) {
+        WelcomeMessageSection(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = Space20dp,
+                    end = Space20dp,
+                ),
+            projects = ((projectsScreenState.data.projects as ListState.Success).data as SuccessState.Data).data
+        )
+        Spacer(modifier = Modifier.height(Space24dp))
+
+        RequestNotifications(
+            hasRequestedNotificationPermission = projectsScreenState.data.hasRequestedNotificationPermission,
+            onClickNotBtn = onClickNotBtn
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = Space20dp,
+                    end = Space20dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SearchBar(
+                modifier = Modifier.weight(1f),
+                searchParamType = stringResource(id = R.string.projects),
+                searchedText = projectsScreenState.data.searchParam,
+                onSearchParamChanged = onSearchParamChanged
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            IconButton(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.surface),
+                onClick = onClickFilterBtn,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_filter),
+                    contentDescription = "Filter projects",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Space16dp))
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(horizontal = Space20dp),
+            horizontalArrangement = Arrangement.spacedBy(Space8dp)
+        ) {
+            itemsIndexed(projectsScreenState.data.filtersStatus) { _, filter ->
+                com.mumbicodes.projectie.presentation.designsystem.components.FilterChip(
+                    text = filter,
+                    selected = filter == projectsScreenState.data.selectedProjectStatus,
+                    onClick = onClickFilterStatus,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Space8dp))
+
+        when (val filteredProjects = projectsScreenState.data.filteredProjects) {
+            is ListState.Error -> TODO()
+            ListState.Loading -> TODO()
+            is ListState.Success -> {
+                when (filteredProjects.data) {
+                    is SuccessState.Data -> {
+                        Log.d(" Success", "With Data")
+                        LazyVerticalStaggeredGrid(
+                            columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
+                            contentPadding = PaddingValues(bottom = Space20dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = Space20dp, end = Space20dp),
+                            verticalArrangement = Arrangement.spacedBy(Space16dp),
+                            horizontalArrangement = Arrangement.spacedBy(Space16dp)
+                        ) {
+                            items(filteredProjects.data.data) { project ->
+                                ProjectItem(
+                                    // modifier = Modifier.padding(Space8dp),
+                                    project = project,
+                                    onClickProject = onClickProject
+                                )
+                            }
+                        }
+                    }
+
+                    SuccessState.Empty -> {
+                        Log.d(" Success", "Empty")
+                        if (projectsScreenState.data.searchParam.isEmpty()) {
+                            EmptyStateSection(
+                                filter = projectsScreenState.data.selectedProjectStatus,
+                                projects = (projectsScreenState.data.projects.data as SuccessState.Data).data
+                            )
+                        } else {
+                            ErrorStateSlot(
+                                illustration = R.drawable.empty_state,
+                                description = R.string.projectsErrorText,
+                                searchParam = projectsScreenState.data.searchParam,
+                                filter = projectsScreenState.data.selectedProjectStatus,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /*
+    *    if (projectsScreenState.data.filteredProjects.isEmpty()) {
+                if (searchedText.isEmpty()) {
+                    EmptyStateSection(
+                        filter = projectsScreenState.data.selectedProjectStatus,
+                        projects = projectsScreenState.data.projects
+                    )
+                } else {
+                    ErrorStateSlot(
+                        illustration = R.drawable.empty_state,
+                        description = R.string.projectsErrorText,
+                        searchParam = searchedText,
+                        filter = projectsScreenState.data.selectedProjectStatus,
+                    )
+                }
+            } else {
+                LazyVerticalStaggeredGrid(
+                    columns = rememberProjectsColumns(windowWidthSizeClass = windowWidthSizeClass),
+                    contentPadding = PaddingValues(bottom = Space20dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = Space20dp, end = Space20dp),
+                    verticalArrangement = Arrangement.spacedBy(Space16dp),
+                    horizontalArrangement = Arrangement.spacedBy(Space16dp)
+                ) {
+                    items(projectsScreenState.data.filteredProjects) { project ->
+                        ProjectItem(
+                            // modifier = Modifier.padding(Space8dp),
+                            project = project,
+                            onClickProject = onClickProject
+                        )
+                    }
+                }
+            }
+    * */
+
+    /*if (projectsScreenState.data.projects.isEmpty()) {
         if (projectsScreenState.isLoading) {
             ShimmerEffectComposable()
         } else {
@@ -322,7 +489,7 @@ fun AllProjectsScreenContent(
                 }
             }
         }
-    }
+    }*/
 }
 
 @Composable
