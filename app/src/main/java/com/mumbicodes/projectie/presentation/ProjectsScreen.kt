@@ -10,9 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.mumbicodes.projectie.presentation.allProjects.AllProjectsScreenRoute
-import com.mumbicodes.projectie.presentation.projectDetails.ProjectDetailsScreen
-import com.mumbicodes.projectie.presentation.theme.Space20dp
+import com.mumbicodes.projectie.presentation.designsystem.theme.Space20dp
+import com.mumbicodes.projectie.presentation.screens.allProjects.AllProjectsScreenRoute
+import com.mumbicodes.projectie.presentation.screens.projectDetails.ProjectDetailsScreen
 import com.mumbicodes.projectie.presentation.util.ContentType
 import com.mumbicodes.projectie.presentation.util.navigation.Screens
 

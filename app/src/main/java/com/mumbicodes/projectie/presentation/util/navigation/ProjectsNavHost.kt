@@ -9,13 +9,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.mumbicodes.projectie.presentation.ProjectsScreen
-import com.mumbicodes.projectie.presentation.add_edit_milestone.AddAndEditMilestoneScreen
-import com.mumbicodes.projectie.presentation.add_edit_project.AddAndEditScreen
-import com.mumbicodes.projectie.presentation.all_milestones.AllMilestonesScreenRoute
-import com.mumbicodes.projectie.presentation.notifications.NotificationScreen
-import com.mumbicodes.projectie.presentation.projectDetails.ProjectDetailsScreen
-import com.mumbicodes.projectie.presentation.splash.OnBoardingScreen
-import com.mumbicodes.projectie.presentation.splash.OnBoardingViewModel
+import com.mumbicodes.projectie.presentation.screens.add_edit_milestone.AddAndEditMilestoneScreen
+import com.mumbicodes.projectie.presentation.screens.add_edit_project.AddAndEditScreen
+import com.mumbicodes.projectie.presentation.screens.all_milestones.AllMilestonesScreenRoute
+import com.mumbicodes.projectie.presentation.screens.notifications.NotificationScreen
+import com.mumbicodes.projectie.presentation.screens.projectDetails.ProjectDetailsScreen
+import com.mumbicodes.projectie.presentation.screens.splash.OnBoardingScreen
+import com.mumbicodes.projectie.presentation.screens.splash.OnBoardingViewModel
 import com.mumbicodes.projectie.presentation.util.ContentType
 
 /**

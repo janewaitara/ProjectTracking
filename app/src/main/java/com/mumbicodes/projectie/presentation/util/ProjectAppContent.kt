@@ -14,8 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.mumbicodes.projectie.presentation.components.BottomBar
-import com.mumbicodes.projectie.presentation.components.NavigationRailComposable
+import com.mumbicodes.projectie.presentation.designsystem.components.BottomBar
+import com.mumbicodes.projectie.presentation.designsystem.components.NavigationRailComposable
 import com.mumbicodes.projectie.presentation.util.navigation.ProjectNavHost
 import com.mumbicodes.projectie.presentation.util.navigation.Screens
 

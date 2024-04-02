@@ -13,9 +13,8 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
-import com.mumbicodes.projectie.presentation.splash.SplashScreenViewModel
-import com.mumbicodes.projectie.presentation.theme.*
-import com.mumbicodes.projectie.presentation.theme.ProjectTrackingTheme
+import com.mumbicodes.projectie.presentation.designsystem.theme.ProjectTrackingTheme
+import com.mumbicodes.projectie.presentation.screens.splash.SplashScreenViewModel
 import com.mumbicodes.projectie.presentation.util.DevicePosture
 import com.mumbicodes.projectie.presentation.util.isBookPosture
 import com.mumbicodes.projectie.presentation.util.isSeparating
