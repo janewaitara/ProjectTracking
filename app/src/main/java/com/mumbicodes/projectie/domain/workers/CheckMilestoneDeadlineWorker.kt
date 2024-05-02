@@ -10,7 +10,6 @@ import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.repository.MilestonesRepository
 import com.mumbicodes.projectie.domain.repository.WorkersRepository
-import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
 import com.mumbicodes.projectie.presentation.util.toLong
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -35,7 +34,7 @@ class CheckMilestoneDeadlineWorker @AssistedInject constructor(
         return withContext(Dispatchers.IO) {
             return@withContext try {
                 Log.e("Reached 2", "It has been reached ")
-                val allMilestones = milestonesRepository.getAllMilestones(AllMilestonesOrder.MostUrgent)
+                val allMilestones = milestonesRepository.getAllMilestones()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     when (allMilestones) {

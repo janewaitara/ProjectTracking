@@ -4,21 +4,42 @@ import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,10 +73,13 @@ import com.mumbicodes.projectie.presentation.screens.all_milestones.components.A
 import com.mumbicodes.projectie.presentation.screens.all_milestones.components.FilterMilestonesBottomSheetContent
 import com.mumbicodes.projectie.presentation.screens.projectDetails.MilestoneDetailsBottomSheetContent
 import com.mumbicodes.projectie.presentation.util.ReferenceDevices
+import com.mumbicodes.projectie.presentation.util.state.ListState
+import com.mumbicodes.projectie.presentation.util.state.ScreenState
+import com.mumbicodes.projectie.presentation.util.state.SuccessState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Locale
 
 @Composable
 fun AllMilestonesScreenRoute(
@@ -128,7 +152,7 @@ fun AllMilestonesScreenRoute(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AllMilestonesScreen(
-    screenState: ScreenStates,
+    screenState: ScreenState<AllMilestonesStates>,
     uiEvents: MutableSharedFlow<AllMilestonesUIEvents>,
     onModifyMilestone: (Int, Int) -> Unit,
     onFiltersApplied: () -> Unit,
@@ -169,94 +193,113 @@ fun AllMilestonesScreen(
         scope.launch { modalBottomSheetState.hide() }
     }
 
-    ModalBottomSheetLayout(
-        sheetContent = {
-            /***
-             * the spacer solves the error
-             * The initial value must have an associated anchor.
-             * */
+    when (screenState) {
+        ScreenState.Loading -> {
+            ShimmerEffectComposable()
+        }
 
-            Spacer(modifier = Modifier.height(1.dp))
-            when (bottomSheetType.value) {
-                BottomSheetType.FILTER -> {
-                    FilterMilestonesBottomSheetContent(
-                        milestonesOrder = screenState.data.milestonesOrder,
-                        selectedMilestonesOrder = screenState.data.selectedMilestoneOrder,
-                        onOrderChange = onMilestoneOrderUpdated,
-                        onFiltersApplied = {
-                            onFiltersApplied()
-                            scope.launch {
-                                modalBottomSheetState.hide()
-                            }
-                        },
-                        onFiltersReset = {
-                            onFiltersReset()
-                            scope.launch {
-                                modalBottomSheetState.hide()
-                            }
-                        }
-                    )
-                }
+        ScreenState.Empty -> {
+            EmptyStateSlot(
+                illustration = R.drawable.add_project,
+                title = R.string.allMilestones,
+                description = R.string.allMilestonesEmptyText,
+            )
+        }
 
-                BottomSheetType.MILESTONE_DETAILS -> {
-                    MilestoneDetailsBottomSheetContent(
-                        milestoneWithTasks = screenState.data.mileStone,
-                        onDeleteClicked = { milestone ->
-                            onDeleteClicked(milestone)
-                            scope.launch {
-                                modalBottomSheetState.hide()
-                            }
-                        },
-                        onModifyClicked = { milestoneId ->
-                            // TODO research why the sheet still persists and I have hidden it
-                            scope.launch {
-                                modalBottomSheetState.hide()
-                            }
-                            onModifyMilestone(
-                                screenState.data.mileStone.milestone.projectId,
-                                milestoneId
+        is ScreenState.Data -> {
+            ModalBottomSheetLayout(
+                sheetContent = {
+                    /***
+                     * the spacer solves the error
+                     * The initial value must have an associated anchor.
+                     * */
+
+                    Spacer(modifier = Modifier.height(1.dp))
+                    when (bottomSheetType.value) {
+                        BottomSheetType.FILTER -> {
+                            FilterMilestonesBottomSheetContent(
+                                milestonesOrder = screenState.data.milestonesOrder,
+                                selectedMilestonesOrder = screenState.data.selectedMilestoneOrder,
+                                onOrderChange = onMilestoneOrderUpdated,
+                                onFiltersApplied = {
+                                    onFiltersApplied()
+                                    scope.launch {
+                                        modalBottomSheetState.hide()
+                                    }
+                                },
+                                onFiltersReset = {
+                                    onFiltersReset()
+                                    scope.launch {
+                                        modalBottomSheetState.hide()
+                                    }
+                                }
                             )
-                        },
-                        onTaskClicked = onTaskClicked,
-                    )
-                }
-            }
-        },
-        sheetState = modalBottomSheetState,
-        sheetBackgroundColor = MaterialTheme.colorScheme.background,
-        sheetShape = RoundedCornerShape(topStart = Space16dp, topEnd = Space16dp),
-        scrimColor = GreyDark.copy(alpha = 0.5f),
-    ) {
-        Scaffold(
-            scaffoldState = scaffoldState,
-            backgroundColor = MaterialTheme.colorScheme.background,
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                AllMilestonesScreenContent(
-                    modifier = Modifier.padding(
-                        top = 24.dp
-                    ),
-                    milestonesStates = screenState,
-                    onClickMilestone = { milestoneId ->
-                        onClickMilestone(milestoneId)
+                        }
 
-                        scope.launch {
-                            modalBottomSheetState.show()
+                        BottomSheetType.MILESTONE_DETAILS -> {
+
+                            screenState.data.mileStone?.let { milestoneWithTasks ->
+                                MilestoneDetailsBottomSheetContent(
+                                    milestoneWithTasks = milestoneWithTasks,
+                                    onDeleteClicked = { milestone ->
+                                        onDeleteClicked(milestone)
+                                        scope.launch {
+                                            modalBottomSheetState.hide()
+                                        }
+                                    },
+                                    onModifyClicked = { milestoneId ->
+                                        // TODO research why the sheet still persists and I have hidden it
+                                        scope.launch {
+                                            modalBottomSheetState.hide()
+                                        }
+                                        onModifyMilestone(
+                                            screenState.data.mileStone.milestone.projectId,
+                                            milestoneId
+                                        )
+                                    },
+                                    onTaskClicked = onTaskClicked,
+                                )
+                            }
                         }
-                    },
-                    onClickFilterBtn = {
-                        scope.launch {
-                            modalBottomSheetState.show()
-                        }
-                    },
-                    onClickFilterStatus = onClickFilterStatus,
-                    searchedText = screenState.data.searchParam,
-                    onSearchParamChanged = onSearchParamChanged,
-                    windowWidthSizeClass = windowWidthSizeClass,
-                    passBottomSheetType = { passedBottomSheetType ->
-                        bottomSheetType.value = passedBottomSheetType
-                    },
-                )
+                    }
+                },
+                sheetState = modalBottomSheetState,
+                sheetBackgroundColor = MaterialTheme.colorScheme.background,
+                sheetShape = RoundedCornerShape(topStart = Space16dp, topEnd = Space16dp),
+                scrimColor = GreyDark.copy(alpha = 0.5f),
+            ) {
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                ) { paddingValues ->
+                    Box(modifier = Modifier.padding(paddingValues)) {
+                        AllMilestonesScreenContent(
+                            modifier = Modifier.padding(
+                                top = 24.dp
+                            ),
+                            milestonesStates = screenState,
+                            onClickMilestone = { milestoneId ->
+                                onClickMilestone(milestoneId)
+
+                                scope.launch {
+                                    modalBottomSheetState.show()
+                                }
+                            },
+                            onClickFilterBtn = {
+                                scope.launch {
+                                    modalBottomSheetState.show()
+                                }
+                            },
+                            onClickFilterStatus = onClickFilterStatus,
+                            searchedText = screenState.data.searchParam,
+                            onSearchParamChanged = onSearchParamChanged,
+                            windowWidthSizeClass = windowWidthSizeClass,
+                            passBottomSheetType = { passedBottomSheetType ->
+                                bottomSheetType.value = passedBottomSheetType
+                            },
+                        )
+                    }
+                }
             }
         }
     }
@@ -266,7 +309,7 @@ fun AllMilestonesScreen(
 @Composable
 fun AllMilestonesScreenContent(
     modifier: Modifier = Modifier,
-    milestonesStates: ScreenStates,
+    milestonesStates: ScreenState.Data<AllMilestonesStates>,
     onClickMilestone: (Int) -> Unit,
     onClickFilterBtn: () -> Unit,
     onClickFilterStatus: (String) -> Unit,
@@ -276,129 +319,137 @@ fun AllMilestonesScreenContent(
     passBottomSheetType: (BottomSheetType) -> Unit,
 ) {
 
-    if (milestonesStates.data.milestones.isEmpty()) {
-        if (milestonesStates.isLoading) {
-            ShimmerEffectComposable()
-        } else {
-            EmptyStateSlot(
-                illustration = R.drawable.add_project,
-                title = R.string.allMilestones,
-                description = R.string.allMilestonesEmptyText,
-            )
+    Column(modifier = modifier) {
+
+        val list = when (val milestones = milestonesStates.data.milestones) {
+            is ListState.Error -> emptyList()
+            ListState.Loading -> emptyList()
+            is ListState.Success -> {
+                when (milestones.data) {
+                    is SuccessState.Data -> milestones.data.data
+                    SuccessState.Empty -> emptyList()
+                }
+            }
         }
-    } else {
+        WelcomeMessageSection(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = Space20dp,
+                    end = Space20dp,
+                ),
+            milestones = list
+        )
+        Spacer(modifier = Modifier.height(Space24dp))
 
-        Column(modifier = modifier) {
-
-            WelcomeMessageSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = Space20dp,
-                        end = Space20dp,
-                    ),
-                milestones = milestonesStates.data.milestones
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = Space20dp,
+                    end = Space20dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SearchBar(
+                modifier = Modifier.weight(1f),
+                searchParamType = stringResource(id = R.string.milestones).lowercase(Locale.getDefault()),
+                searchedText = searchedText,
+                onSearchParamChanged = onSearchParamChanged
             )
-            Spacer(modifier = Modifier.height(Space24dp))
 
-            Row(
+            Spacer(modifier = Modifier.width(8.dp))
+
+            IconButton(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = Space20dp,
-                        end = Space20dp,
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
+                    .size(48.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.surface),
+                onClick = {
+                    onClickFilterBtn()
+
+                    passBottomSheetType(
+                        BottomSheetType.FILTER
+                    )
+                },
             ) {
-                SearchBar(
-                    modifier = Modifier.weight(1f),
-                    searchParamType = stringResource(id = R.string.milestones).lowercase(Locale.getDefault()),
-                    searchedText = searchedText,
-                    onSearchParamChanged = onSearchParamChanged
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_filter),
+                    contentDescription = "Filter projects",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                IconButton(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(MaterialTheme.shapes.small)
-                        .background(MaterialTheme.colorScheme.surface),
-                    onClick = {
-                        onClickFilterBtn()
-
-                        passBottomSheetType(
-                            BottomSheetType.FILTER
-                        )
-                    },
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_filter),
-                        contentDescription = "Filter projects",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
             }
+        }
 
-            Spacer(modifier = Modifier.height(Space16dp))
+        Spacer(modifier = Modifier.height(Space16dp))
 
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                contentPadding = PaddingValues(horizontal = Space20dp),
-                horizontalArrangement = Arrangement.spacedBy(Space8dp)
-            ) {
-                itemsIndexed(milestonesStates.data.filtersStatus) { _, filter ->
-                    FilterChip(
-                        text = filter,
-                        selected = filter == milestonesStates.data.selectedMilestoneStatus,
-                        onClick = onClickFilterStatus,
-                    )
-                }
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(horizontal = Space20dp),
+            horizontalArrangement = Arrangement.spacedBy(Space8dp)
+        ) {
+            itemsIndexed(milestonesStates.data.filtersStatus) { _, filter ->
+                FilterChip(
+                    text = filter,
+                    selected = filter == milestonesStates.data.selectedMilestoneStatus,
+                    onClick = onClickFilterStatus,
+                )
             }
+        }
 
-            Spacer(modifier = Modifier.height(Space8dp))
+        Spacer(modifier = Modifier.height(Space8dp))
 
-            if (milestonesStates.data.filteredMilestones.isEmpty()) {
-                if (searchedText.isEmpty()) {
-                    EmptyState(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(start = Space20dp, end = Space20dp),
-                        filter = milestonesStates.data.selectedMilestoneStatus,
-                    )
-                } else {
-                    ErrorStateSlot(
-                        illustration = R.drawable.empty_state,
-                        description = R.string.milestonesErrorText,
-                        searchParam = searchedText,
-                        filter = milestonesStates.data.selectedMilestoneStatus,
-                    )
-                }
-            } else {
-                LazyVerticalStaggeredGrid(
-                    columns = rememberAllMilestonesColumns(windowWidthSizeClass = windowWidthSizeClass),
-                    contentPadding = PaddingValues(bottom = Space20dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = Space20dp, end = Space20dp),
-                    verticalArrangement = Arrangement.spacedBy(Space16dp),
-                    horizontalArrangement = Arrangement.spacedBy(Space16dp)
-                ) {
-                    items(milestonesStates.data.filteredMilestones) { milestoneWithTasks ->
+        when (val filteredMilestones = milestonesStates.data.filteredMilestones) {
+            is ListState.Error -> TODO()
+            ListState.Loading -> TODO()
+            is ListState.Success -> {
+                when (filteredMilestones.data) {
+                    SuccessState.Empty -> {
+                        if (milestonesStates.data.searchParam.isEmpty()) {
+                            EmptyState(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(start = Space20dp, end = Space20dp),
+                                filter = milestonesStates.data.selectedMilestoneStatus,
+                            )
+                        } else {
+                            ErrorStateSlot(
+                                illustration = R.drawable.empty_state,
+                                description = R.string.milestonesErrorText,
+                                searchParam = milestonesStates.data.searchParam,
+                                filter = milestonesStates.data.selectedMilestoneStatus,
+                            )
+                        }
+                    }
 
-                        AllMilestonesItem(
-                            milestoneWithTasks = milestoneWithTasks,
-                            projectName = milestonesStates.data.milestonesProjectName[milestoneWithTasks.milestone.milestoneId]
-                                ?: "No project name",
-                            onClickMilestone = {
-                                onClickMilestone(it)
+                    is SuccessState.Data -> {
 
-                                passBottomSheetType(
-                                    BottomSheetType.MILESTONE_DETAILS
+                        LazyVerticalStaggeredGrid(
+                            columns = rememberAllMilestonesColumns(windowWidthSizeClass = windowWidthSizeClass),
+                            contentPadding = PaddingValues(bottom = Space20dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = Space20dp, end = Space20dp),
+                            verticalArrangement = Arrangement.spacedBy(Space16dp),
+                            horizontalArrangement = Arrangement.spacedBy(Space16dp)
+                        ) {
+                            items(filteredMilestones.data.data) { milestoneWithTasks ->
+
+                                AllMilestonesItem(
+                                    milestoneWithTasks = milestoneWithTasks,
+                                    projectName = milestonesStates.data.milestonesProjectName[milestoneWithTasks.milestone.milestoneId]
+                                        ?: "No project name",
+                                    onClickMilestone = {
+                                        onClickMilestone(it)
+
+                                        passBottomSheetType(
+                                            BottomSheetType.MILESTONE_DETAILS
+                                        )
+                                    }
                                 )
                             }
-                        )
+                        }
                     }
                 }
             }

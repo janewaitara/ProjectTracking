@@ -3,7 +3,6 @@ package com.mumbicodes.projectie.domain.repository
 import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
-import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
 import kotlinx.coroutines.flow.Flow
 
 interface MilestonesRepository {
@@ -17,7 +16,7 @@ interface MilestonesRepository {
         status: String?,
     ): DataResult<List<Milestone>>
 
-    suspend fun getAllMilestones(milestonesOrder: AllMilestonesOrder): DataResult<Flow<List<MilestoneWithTasks>>>
+    suspend fun getAllMilestones(): DataResult<Flow<List<MilestoneWithTasks>>>
 
     suspend fun deleteMilestone(milestone: Milestone)
 

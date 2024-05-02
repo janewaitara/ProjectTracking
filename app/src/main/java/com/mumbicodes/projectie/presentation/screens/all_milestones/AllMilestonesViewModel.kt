@@ -1,22 +1,20 @@
 package com.mumbicodes.projectie.presentation.screens.all_milestones
 
-import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.DataResult
-import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.model.Task
-import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
-import com.mumbicodes.projectie.domain.util.AllMilestonesOrder
 import com.mumbicodes.projectie.presentation.screens.add_edit_milestone.TaskState
+import com.mumbicodes.projectie.presentation.util.state.ListState
+import com.mumbicodes.projectie.presentation.util.state.ScreenState
+import com.mumbicodes.projectie.presentation.util.state.SuccessState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,10 +29,10 @@ class AllMilestonesViewModel @Inject constructor(
     private val milestonesUseCases: MilestonesUseCases,
     private val projectsUseCases: ProjectsUseCases,
     private val tasksUseCase: TasksUseCases,
-    private val appContext: Application,
 ) : ViewModel() {
 
-    private val _screenStates = mutableStateOf(ScreenStates())
+    private val _screenStates: MutableState<ScreenState<AllMilestonesStates>> =
+        mutableStateOf(ScreenState.Loading)
     val screenStates = _screenStates
 
     private var getMilestonesJob: Job? = null
@@ -50,37 +48,34 @@ class AllMilestonesViewModel @Inject constructor(
     val stateTasks: List<TaskState> = _stateTasks
 
     init {
-        getAllMilestones(
-            milestonesOrder = screenStates.value.data.milestonesOrder,
-            milestoneStatus = screenStates.value.data.selectedMilestoneStatus,
-        )
+        getAllMilestones()
     }
 
-    private fun getAllMilestones(milestonesOrder: AllMilestonesOrder, milestoneStatus: String) {
+    /**
+     * why am I reassigning milestone?
+     * when the milestone changes the flow emits again and it automatically set to null,
+     * so we set it to the previous selected milestone so that it doesn't disappear
+     */
+    private fun getAllMilestones() {
         viewModelScope.launch {
-            _screenStates.value = screenStates.value.copy(
-                isLoading = true
-            )
-
             getMilestonesJob?.cancel()
 
             getMilestonesJob = when (
                 val allMilestones =
-                    milestonesUseCases.getAllMilestonesUseCase(milestonesOrder)
+                    milestonesUseCases.getAllMilestonesUseCase()
             ) {
                 is DataResult.Error -> TODO()
                 is DataResult.Success -> {
                     allMilestones.data.onEach { milestonesWithTasks ->
-                        _screenStates.value = screenStates.value.copy(
-                            data = screenStates.value.data.copy(
-                                milestones = milestonesWithTasks,
-                                milestonesOrder = milestonesOrder,
-                            ),
-                            isLoading = false,
-                        )
-                        milestonesWithTasks.filterMilestones(
-                            milestoneStatus,
-                            screenStates.value.data.searchParam
+                        _screenStates.value = ScreenState.Data(
+                            data = AllMilestonesStates(
+                                mileStone = getNullableSuccessScreenState()?.data?.mileStone,
+                                milestones = ListState.Success(
+                                    data = SuccessState.Data(
+                                        data = milestonesWithTasks,
+                                    )
+                                )
+                            )
                         )
                         getProjectNameAndId()
                     }
@@ -113,18 +108,17 @@ class AllMilestonesViewModel @Inject constructor(
         val mappedMilestonesWithProjectName = mutableMapOf<Int, String>()
 
         _projectNames.value.forEach { projectName ->
-            screenStates.value.data.filteredMilestones.forEach { milestoneWithTasks ->
+            (((screenStates.value as ScreenState.Data).data.milestones as ListState.Success).data as SuccessState.Data).data.forEach { milestoneWithTasks ->
                 if (milestoneWithTasks.milestone.projectId == projectName.projectId) {
                     mappedMilestonesWithProjectName[milestoneWithTasks.milestone.milestoneId] =
                         projectName.projectName
                 }
             }
         }
-        _screenStates.value = screenStates.value.copy(
-            data = screenStates.value.data.copy(
+        _screenStates.value = ScreenState.Data(
+            data = (screenStates.value as ScreenState.Data<AllMilestonesStates>).data.copy(
                 milestonesProjectName = mappedMilestonesWithProjectName
-            ),
-            isLoading = false,
+            )
         )
     }
 
@@ -139,57 +133,49 @@ class AllMilestonesViewModel @Inject constructor(
             }
 
             is AllMilestonesEvents.OrderMilestones -> {
-                if (screenStates.value.data.milestonesOrder::class == screenStates.value.data.selectedMilestoneOrder::class) {
+                if ((screenStates.value as ScreenState.Data).data.milestonesOrder::class == (screenStates.value as ScreenState.Data).data.selectedMilestoneOrder::class) {
                     return
                 }
-
-                getAllMilestones(
-                    milestonesOrder = screenStates.value.data.selectedMilestoneOrder,
-                    milestoneStatus = screenStates.value.data.selectedMilestoneStatus
+                _screenStates.value = getSuccessScreenState().copy(
+                    data = getSuccessScreenState().data.copy(
+                        milestonesOrder = getSuccessScreenState().data.selectedMilestoneOrder
+                    )
                 )
             }
 
             is AllMilestonesEvents.UpdateMilestoneOrder -> {
-                _screenStates.value = screenStates.value.copy(
-                    data = screenStates.value.data.copy(
+                _screenStates.value = getSuccessScreenState().copy(
+                    data = getSuccessScreenState().data.copy(
                         selectedMilestoneOrder = milestonesEvents.milestonesOrder
                     )
                 )
             }
 
             is AllMilestonesEvents.ResetMilestonesOrder -> {
-                _screenStates.value = screenStates.value.copy(
-                    data = screenStates.value.data.copy(
-                        selectedMilestoneOrder = milestonesEvents.milestonesOrder
+                _screenStates.value = getSuccessScreenState().copy(
+                    data = getSuccessScreenState().data.copy(
+                        selectedMilestoneOrder = milestonesEvents.milestonesOrder,
+                        milestonesOrder = milestonesEvents.milestonesOrder
                     )
-                )
-                getAllMilestones(
-                    milestonesOrder = milestonesEvents.milestonesOrder,
-                    milestoneStatus = screenStates.value.data.selectedMilestoneStatus
                 )
             }
 
             is AllMilestonesEvents.SearchMilestone -> {
-                _screenStates.value = screenStates.value.copy(
-                    data = screenStates.value.data.copy(
+                _screenStates.value = getSuccessScreenState().copy(
+                    data = getSuccessScreenState().data.copy(
                         searchParam = milestonesEvents.searchParam
                     )
-                )
-
-                screenStates.value.data.milestones.filterMilestones(
-                    milestoneStatus = screenStates.value.data.selectedMilestoneStatus,
-                    searchParam = screenStates.value.data.searchParam
                 )
             }
 
             is AllMilestonesEvents.SelectMilestoneStatus -> {
-                if (screenStates.value.data.selectedMilestoneStatus == milestonesEvents.milestoneStatus) {
+                if (getSuccessScreenState().data.selectedMilestoneStatus == milestonesEvents.milestoneStatus) {
                     return
                 }
-
-                screenStates.value.data.milestones.filterMilestones(
-                    milestoneStatus = milestonesEvents.milestoneStatus,
-                    searchParam = screenStates.value.data.searchParam
+                _screenStates.value = getSuccessScreenState().copy(
+                    data = getSuccessScreenState().data.copy(
+                        selectedMilestoneStatus = milestonesEvents.milestoneStatus
+                    )
                 )
             }
 
@@ -207,41 +193,22 @@ class AllMilestonesViewModel @Inject constructor(
                 val tasks = tasksUseCase.transformTasksUseCase.transformTaskStatesToTasks(
                     stateTasks
                 )
-                checkAndUpdateMilestoneStatus(tasks)
+
                 // Update db
                 viewModelScope.launch {
-                    tasksUseCase.addTasksUseCase(
-                        tasks
-                    )
+                    checkAndUpdateMilestoneStatus(tasks)
+                    tasksUseCase.addTasksUseCase(tasks)
                     checkAndUpdateProjectStatus()
                 }
             }
         }
     }
 
-    private fun List<MilestoneWithTasks>.filterMilestones(
-        milestoneStatus: String,
-        searchParam: String,
-    ) {
-        _screenStates.value = screenStates.value.copy(
-            data = screenStates.value.data.copy(
-                filteredMilestones = if (milestoneStatus == appContext.getString(R.string.all)) {
-                    this.filter {
-                        it.milestone.milestoneTitle.contains(searchParam)
-                    }
-                } else {
-                    this.filter {
-                        it.milestone.status == milestoneStatus
-                    }.filter {
-                        it.milestone.milestoneTitle.contains(searchParam)
-                    }
-                },
-                selectedMilestoneStatus = milestoneStatus,
-            ),
-            isLoading = false,
+    private fun getSuccessScreenState() =
+        (screenStates.value as ScreenState.Data<AllMilestonesStates>)
 
-        )
-    }
+    private fun getNullableSuccessScreenState() =
+        (screenStates.value as? ScreenState.Data<AllMilestonesStates>)
 
     private fun getMilestoneById(milestoneId: Int) {
         viewModelScope.launch {
@@ -253,21 +220,10 @@ class AllMilestonesViewModel @Inject constructor(
                 is DataResult.Error -> TODO()
                 is DataResult.Success -> {
                     milestone.data.onEach { milestoneWithTask ->
-                        _screenStates.value = screenStates.value.copy(
-                            data = screenStates.value.data.copy(
-                                mileStone = milestoneWithTask ?: MilestoneWithTasks(
-                                    milestone = Milestone(
-                                        projectId = 0,
-                                        milestoneId = 0,
-                                        milestoneTitle = "",
-                                        milestoneSrtDate = 0,
-                                        milestoneEndDate = 0,
-                                        status = "",
-                                    ),
-                                    tasks = listOf()
-                                )
-                            ),
-                            isLoading = false,
+                        _screenStates.value = getSuccessScreenState().copy(
+                            data = getSuccessScreenState().data.copy(
+                                mileStone = milestoneWithTask
+                            )
                         )
                         // adding tasks to state
                         _stateTasks.apply {
@@ -284,15 +240,12 @@ class AllMilestonesViewModel @Inject constructor(
         }
     }
 
-    private fun checkAndUpdateMilestoneStatus(tasks: List<Task>) {
-
-        viewModelScope.launch {
-            val currentMilestoneStatus =
-                milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
+    private suspend fun checkAndUpdateMilestoneStatus(tasks: List<Task>) {
+        val currentMilestoneStatus =
+            milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
+        getSuccessScreenState().data.mileStone?.let {
             milestonesUseCases.addMilestoneUseCase(
-                screenStates.value.data.mileStone.milestone.copy(
-                    status = currentMilestoneStatus
-                )
+                it.milestone.copy(status = currentMilestoneStatus)
             )
         }
     }
@@ -300,7 +253,8 @@ class AllMilestonesViewModel @Inject constructor(
     private fun checkAndUpdateProjectStatus() {
         viewModelScope.launch {
 
-            val projectId = screenStates.value.data.mileStone.milestone.projectId
+            val projectId =
+                getSuccessScreenState().data.mileStone?.milestone?.projectId ?: return@launch
             val projectStatus = when (
                 val status =
                     projectsUseCases.checkProjectStatusUseCase.invoke(projectId)
