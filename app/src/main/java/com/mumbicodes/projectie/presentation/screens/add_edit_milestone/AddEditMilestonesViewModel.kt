@@ -177,7 +177,7 @@ class AddEditMilestonesViewModel @Inject constructor(
                         )
                     )
 
-                    tasksUseCases.addTasksUseCase(
+                    tasksUseCases.insertOrUpdateTasksUseCase(
                         tasksUseCases.transformTasksUseCase.transformTaskStatesToTasks(
                             stateTasks
                         ).filter {

@@ -197,7 +197,7 @@ class AllMilestonesViewModel @Inject constructor(
                 // Update db
                 viewModelScope.launch {
                     checkAndUpdateMilestoneStatus(tasks)
-                    tasksUseCase.addTasksUseCase(tasks)
+                    tasksUseCase.insertOrUpdateTasksUseCase(tasks)
                     checkAndUpdateProjectStatus()
                 }
             }

@@ -133,7 +133,7 @@ class ProjectDetailsViewModel @Inject constructor(
                 checkAndUpdateMilestoneStatus(tasks)
                 // Update db
                 viewModelScope.launch {
-                    tasksUseCase.addTasksUseCase(
+                    tasksUseCase.insertOrUpdateTasksUseCase(
                         tasks
                     )
 
