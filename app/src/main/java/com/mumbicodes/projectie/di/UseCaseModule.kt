@@ -62,7 +62,7 @@ object UseCaseModule {
         app: Application,
     ): MilestonesUseCases {
         return MilestonesUseCases(
-            addMilestoneUseCase = AddMilestoneUseCase(repository),
+            insertOrUpdateMilestoneUseCase = InsertOrUpdateMilestoneUseCase(repository),
             getMilestoneByIdWithTasksUseCase = GetMilestoneByIdWithTasksUseCase(repository),
             getMilestonesUseCase = GetMilestonesUseCase(repository),
             deleteMilestoneUseCase = DeleteMilestoneUseCase(repository),

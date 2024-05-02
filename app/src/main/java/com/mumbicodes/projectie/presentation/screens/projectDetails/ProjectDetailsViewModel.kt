@@ -253,7 +253,7 @@ class ProjectDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentMilestoneStatus =
                 milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
-            milestonesUseCases.addMilestoneUseCase(
+            milestonesUseCases.insertOrUpdateMilestoneUseCase(
                 state.value.mileStone.milestone.copy(
                     status = currentMilestoneStatus
                 )

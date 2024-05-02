@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MilestonesRepository {
 
-    suspend fun insertMilestone(milestone: Milestone)
+    suspend fun insertOrUpdateMilestone(milestone: Milestone)
 
     suspend fun getMilestoneByIdWithTasks(milestoneId: Int): DataResult <Flow<MilestoneWithTasks?>>
 

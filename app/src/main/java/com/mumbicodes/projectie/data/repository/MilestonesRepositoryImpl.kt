@@ -13,8 +13,8 @@ class MilestonesRepositoryImpl(
     private val milestonesDao: MilestonesDao,
 ) : MilestonesRepository {
 
-    override suspend fun insertMilestone(milestone: Milestone) {
-        milestonesDao.insertMilestone(milestone)
+    override suspend fun insertOrUpdateMilestone(milestone: Milestone) {
+        milestonesDao.insertOrUpdateMilestone(milestone)
     }
 
     override suspend fun getMilestoneByIdWithTasks(milestoneId: Int): DataResult<Flow<MilestoneWithTasks?>> =

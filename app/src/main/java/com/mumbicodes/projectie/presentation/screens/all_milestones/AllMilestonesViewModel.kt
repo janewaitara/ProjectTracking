@@ -244,7 +244,7 @@ class AllMilestonesViewModel @Inject constructor(
         val currentMilestoneStatus =
             milestonesUseCases.checkMilestoneStatusUseCase.invoke(tasks)
         getSuccessScreenState().data.mileStone?.let {
-            milestonesUseCases.addMilestoneUseCase(
+            milestonesUseCases.insertOrUpdateMilestoneUseCase(
                 it.milestone.copy(status = currentMilestoneStatus)
             )
         }
