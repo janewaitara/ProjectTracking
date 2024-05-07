@@ -9,10 +9,7 @@ import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.model.ProjectName
 import com.mumbicodes.projectie.domain.relations.ProjectWithMilestones
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
-import com.mumbicodes.projectie.domain.util.OrderType
-import com.mumbicodes.projectie.domain.util.ProjectsOrder
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 class ProjectsRepositoryImpl(
     private val projectsDao: ProjectsDao,
@@ -45,28 +42,8 @@ class ProjectsRepositoryImpl(
      *
      * By default, the order is the date added
      * */
-    override suspend fun getAllProjects(projectOrder: ProjectsOrder): DataResult<Flow<List<Project>>> =
-        safeTransaction {
-            projectsDao.getAllProjects().map { projects ->
-                when (projectOrder.orderType) {
-                    is OrderType.Ascending -> {
-                        when (projectOrder) {
-                            is ProjectsOrder.Name -> projects.sortedBy { it.projectName.lowercase() }
-                            is ProjectsOrder.Deadline -> projects.sortedBy { it.projectDeadline }
-                            is ProjectsOrder.DateAdded -> projects.sortedBy { it.timeStamp }
-                        }
-                    }
-
-                    is OrderType.Descending -> {
-                        when (projectOrder) {
-                            is ProjectsOrder.Name -> projects.sortedByDescending { it.projectName.lowercase() }
-                            is ProjectsOrder.Deadline -> projects.sortedByDescending { it.projectDeadline }
-                            is ProjectsOrder.DateAdded -> projects.sortedByDescending { it.timeStamp }
-                        }
-                    }
-                }
-            }
-        }.toDataResult()
+    override suspend fun getAllProjects(): DataResult<Flow<List<Project>>> =
+        safeTransaction { projectsDao.getAllProjects() }.toDataResult()
 
     override suspend fun getProjectNameAndId(): DataResult<Flow<List<ProjectName>>> =
         safeTransaction { projectsDao.getProjectNameAndId() }.toDataResult()

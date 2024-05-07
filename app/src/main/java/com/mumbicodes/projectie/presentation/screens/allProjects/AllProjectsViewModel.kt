@@ -6,7 +6,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.use_case.notifications.NotificationUseCases
@@ -43,7 +42,7 @@ class AllProjectsViewModel @Inject constructor(
     private var getProjectsJob: Job? = null
 
     init {
-        getProjects(ProjectsOrder.DateAdded(OrderType.Descending), "All")
+        getProjects(ProjectsOrder.DateAdded(OrderType.Descending))
         if (state is ScreenState.Data<*>) {
             readNotPromptState()
         }
@@ -58,17 +57,18 @@ class AllProjectsViewModel @Inject constructor(
                 ) {
                     return
                 }
-                getProjects(
-                    (state.value as ScreenState.Data).data.selectedProjectOrder,
-                    (state.value as ScreenState.Data).data.selectedProjectStatus
+                _state.value = ScreenState.Data(
+                    data = (state.value as ScreenState.Data<AllProjectsStates>).data.copy(
+                        projectsOrder = (state.value as ScreenState.Data).data.selectedProjectOrder
+                    )
                 )
             }
 
             is AllProjectsEvent.ResetProjectsOrder -> {
-
-                getProjects(
-                    projectsEvent.projectsOrder,
-                    (state.value as ScreenState.Data).data.selectedProjectStatus
+                _state.value = ScreenState.Data(
+                    data = (state.value as ScreenState.Data<AllProjectsStates>).data.copy(
+                        selectedProjectOrder = projectsEvent.projectsOrder
+                    )
                 )
             }
 
@@ -90,9 +90,10 @@ class AllProjectsViewModel @Inject constructor(
                 if ((state.value as ScreenState.Data).data.selectedProjectStatus == projectsEvent.projectStatus) {
                     return
                 }
-                (((state.value as ScreenState.Data).data.projects as ListState.Success).data as SuccessState.Data).data.filterProjects(
-                    projectStatus = projectsEvent.projectStatus,
-                    searchParam = (state.value as ScreenState.Data).data.searchParam
+                _state.value = ScreenState.Data(
+                    data = (state.value as ScreenState.Data<AllProjectsStates>).data.copy(
+                        selectedProjectStatus = projectsEvent.projectStatus
+                    )
                 )
             }
 
@@ -110,10 +111,6 @@ class AllProjectsViewModel @Inject constructor(
                         searchParam = projectsEvent.searchParam
                     )
                 )
-                (((state.value as ScreenState.Data).data.projects as ListState.Success).data as SuccessState.Data).data.filterProjects(
-                    projectStatus = (state.value as ScreenState.Data<AllProjectsStates>).data.selectedProjectStatus,
-                    searchParam = projectsEvent.searchParam,
-                )
             }
 
             is AllProjectsEvent.UpdateProjectOrder -> {
@@ -129,12 +126,12 @@ class AllProjectsViewModel @Inject constructor(
     /**
      * Whenever called, a new flow is emitted. Hence cancel the old coroutine that's observing db
      * */
-    private fun getProjects(projectsOrder: ProjectsOrder, projectStatus: String) {
+    private fun getProjects(projectsOrder: ProjectsOrder) {
         viewModelScope.launch {
 
             getProjectsJob?.cancel()
             getProjectsJob =
-                when (val results = projectsUseCases.getProjectsUseCase(projectsOrder)) {
+                when (val results = projectsUseCases.getProjectsUseCase()) {
                     is DataResult.Error -> {
                         // Doing this in a viewModelScope as we need to return a job
                         viewModelScope.launch {
@@ -163,49 +160,12 @@ class AllProjectsViewModel @Inject constructor(
                                             projectsOrder = projectsOrder,
                                         ),
                                     )
-                                    projects.filterProjects(
-                                        projectStatus,
-                                        (state.value as ScreenState.Data<AllProjectsStates>).data.searchParam
-                                    )
                                 }
                             }
                             .launchIn(viewModelScope)
                     }
                 }
         }
-    }
-
-    private fun List<Project>.filterProjects(
-        projectStatus: String,
-        searchParam: String,
-    ) {
-        _state.value = ScreenState.Data(
-            data = (state.value as ScreenState.Data).data.copy(
-                filteredProjects = ListState.Success
-                (
-                    data = when (
-                        this.filter { projectStatus == appContext.getString(R.string.all) || it.projectStatus == projectStatus }
-                            .filter {
-                                it.projectName.contains(searchParam)
-                            }.isEmpty()
-                    ) {
-                        true -> {
-                            SuccessState.Empty
-                        }
-
-                        false -> {
-                            SuccessState.Data(
-                                this.filter { projectStatus == appContext.getString(R.string.all) || it.projectStatus == projectStatus }
-                                    .filter {
-                                        it.projectName.contains(searchParam)
-                                    }
-                            )
-                        }
-                    }
-                ),
-                selectedProjectStatus = projectStatus,
-            )
-        )
     }
 
     private fun readNotPromptState() {
