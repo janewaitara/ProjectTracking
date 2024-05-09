@@ -1,7 +1,7 @@
 package com.mumbicodes.projectie.domain.use_case.milestones
 
 data class MilestonesUseCases(
-    val addMilestoneUseCase: AddMilestoneUseCase,
+    val insertOrUpdateMilestoneUseCase: InsertOrUpdateMilestoneUseCase,
     val getMilestoneByIdWithTasksUseCase: GetMilestoneByIdWithTasksUseCase,
     val getMilestonesUseCase: GetMilestonesUseCase,
     val deleteMilestoneUseCase: DeleteMilestoneUseCase,

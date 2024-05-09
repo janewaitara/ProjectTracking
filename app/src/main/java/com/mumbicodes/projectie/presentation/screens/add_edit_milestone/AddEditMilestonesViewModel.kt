@@ -1,6 +1,5 @@
 package com.mumbicodes.projectie.presentation.screens.add_edit_milestone
 
-import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -15,7 +14,12 @@ import com.mumbicodes.projectie.domain.model.Task
 import com.mumbicodes.projectie.domain.use_case.milestones.MilestonesUseCases
 import com.mumbicodes.projectie.domain.use_case.projects.ProjectsUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
-import com.mumbicodes.projectie.presentation.util.*
+import com.mumbicodes.projectie.presentation.util.MILESTONE_ID
+import com.mumbicodes.projectie.presentation.util.PROJECT_ID
+import com.mumbicodes.projectie.presentation.util.toDateAsString
+import com.mumbicodes.projectie.presentation.util.toLocalDate
+import com.mumbicodes.projectie.presentation.util.toLong
+import com.mumbicodes.projectie.presentation.util.toTask
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,7 +35,6 @@ class AddEditMilestonesViewModel @Inject constructor(
     private val tasksUseCases: TasksUseCases,
     private val projectsUseCases: ProjectsUseCases,
     savedStateHandle: SavedStateHandle,
-    private val appContext: Application,
 ) : ViewModel() {
 
     private val _milestoneTitleState = mutableStateOf("")
@@ -164,7 +167,7 @@ class AddEditMilestonesViewModel @Inject constructor(
 
                 viewModelScope.launch {
 
-                    milestonesUseCases.addMilestoneUseCase(
+                    milestonesUseCases.insertOrUpdateMilestoneUseCase(
                         Milestone(
                             projectId = passedProjectId,
                             milestoneId = currentMilestoneId!!,
@@ -177,7 +180,7 @@ class AddEditMilestonesViewModel @Inject constructor(
                         )
                     )
 
-                    tasksUseCases.addTasksUseCase(
+                    tasksUseCases.insertOrUpdateTasksUseCase(
                         tasksUseCases.transformTasksUseCase.transformTaskStatesToTasks(
                             stateTasks
                         ).filter {

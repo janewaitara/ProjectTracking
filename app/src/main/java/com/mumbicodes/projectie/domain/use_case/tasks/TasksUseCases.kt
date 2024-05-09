@@ -1,7 +1,7 @@
 package com.mumbicodes.projectie.domain.use_case.tasks
 
 class TasksUseCases(
-    val addTasksUseCase: AddTasksUseCase,
+    val insertOrUpdateTasksUseCase: InsertOrUpdateTasksUseCase,
     val deleteTaskUseCase: DeleteTaskUseCase,
     val transformTasksUseCase: TransformTasksUseCase,
 )

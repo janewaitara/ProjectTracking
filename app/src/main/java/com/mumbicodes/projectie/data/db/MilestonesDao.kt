@@ -1,6 +1,9 @@
 package com.mumbicodes.projectie.data.db
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Query
+import androidx.room.Upsert
 import com.mumbicodes.projectie.domain.model.Milestone
 import com.mumbicodes.projectie.domain.relations.MilestoneWithTasks
 import kotlinx.coroutines.flow.Flow
@@ -8,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MilestonesDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMilestone(milestone: Milestone)
+    @Upsert
+    suspend fun insertOrUpdateMilestone(milestone: Milestone)
 
     /** Fetch */
     @Query("SELECT * from milestones_table WHERE milestoneId = :milestoneId")

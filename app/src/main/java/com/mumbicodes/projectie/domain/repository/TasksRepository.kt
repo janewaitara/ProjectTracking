@@ -4,7 +4,7 @@ import com.mumbicodes.projectie.domain.model.Task
 
 interface TasksRepository {
 
-    suspend fun insertTask(tasks: List<Task>)
+    suspend fun insertOrUpdateTask(tasks: List<Task>)
 
     suspend fun deleteTask(task: Task)
 }

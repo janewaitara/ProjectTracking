@@ -15,8 +15,8 @@ import com.mumbicodes.projectie.domain.use_case.onBoarding.OnBoardingUseCases
 import com.mumbicodes.projectie.domain.use_case.onBoarding.ReadOnBoardingStateUseCase
 import com.mumbicodes.projectie.domain.use_case.onBoarding.SaveOnBoardingStateUseCase
 import com.mumbicodes.projectie.domain.use_case.projects.*
-import com.mumbicodes.projectie.domain.use_case.tasks.AddTasksUseCase
 import com.mumbicodes.projectie.domain.use_case.tasks.DeleteTaskUseCase
+import com.mumbicodes.projectie.domain.use_case.tasks.InsertOrUpdateTasksUseCase
 import com.mumbicodes.projectie.domain.use_case.tasks.TasksUseCases
 import com.mumbicodes.projectie.domain.use_case.tasks.TransformTasksUseCase
 import com.mumbicodes.projectie.domain.use_case.workers.CancelWorkerUseCase
@@ -62,7 +62,7 @@ object UseCaseModule {
         app: Application,
     ): MilestonesUseCases {
         return MilestonesUseCases(
-            addMilestoneUseCase = AddMilestoneUseCase(repository),
+            insertOrUpdateMilestoneUseCase = InsertOrUpdateMilestoneUseCase(repository),
             getMilestoneByIdWithTasksUseCase = GetMilestoneByIdWithTasksUseCase(repository),
             getMilestonesUseCase = GetMilestonesUseCase(repository),
             deleteMilestoneUseCase = DeleteMilestoneUseCase(repository),
@@ -79,7 +79,7 @@ object UseCaseModule {
         repository: TasksRepository,
     ): TasksUseCases {
         return TasksUseCases(
-            addTasksUseCase = AddTasksUseCase(repository),
+            insertOrUpdateTasksUseCase = InsertOrUpdateTasksUseCase(repository),
             deleteTaskUseCase = DeleteTaskUseCase(repository),
             transformTasksUseCase = TransformTasksUseCase(),
         )

@@ -9,13 +9,16 @@ import com.mumbicodes.projectie.R
 import com.mumbicodes.projectie.domain.model.DataResult
 import com.mumbicodes.projectie.domain.model.Project
 import com.mumbicodes.projectie.domain.repository.ProjectsRepository
-import com.mumbicodes.projectie.domain.util.OrderType
-import com.mumbicodes.projectie.domain.util.ProjectsOrder
 import com.mumbicodes.projectie.presentation.util.toLocalDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 private const val TAG = "ProjectWorkerInTwoDays"
@@ -34,9 +37,7 @@ class CheckProjectDeadlineIsInTwoDaysWorker @AssistedInject constructor(
             return@withContext try {
                 Log.e("Reached 3", "It has been reached - 2 days ")
 
-                val allProjects = projectsRepository.getAllProjects(
-                    projectOrder = ProjectsOrder.DateAdded(OrderType.Descending)
-                )
+                val allProjects = projectsRepository.getAllProjects()
 
                 CoroutineScope(Dispatchers.IO).launch {
                     when (allProjects) {
