@@ -91,10 +91,10 @@ fun ProjectTrackingTheme(
         SideEffect {
             val window = (view.context as Activity).window
             val insets = WindowCompat.getInsetsController(window, view)
-            window.statusBarColor = if (darkTheme) DarkColorPalette.background.toArgb() else LightColorPalette.background.toArgb() // choose a status bar color
-            // window.navigationBarColor = LightColorPalette.surface.toArgb() // choose a navigation bar color
+            window.statusBarColor = colors.background.toArgb() // choose a status bar color
             insets.isAppearanceLightStatusBars = !darkTheme
-            // insets.isAppearanceLightNavigationBars = !darkTheme
+            window.navigationBarColor = colors.background.toArgb() // choose a navigation bar color
+            insets.isAppearanceLightNavigationBars = !darkTheme
         }
     }
 
